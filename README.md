@@ -4,8 +4,9 @@ my blog theme, (I rly need to version control this T.T)
 
 
 # 💻 computerpen's blog theme
+# 컴푸터싸인펜의 커스텀 블로그 테마
 
-
+[여기를 눌러서 체험해 보세요](https://fr0mhellsmath.blogspot.com/)
 
 ## ✨ 핵심 기능 (Features)
 
