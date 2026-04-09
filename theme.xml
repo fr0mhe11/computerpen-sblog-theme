@@ -4197,7 +4197,18 @@ body.light-mode .lm-spinner { border-color: rgba(0, 0, 0, 0.1); border-top-color
   align-items: center;
 }
 .settings-close { background: none; border: none; color: #8B95A1; font-size: 20px; cursor: pointer; transition: 0.2s; }
-.settings-close:hover { color: #F2F4F6; }
+
+.settings-close:hover { 
+  color: #F2F4F6; 
+  background-color: rgba(255, 255, 255, 0.1); 
+  border-radius: 6px;
+}
+/* 라이트 모드일 때 X 버튼 호버 (까맣게 유지) */
+body.light-mode .settings-close:hover { 
+  color: #191F28 !important; 
+  background-color: rgba(0, 0, 0, 0.05) !important; 
+}
+
 
 .settings-body { padding: 8px 20px 20px 20px; }
 .setting-item {
@@ -5543,6 +5554,40 @@ body.light-mode #settings-fab[style*="position: fixed"]:hover {
   background: rgba(255, 255, 255, 1) !important;
   transform: scale(1.05) !important;
 }
+
+/* =========================================================
+   ✨ 인기글(Post of the week) 폰트 이질감 완벽 동기화 패치
+========================================================= */
+/* 1. 인기글 위젯 내의 모든 요소가 블로그 기본 폰트를 강제로 따라가도록 설정 */
+.PopularPosts,
+.PopularPosts .post-title,
+.PopularPosts .item-title,
+.PopularPosts .item-date,
+.PopularPosts .byline {
+    font-family: inherit !important; 
+}
+
+/* 2. 제목 글씨체 다듬기 (본문 제목처럼 또렷하고 모던하게) */
+.PopularPosts .post-title a,
+.PopularPosts .item-title a {
+    /* 시스템 최고급 폰트(애플, 프리텐다드 등) 우선 적용 */
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, Roboto, "Noto Sans KR", "Segoe UI", sans-serif !important;
+    letter-spacing: -0.02em !important; /* 글씨가 흩어지지 않도록 자간을 살짝 조여줌 */
+    word-break: keep-all !important; /* 단어 단위로 예쁘게 줄바꿈 */
+}
+
+/* 3. 날짜/메타 정보 폰트 다듬기 */
+.PopularPosts .item-date,
+.PopularPosts .byline {
+    font-family: -apple-system, BlinkMacSystemFont, "Apple SD Gothic Neo", "Pretendard Variable", Pretendard, Roboto, "Noto Sans KR", sans-serif !important;
+    letter-spacing: 0 !important;
+}
+
+/* (참고) 순위 숫자(01, 02...)는 디자인 포인트이므로 기존 JetBrains Mono(개발자 폰트) 유지 */
+
+
+
+
 
 
 
