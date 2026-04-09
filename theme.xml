@@ -10,6 +10,12 @@
 <script type='text/javascript'>
 //<![CDATA[
 window.MathJax = {
+
+loader: {
+    // 🔥 MathJax의 모든 확장 패키지를 한 번에 불러옵니다
+    load: ['[tex]/all-packages'] 
+  },
+
   tex: {
     inlineMath: [['$', '$'], ['\\(', '\\)']],
     displayMath: [['$$', '$$'], ['\\[', '\\]']],
@@ -3514,19 +3520,16 @@ mjx-container[display="true"],
    상단 읽기 진행률 바 (Reading Progress Bar)
 ========================================================= */
 #reading-progress-bar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 0%;
-  height: 3px; /* 너무 두껍지 않게 3px 설정 */
-  background: linear-gradient(90deg, #3182F6, #5C9DFF); /* 토스 시그니처 블루 그라데이션 */
-  z-index: 999999; /* 화면 최상단에 무조건 노출 */
-  transition: width 0.05s ease-out; /* 부드럽게 따라오도록 설정 */
-  border-top-right-radius: 2px;
-  border-bottom-right-radius: 2px;
+  position: fixed; top: 0; left: 0;
+  width: 100%; height: 3px;
+  background: linear-gradient(90deg, #3182F6, #5C9DFF);
+  z-index: 999999;
+  /* 🚀 width 대신 GPU가속(transform) 사용 */
+  transform-origin: left;
+  transform: scaleX(0);
+  transition: transform 0.05s ease-out;
+  border-top-right-radius: 2px; border-bottom-right-radius: 2px;
 }
-    
-    
 
     
     
@@ -3928,11 +3931,16 @@ div.code-toolbar > .toolbar button:hover {
    [OVERHAUL] 1. 3-Pane UI Layout & 2. Zen Mode
 ========================================================= */
 
-/* ① 부드러운 레이아웃 전환 애니메이션 준비 */
+/* ① 부드러운 레이아웃 전환 (all 대신 필요한 속성만 지정하여 GPU 과부하 차단) */
 .sidebar-container, #toc-wrapper, .page_body, .page_body .centered {
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1) !important;
 }
 
+/* ✨ [누락 버그 해결] 고스트 UI (스마트 헤더 숨김 애니메이션) */
+body.ghost-ui-active .centered-top-container.sticky {
+  transform: translateY(-100%) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+}
 
 
 /* ③ Zen Mode 활성화 시 레이아웃 변화 (사이드바 숨김 & 중앙 확장) */
@@ -4487,39 +4495,14 @@ a[href^="#fn"]:not(.footnote-backref) {
 
 
 
-/* =========================================================
-   [라이트 모드 긴급 패치] 인라인 코드 가독성 & 수식 파란색 강조 복구
-========================================================= */
-
-/* 1. 인라인 코드(한 줄 코드) 하얀 박스 버그 완벽 해결 */
-body.light-mode .post-body code:not([class*="language-"]),
-body.light-mode .post-body p code,
-body.light-mode .post-body li code,
-body.light-mode .callout-content code {
-  background-color: rgba(0, 0, 0, 0.06) !important; /* 옅은 회색 배경 */
-  color: #333D4B !important; /* 가독성 높은 토스 스타일 붉은색 글씨 */
-  border: 1px solid rgba(0, 0, 0, 0.05) !important;
-  padding: 2px 6px !important;
-  border-radius: 4px !important;
-  text-shadow: none !important;
+/* 수식(MathJax) 색상 보호 모드 (강제 덮어쓰기 금지) */
+mjx-container, .MathJax_SVG {
+  /* MathJax가 본문 텍스트 색상을 자연스럽게 상속받도록 허용 */
+  color: inherit !important; 
 }
-
-/* 프리즘(블록) 코드는 위 규칙에서 제외시켜 정상 유지 */
-body.light-mode .post-body pre code {
-  background-color: transparent !important;
-  color: #333D4B !important;
-  border: none !important;
-  padding: 0 !important;
-}
-
-/* 2. 수식(MathJax) 파란색 강조 증발 버그 해결 */
-/* 이전에 넣었던 무식한 전체 덮어쓰기(* fill)를 무력화하고 원래 색상(파란색 등)을 복구합니다. */
-body.light-mode mjx-container svg,
-body.light-mode .MathJax_SVG *,
-body.light-mode #callout-modal-body mjx-container svg,
-body.light-mode #callout-modal-body .MathJax_SVG * {
-  fill: unset !important;
-  stroke: unset !important;
+/* 링크나 볼드 처리된 수식만 파란색 포인트 유지 */
+strong mjx-container, b mjx-container, a mjx-container {
+  color: #3182F6 !important;
 }
 
 /* 수식 전체의 기본 바탕색만 먹색으로 지정하여, \color{blue} 등의 내부 강조색이 정상 작동하게 만듦 */
@@ -4740,93 +4723,9 @@ body.latex-font .post-body {
 
 
 
-/* =========================================================
-   [QoL] 메인 화면 스켈레톤 로딩 (Skeleton Shimmer)
-========================================================= */
-
-body:not(.item-view) .post-outer-container {
-  position: relative;
-  overflow: hidden;
-}
-
-/* 스켈레톤 덮개 생성 */
-body:not(.item-view) .post-outer-container::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: #191F28; /* 다크모드 배경색으로 글을 덮음 */
-  z-index: 10;
-  
-  /* 🚀 홀로그램처럼 빛이 훑고 지나가는 Shimmer 이펙트 */
-  background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(49, 130, 246, 0.08) 50%, rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
-  animation: 
-    skeletonShimmer 1.2s infinite linear, 
-    skeletonFadeOut 0.5s 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards; /* 0.8초 뒤에 사라짐 */
-  pointer-events: none;
-}
-
-/* 라이트 모드용 스켈레톤 동기화 */
-body.light-mode:not(.item-view) .post-outer-container::after {
-  background: #FFFFFF;
-  background-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(49, 130, 246, 0.05) 50%, rgba(0,0,0,0) 100%);
-}
-
-@keyframes skeletonShimmer {
-  0% { background-position: 200% 0; }
-  100% { background-position: -200% 0; }
-}
-@keyframes skeletonFadeOut {
-  to { opacity: 0; visibility: hidden; }
-}
-
-/* 🌊 위에서부터 아래로 순차적으로 스켈레톤이 벗겨지는 고급스러운 딜레이 (앱 느낌) */
-body:not(.item-view) .post-outer-container:nth-child(1)::after { animation-delay: 0s, 0.6s; }
-body:not(.item-view) .post-outer-container:nth-child(2)::after { animation-delay: 0s, 0.7s; }
-body:not(.item-view) .post-outer-container:nth-child(3)::after { animation-delay: 0s, 0.8s; }
-body:not(.item-view) .post-outer-container:nth-child(4)::after { animation-delay: 0s, 0.9s; }
-body:not(.item-view) .post-outer-container:nth-child(n+5)::after { animation-delay: 0s, 1.0s; }
 
 
 
-/* =========================================================
-   [QoL] 개별 글(본문) 화면 스켈레톤 로딩 (Skeleton Shimmer)
-========================================================= */
-
-/* 글 본문 영역에도 스켈레톤 덮개 씌우기 */
-body.item-view .post-outer-container {
-  position: relative;
-  overflow: hidden;
-  /* 글이 나타날 때 아래에서 위로 살짝 올라오는 쫀득한 모션 추가 */
-  animation: articleSlideUp 0.6s 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) backwards;
-}
-
-/* 스켈레톤 빛 이펙트 (0.5초 뒤에 스르륵 사라짐) */
-body.item-view .post-outer-container::after {
-  content: "";
-  position: absolute;
-  top: 0; left: 0; width: 100%; height: 100%;
-  background: #191F28; /* 다크모드 배경색 */
-  z-index: 10;
-  
-  background-image: linear-gradient(90deg, rgba(255,255,255,0) 0%, rgba(49, 130, 246, 0.08) 50%, rgba(255,255,255,0) 100%);
-  background-size: 200% 100%;
-  animation: 
-    skeletonShimmer 1.2s infinite linear, 
-    skeletonFadeOut 0.5s 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards; /* 0.5초 딜레이 후 사라짐 */
-  pointer-events: none; /* 클릭 방해 안 함 */
-}
-
-/* 라이트 모드 본문 스켈레톤 */
-body.light-mode.item-view .post-outer-container::after {
-  background: #FFFFFF;
-  background-image: linear-gradient(90deg, rgba(0,0,0,0) 0%, rgba(49, 130, 246, 0.05) 50%, rgba(0,0,0,0) 100%);
-}
-
-@keyframes articleSlideUp {
-  0% { transform: translateY(15px); opacity: 0; }
-  100% { transform: translateY(0); opacity: 1; }
-}
 
 
 /* =========================================================
@@ -5584,6 +5483,52 @@ body:not(.light-mode) .post-body li code {
 }
 /* 프리즘 코드블록(pre) 안의 원본 코드는 위 박스 규칙에서 보호 */
 body:not(.light-mode) .post-body pre code { background-color: transparent !important; border: none !important; padding: 0 !important; }
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   ⚙️ 설정 버튼 라이트 모드 완벽 대응 (목차 내부 & 플로팅)
+========================================================= */
+/* 1. 기본 상태 및 목차창 내부에 있을 때의 아이콘 색상 */
+body.light-mode #settings-fab {
+  color: #8B95A1 !important; /* 토스 스타일 기본 진회색 */
+}
+
+/* 마우스 올렸을 때 (호버) 약간 어두워지며 강조 */
+body.light-mode #settings-fab:hover {
+  color: #191F28 !important; 
+  background-color: rgba(0, 0, 0, 0.05) !important; 
+  border-radius: 4px !important;
+}
+
+/* 2. 목차가 없는 짧은 글이라 우측 하단에 '플로팅(동그라미)'으로 떠 있을 경우 */
+body.light-mode #settings-fab[style*="position: fixed"] {
+  background: rgba(255, 255, 255, 0.85) !important;
+  border: 1px solid rgba(0, 0, 0, 0.1) !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+  backdrop-filter: blur(8px) !important; /* 예쁜 반투명 효과 */
+  border-radius: 50% !important; /* 다시 동그랗게 유지 */
+}
+
+body.light-mode #settings-fab[style*="position: fixed"]:hover {
+  background: rgba(255, 255, 255, 1) !important;
+  transform: scale(1.05) !important;
+}
+
+
+
+
+
+
 
 
 
@@ -8853,7 +8798,8 @@ const settingsWrapper = document.createElement('div');
 
   document.body.appendChild(settingsWrapper);
 
-  // ⚙️ 2. 설정 버튼을 검색창에서 빼서 '플로팅 목차(ToC)' 안으로 쏙 이동!
+
+// ⚙️ 2. 설정 버튼을 검색창에서 빼서 '플로팅 목차(ToC)' 안으로 쏙 이동!
   const fab = document.createElement('button');
   fab.id = "settings-fab";
   fab.className = "toc-btn"; // 목차 버튼과 동일한 클래스 부여하여 완벽 동기화
@@ -8868,6 +8814,9 @@ const settingsWrapper = document.createElement('div');
     document.body.appendChild(fab);
     fab.style.cssText = "position:fixed; bottom:30px; right:30px; z-index:9999; font-size:24px; background:rgba(30,31,36,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:48px; height:48px; display:flex; justify-content:center; align-items:center; cursor:pointer;";
   }
+
+
+
 
   // 팝업 열기/닫기 로직
   const panel = document.getElementById('settings-panel');
@@ -8962,9 +8911,12 @@ window.addEventListener('scroll', function() {
       const currentScroll = window.pageYOffset || document.documentElement.scrollTop;
       const height = document.documentElement.scrollHeight - document.documentElement.clientHeight;
       
-      // ① 상단 읽기 진행률 바
+   
+// ① 상단 읽기 진행률 바 (GPU 가속)
       const progressBar = document.getElementById("reading-progress-bar");
-      if (progressBar) progressBar.style.width = ((currentScroll / height) * 100) + "%";
+      if (progressBar) progressBar.style.transform = "scaleX(" + (currentScroll / height) + ")";
+
+
 
       // ② 고스트 UI (메뉴 자동 숨김 & 모바일 바운스 방어)
       if (currentScroll >= 0 && currentScroll + window.innerHeight <= document.documentElement.scrollHeight) {
