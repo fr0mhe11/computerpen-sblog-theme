@@ -23,7 +23,7 @@ loader: {
     processEscapes: true
   },
   // [리사이징 설정] 기존에 90% 정도를 쓰셨다면 아래 scale 값을 조절하세요
-  chtml: {
+  svg: {
     scale: 0.95,        // 전체적인 수식 크기 (0.95 = 95%)
     minScale: 0.5,      // 모바일에서 너무 작아지지 않게 방지
     displayAlign: 'center'
@@ -47,8 +47,7 @@ loader: {
 };
 //]]>
 </script>
-<script async='async' id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-chtml.js'/>
-
+<script async='async' id='MathJax-script' src='https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-svg.js'/>
 <style>
   mjx-container[display=&quot;true&quot;] {
     overflow-x: auto;
@@ -8284,16 +8283,14 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
         let html = el.innerHTML.trim();
         
         // 🚀 [근본 해결 1] 텅 빈 <p> 갭이 생기지 않도록, 제목을 감싸는 <p>와 </p>까지 한 번에 묶어서 추출합니다.
-      let titleRegex = /^(?:<p>)?\s*\[!([^\]]+)\]([+-]?)([\s\S]*?)(?:<br\s*\/?>|<\/p>|$)/i;
-let match = html.match(titleRegex);
-
-if (match) {
-    let fullMatch = match[0]; 
-    let type = match[1].toLowerCase().trim();
-    let collapseSign = match[2]; 
-    
-    // 🚀 잘린 제목 안의 숨은 엔터 찌꺼기들을 띄어쓰기 한 칸으로 예쁘게 펴줍니다.
-    let titleHtml = match[3].replace(/\n/g, ' ').trim();
+        let titleRegex = /^(?:<p>)?\s*\[!([^\]]+)\]([+-]?)([\s\S]*?)(?:<br\s*\/?>|<\/p>|\n|$)/i;
+        let match = html.match(titleRegex);
+        
+        if (match) {
+            let fullMatch = match[0]; 
+            let type = match[1].toLowerCase().trim();
+            let collapseSign = match[2]; 
+            let titleHtml = match[3].trim(); 
             
             
 			const numberedTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시','증명', 'proof'];
@@ -8386,32 +8383,68 @@ if (match) {
 // ==========================================
   // 🚀 [옵시디언 호환] ==형광펜== 문법 자동 파싱
   // ==========================================
-  window.parseObsidianHighlights = function() {
-    document.querySelectorAll('.post-body').forEach(body => {
-      const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
-      const textNodes = [];
-      let node;
-      while (node = walker.nextNode()) {
-        const parentTag = node.parentNode.tagName.toUpperCase();
-        // 코드, 수식, 스크립트 안의 == 는 건드리지 않고 보호함
-        if (['CODE', 'PRE', 'SCRIPT', 'STYLE'].includes(parentTag) || node.parentNode.closest('mjx-container')) continue;
-        textNodes.push(node);
+window.parseObsidianHighlights = function() {
+  document.querySelectorAll('.post-body').forEach(body => {
+    // 1. 본문 안의 모든 '텍스트 노드'만 안전하게 추출 (HTML 구조 보존)
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
+    const nodesToReplace = [];
+    let node;
+    
+    while (node = walker.nextNode()) {
+      const parentTag = node.parentNode.tagName.toUpperCase();
+      // 코드블록이나 스크립트 내부 등은 무시
+      if (['CODE', 'PRE', 'SCRIPT', 'STYLE'].includes(parentTag) || node.parentNode.closest('mjx-container')) continue;
+      
+      // 텍스트에 '=='가 포함된 노드만 후보로 등록
+      if (node.nodeValue.includes('==')) {
+        nodesToReplace.push(node);
       }
-      textNodes.forEach(txtNode => {
-        // 개행 문자가 포함된 ==텍스트== 도 완벽하게 인식하도록 정규식 개선
-        if (/==([\s\S]+?)==/.test(txtNode.nodeValue)) {
-          const span = document.createElement('span');
-          span.innerHTML = txtNode.nodeValue.replace(/==([\s\S]+?)==/g, '<mark class="obsidian-highlight">$1</mark>');
-          txtNode.parentNode.replaceChild(span, txtNode);
-          const parent = span.parentNode;
-          while (span.firstChild) parent.insertBefore(span.firstChild, span);
-          parent.removeChild(span);
+    }
+
+    nodesToReplace.forEach(txtNode => {
+      const text = txtNode.nodeValue;
+      
+      // 🚀 [핵심 로직] 수식($...$)과 형광펜(==...==)을 동시 탐색하는 정규식
+      // 매칭 그룹 1: 수식 ($$수식$$ 또는 $수식$)
+      // 매칭 그룹 2: 형광펜 내부 텍스트
+      const regex = /(\$\$[\s\S]+?\$\$|\$(?:\\.|[^$\\])+?\$)|==([\s\S]+?)==/g;
+      
+      if (!regex.test(text)) return;
+      
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      regex.lastIndex = 0; // test() 호출 후 인덱스 초기화
+      
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        // 매칭된 부분 이전의 일반 텍스트 보존
+        if (match.index > lastIndex) {
+          fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
         }
-      });
+        
+        if (match[1]) {
+          // ✅ 수식($a==b$)이 먼저 잡힌 경우: 형광펜으로 바꾸지 않고 '그대로' 텍스트로 보존 (보호 구역)
+          fragment.appendChild(document.createTextNode(match[1]));
+        } else if (match[2]) {
+          // ✅ 형광펜(==텍스트==)이 잡힌 경우: <mark> 태그로 변환
+          const mark = document.createElement('mark');
+          mark.className = 'obsidian-highlight';
+          mark.textContent = match[2];
+          fragment.appendChild(mark);
+        }
+        lastIndex = regex.lastIndex;
+      }
+      
+      // 남은 자투리 텍스트 마저 이어붙이기
+      if (lastIndex < text.length) {
+        fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+      }
+      
+      // 기존 텍스트를 파싱된 조각들로 부드럽게 교체 (이벤트 리스너 파괴 없음!)
+      txtNode.parentNode.replaceChild(fragment, txtNode);
     });
-  };
-
-
+  });
+};
 
 
 
