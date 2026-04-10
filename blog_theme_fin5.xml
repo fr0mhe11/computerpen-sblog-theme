@@ -8284,14 +8284,16 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
         let html = el.innerHTML.trim();
         
         // 🚀 [근본 해결 1] 텅 빈 <p> 갭이 생기지 않도록, 제목을 감싸는 <p>와 </p>까지 한 번에 묶어서 추출합니다.
-        let titleRegex = /^(?:<p>)?\s*\[!([^\]]+)\]([+-]?)([\s\S]*?)(?:<br\s*\/?>|<\/p>|\n|$)/i;
-        let match = html.match(titleRegex);
-        
-        if (match) {
-            let fullMatch = match[0]; 
-            let type = match[1].toLowerCase().trim();
-            let collapseSign = match[2]; 
-            let titleHtml = match[3].trim(); 
+      let titleRegex = /^(?:<p>)?\s*\[!([^\]]+)\]([+-]?)([\s\S]*?)(?:<br\s*\/?>|<\/p>|$)/i;
+let match = html.match(titleRegex);
+
+if (match) {
+    let fullMatch = match[0]; 
+    let type = match[1].toLowerCase().trim();
+    let collapseSign = match[2]; 
+    
+    // 🚀 잘린 제목 안의 숨은 엔터 찌꺼기들을 띄어쓰기 한 칸으로 예쁘게 펴줍니다.
+    let titleHtml = match[3].replace(/\n/g, ' ').trim();
             
             
 			const numberedTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시','증명', 'proof'];
@@ -8803,6 +8805,7 @@ document.addEventListener("DOMContentLoaded", function() {
 <script type='text/javascript'>
 //<![CDATA[
 // 🚀 [글로벌] 스켈레톤 마스터 컨트롤러
+
 window.SkeletonMaster = {
   apply: function(container) {
     // 1. 이미지는 로딩이 완전히 끝날 때까지 뼈대 유지
@@ -8818,23 +8821,32 @@ window.SkeletonMaster = {
         img.addEventListener('error', () => img.classList.remove('skeleton-ui'));
       }
     });
-    // 2. 콜아웃, 코드블록, 수식 블록에 뼈대 입히기
-    const blocks = container.querySelectorAll('blockquote, pre, .math-block');
-    blocks.forEach(b => b.classList.add('skeleton-ui'));
+
+    // ✨ 타겟이 글 목록(더보기 카드)일 때만 자기 자신도 뼈대 처리 (본문 post-body 삭제됨)
+    if (container.classList && (container.classList.contains('post-outer-container') || container.classList.contains('post'))) {
+      container.classList.add('skeleton-ui');
+    }
   },
   
   remove: function(container) {
+    // 내부 자식들의 뼈대 벗기기
     const blocks = container.querySelectorAll('.skeleton-ui:not(img)');
     blocks.forEach(b => b.classList.remove('skeleton-ui'));
+    
+    // ✨ 자기 자신이 뼈대였으면 본인도 벗기기
+    if (container.classList && container.classList.contains('skeleton-ui')) {
+      container.classList.remove('skeleton-ui');
+    }
   }
 };
 
 document.addEventListener("DOMContentLoaded", function() {
   
-  // ✨ [추가] 초기 접속 시(모든 화면) 기본 스켈레톤 작동 로직
   const postBodyNode = document.querySelector('.post-body');
   if (postBodyNode) {
-    SkeletonMaster.apply(document); // 일단 뼈대부터 입힘
+    // ✨ 초기 접속 시 글 본문 전체 쉬머링 삭제됨
+    SkeletonMaster.apply(document); // 다른 외부 이미지들을 위한 안전장치만 유지
+    
     const initRender = async () => {
       if (window.MathJax) {
         if (MathJax.typesetPromise) {
@@ -8843,11 +8855,14 @@ document.addEventListener("DOMContentLoaded", function() {
       }
       if (window.initCodeBlocks) window.initCodeBlocks();
       if (window.initCallouts) window.initCallouts();
-      // 플러그인 변환 시간을 벌어주기 위해 0.3초 대기 후 뼈대 벗기기
+      // 무한 로딩 방지용 일괄 제거 (유지)
       setTimeout(() => SkeletonMaster.remove(document), 300);
     };
+
+
     initRender();
-  }
+}
+  
 
   // 아래부터는 기존 '더보기 + 복원' 로직
   if (document.body.classList.contains('item-view')) return;
