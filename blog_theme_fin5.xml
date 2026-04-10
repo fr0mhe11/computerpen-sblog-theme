@@ -8293,7 +8293,21 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
             let collapseSign = match[2]; 
             let titleHtml = match[3].trim(); 
             
-            if (!titleHtml) titleHtml = type.charAt(0).toUpperCase() + type.slice(1);
+            
+			const numberedTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시','증명', 'proof'];
+                    const rawType = match[1].trim(); // 사용자가 적은 '[!정리]' 안의 텍스트
+
+                    if (!titleHtml || titleHtml === rawType) {
+                        if (numberedTypes.includes(type)) {
+                            // 1. 자동 넘버링이 붙는 종류라면 텍스트를 완전히 비움 (CSS가 '정리 1.'을 알아서 띄움)
+                            titleHtml = ''; 
+                        } else {
+                            // 2. 증명(Proof), 노트(Note) 등 번호가 없는 일반 콜아웃은 원래대로 기본 이름을 띄움
+                            titleHtml = rawType.charAt(0).toUpperCase() + rawType.slice(1);
+                        }
+                    }
+
+
 
             // 🚀 [근본 해결 2] 제목에 $$ 블록 수식을 썼더라도, 화면에 뿌리기 전에 JS가 강제로 인라인($) HTML 속성으로 조작해 버립니다.
             titleHtml = titleHtml.replace(/display="block"/g, 'display="inline"').replace(/display="true"/g, 'display="false"').replace(/class="math display"/g, 'class="math inline"').replace(/class="katex-display"/g, 'class="katex"').replace(/style="[^"]*display:[^;]*block[^"]*"/gi, 'style="display:inline"');
