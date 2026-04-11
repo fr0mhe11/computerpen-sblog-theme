@@ -2,6 +2,7 @@
 <!DOCTYPE html>
 <html b:css='false' b:defaultwidgetversion='2' b:layoutsVersion='3' b:responsive='true' b:templateUrl='indie.xml' b:templateVersion='1.3.3' expr:dir='data:blog.languageDirection' expr:lang='data:blog.locale' xmlns='http://www.w3.org/1999/xhtml' xmlns:b='http://www.google.com/2005/gml/b' xmlns:data='http://www.google.com/2005/gml/data' xmlns:expr='http://www.google.com/2005/gml/expr'>
   <head>
+    <script>document.documentElement.classList.add(&#39;is-rendering&#39;);</script>
     <meta content='width=device-width, initial-scale=1' name='viewport'/>
     <title><data:view.title.escaped/></title>
     <b:include data='blog' name='all-head-content'/>
@@ -5219,6 +5220,30 @@ body.light-mode .skeleton-ui::after {
 
 
 
+/* ✨ 글 본문(Post View) 진입 시 보여줄 스켈레톤 레이아웃 */
+.post-skeleton-wrapper {
+  padding: 10px; width: 100%; box-sizing: border-box;
+  animation: popIn 0.3s ease;
+}
+.post-skeleton-wrapper .skel-title { height: 40px; width: 70%; margin: 20px 0 30px 0; border-radius: 8px; }
+.post-skeleton-wrapper .skel-line { height: 20px; width: 100%; margin-bottom: 14px; border-radius: 6px; }
+.post-skeleton-wrapper .skel-line.short { width: 50%; margin-bottom: 40px; }
+.post-skeleton-wrapper .skel-box { height: 220px; width: 100%; margin-bottom: 30px; border-radius: 16px; }
+
+/* 로딩 중 실제 본문 덜컹거림 방지 */
+body.item-view .post-body.is-loading {
+  display: none !important;
+}
+
+
+
+
+
+
+
+
+
+
 /* =========================================================
    ✨ [최종 통합] 코드블록 (호버 파란색 / 체크 회색 / iPad 호환)
 ========================================================= */
@@ -5773,6 +5798,98 @@ body:not(.item-view) .byline {
 
 
 
+
+
+
+
+
+
+
+/* 🚀 1. 브라우저 첫 프레임부터 스켈레톤 강제 적용 (깜빡임 원천 차단) */
+html.is-rendering .sidebar-container .widget,
+html.is-rendering #comments,
+html.is-rendering .series-box,
+html.is-rendering .widget.FeaturedPost,
+html.is-rendering #modern-series-nav {
+  position: relative !important;
+  overflow: hidden !important;
+  background-color: #2A2B2E !important;
+  color: transparent !important;
+  border: none !important;
+  pointer-events: none !important;
+}
+
+/* 내부 텍스트/이미지 첫 프레임부터 완벽 숨김 */
+html.is-rendering .sidebar-container .widget > *,
+html.is-rendering #comments > *,
+html.is-rendering .series-box > *,
+html.is-rendering .widget.FeaturedPost > *,
+html.is-rendering #modern-series-nav > * {
+  visibility: hidden !important;
+  opacity: 0 !important;
+}
+
+/* 쉬머링 애니메이션 CSS */
+html.is-rendering .sidebar-container .widget::after,
+html.is-rendering #comments::after,
+html.is-rendering .series-box::after,
+html.is-rendering .widget.FeaturedPost::after,
+html.is-rendering #modern-series-nav::after {
+  content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.06), transparent);
+  animation: shimmer 1.5s infinite linear; transform: translateX(-100%);
+}
+
+/* 본문(Post)도 로딩 끝날 때까지 원본을 아예 숨김 (가짜 스켈레톤이 그 자리를 채움) */
+html.is-rendering body.item-view .post-body {
+  display: none !important;
+}
+
+/* ☀️ 라이트 모드 동기화 */
+html.is-rendering body.light-mode .sidebar-container .widget,
+html.is-rendering body.light-mode #comments,
+html.is-rendering body.light-mode .series-box,
+html.is-rendering body.light-mode .widget.FeaturedPost,
+html.is-rendering body.light-mode #modern-series-nav {
+  background-color: #F2F4F6 !important;
+}
+html.is-rendering body.light-mode .sidebar-container .widget::after,
+html.is-rendering body.light-mode #comments::after,
+html.is-rendering body.light-mode .series-box::after,
+html.is-rendering body.light-mode .widget.FeaturedPost::after,
+html.is-rendering body.light-mode #modern-series-nav::after {
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.6), transparent);
+}
+
+
+
+/* 🔥 스켈레톤 해제 후 통통 튀어오르는 팝(Pop) 애니메이션 */
+@keyframes popInElements {
+  0% { opacity: 0; transform: translateY(15px) scale(0.97); }
+  100% { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+/* 1. 스켈레톤이 걷히는 요소 (더보기 오류 방지를 위해 메인 글 카드는 제외) */
+body.is-loaded .post-body,
+body.is-loaded .sidebar-container .widget,
+body.is-loaded #comments,
+body.is-loaded .series-box,
+body.is-loaded .widget.FeaturedPost,
+body.is-loaded #modern-series-nav {
+  opacity: 0; /* 애니메이션 시작 전 투명하게 대기 */
+  animation: popInElements 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* 2. ⚡ 시차 애니메이션 */
+body.is-loaded .post-body { animation-delay: 0s; }
+body.is-loaded .series-box { animation-delay: 0.05s; }
+body.is-loaded .sidebar-container .widget { animation-delay: 0.1s; }
+body.is-loaded #comments { animation-delay: 0.15s; }
+
+
+
+
+
     ]]></b:skin>
     <b:template-skin>
       <![CDATA[
@@ -6229,7 +6346,7 @@ body:not(.item-view) .byline {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
@@ -7792,7 +7909,7 @@ body:not(.item-view) .byline {
           <b:widget-settings>
             <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
             <b:widget-setting name='display'>LIST</b:widget-setting>
-            <b:widget-setting name='selectedLabelsList'/>
+            <b:widget-setting name='selectedLabelsList'>1 1 1,11 1,1121312321,123123213213,22ㅈㅇㄴㅁㅇ,2ㄷ2ㄷ21ㄷ</b:widget-setting>
             <b:widget-setting name='showType'>ALL</b:widget-setting>
             <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
           </b:widget-settings>
@@ -7863,8 +7980,6 @@ body:not(.item-view) .byline {
 //<![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
   
-
-
 
 
 
@@ -8957,28 +9072,104 @@ window.SkeletonMaster = {
   }
 };
 
+
+// 쉬머링 코드
 document.addEventListener("DOMContentLoaded", function() {
-  
-  const postBodyNode = document.querySelector('.post-body');
-  if (postBodyNode) {
-    // ✨ 초기 접속 시 글 본문 전체 쉬머링 삭제됨
-    SkeletonMaster.apply(document); // 다른 외부 이미지들을 위한 안전장치만 유지
-    
-    const initRender = async () => {
-      if (window.MathJax) {
-        if (MathJax.typesetPromise) {
-          try { await MathJax.typesetPromise(); } catch(e){}
+
+  // ❌ [삭제됨] 1. 초기 로딩 JS 로직은 CSS가 더 완벽하게 처리하므로 과감히 지웁니다.
+
+// 🚀 2. [클릭 반응 - 글 카드] 메인 화면 글 카드 클릭 시 전체 포커스 (쉬머링 제거)
+  if (!document.body.classList.contains('item-view')) {
+    document.body.addEventListener('click', function(e) {
+      // 클릭한 곳이 글 카드 내부인지 확인
+      const card = e.target.closest('.post-outer-container, .PopularPosts .post');
+      if (!card) return;
+      if (e.target.tagName.toLowerCase() === 'a' && e.target.target === '_blank') return;
+      
+      // 💡 여기서 card.classList.add('skeleton-ui'); 를 지웠습니다!
+      // 클릭한 카드는 원본 모습 그대로 두고 중복 클릭만 방지합니다.
+      card.style.pointerEvents = 'none'; 
+      
+      // 클릭하지 않은 나머지 카드만 흐리게 처리하여 시선 집중
+      document.querySelectorAll('.post-outer-container, .PopularPosts .post').forEach(other => {
+        if (other !== card) {
+          other.style.opacity = '0.4';
+          other.style.pointerEvents = 'none';
         }
+      });
+    });
+  }
+
+  // 🚀 3. [클릭 반응 - 내부 링크] 사이드바 태그, 카테고리, 시리즈 링크 등
+  const internalLinks = document.querySelectorAll('.sidebar-container a, .series-list a, .series-dropdown-list a, .nav-btn');
+  internalLinks.forEach(link => {
+    link.addEventListener('click', function(e) {
+      const href = this.getAttribute('href');
+      if (!href || href.startsWith('#') || this.target === '_blank') return;
+      const parentWidget = this.closest('.widget, .series-box, #modern-series-nav');
+      if (parentWidget) {
+        parentWidget.classList.add('skeleton-ui');
+        parentWidget.style.pointerEvents = 'none';
       }
-      if (window.initCodeBlocks) window.initCodeBlocks();
-      if (window.initCallouts) window.initCallouts();
-      // 무한 로딩 방지용 일괄 제거 (유지)
-      setTimeout(() => SkeletonMaster.remove(document), 300);
-    };
+    });
+  });
+
+  // 🚀 4. [글 본문 화면] 본문 가짜 스켈레톤 박스 생성
+  const postBodyNode = document.querySelector('.post-body');
+  let skelWrapper = null;
+  
+  if (postBodyNode && document.body.classList.contains('item-view')) {
+    skelWrapper = document.createElement('div');
+    skelWrapper.className = 'post-skeleton-wrapper';
+    skelWrapper.innerHTML = `
+      <div class="skeleton-ui skel-title"></div>
+      <div class="skeleton-ui skel-line"></div>
+      <div class="skeleton-ui skel-line"></div>
+      <div class="skeleton-ui skel-line"></div>
+      <div class="skeleton-ui skel-line short"></div>
+      <div class="skeleton-ui skel-box"></div>
+      <div class="skeleton-ui skel-line"></div>
+      <div class="skeleton-ui skel-line short"></div>
+    `;
+    postBodyNode.parentNode.insertBefore(skelWrapper, postBodyNode);
+  }
+
+  // 🚀 5. [수식 렌더링 완료 후 봉인 해제!]
+  SkeletonMaster.apply(document); 
+  
+const initRender = async () => {
+    if (window.MathJax && MathJax.typesetPromise) {
+      try { await MathJax.typesetPromise(); } catch(e){}
+    }
+    if (window.initCodeBlocks) window.initCodeBlocks();
+    if (window.initCallouts) window.initCallouts();
+    
+    // ------------------------------------------------------------------
+    // 👇 여기서부터 지우고 새로운 코드로 덮어씌우세요! 👇
+    setTimeout(() => {
+      // 💡 최상단 렌더링 블락 해제 (스켈레톤 걷힘)
+      document.documentElement.classList.remove('is-rendering');
+      
+      // 🔥 로딩 완료 신호탄: 이 클래스가 추가되면 CSS가 모든 요소에 팝 애니메이션을 작동시킵니다.
+      document.body.classList.add('is-loaded'); 
+      
+      SkeletonMaster.remove(document); 
+      
+      if (skelWrapper) skelWrapper.remove(); // 본문용 가짜 박스 폭파
+      if (postBodyNode) {
+        postBodyNode.style.display = 'block'; // 숨겨뒀던 진짜 본문 등장
+        // (원래 여기 있던 JS 애니메이션 코드는 지웁니다. CSS가 대신합니다!)
+      }
+    }, 350); 
+    // 👆 여기까지 교체 👆
+    // ------------------------------------------------------------------
+  };
+  initRender();
 
 
-    initRender();
-}
+  // (이 아래부터는 기존에 있던 더보기 로직 등 나머지 코드가 이어지면 됩니다)
+  if (document.body.classList.contains('item-view')) return;
+  // ...
   
 
   // 아래부터는 기존 '더보기 + 복원' 로직
