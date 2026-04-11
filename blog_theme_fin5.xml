@@ -4732,14 +4732,22 @@ body.latex-font .post-body {
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.8) !important;
 }
 
-/* 큰 제목(H1, H2)에 묵직한 펀치감과 미세한 토스 블루 네온 글로우 부여 */
-.post-body h1, .post-body h2 {
+/* 큰 제목 및 글 제목에 파란 네온 대신 '은은한 하얀색 글로우' 통일 */
+.post-title, .post-title a,
+.post-body h1, .post-body h2, .post-body h3 {
   font-weight: 800 !important;
   letter-spacing: -0.5px !important;
-
-   text-shadow: 0 0 20px rgba(49, 130, 246, 0.36) !important;
+  text-shadow: 0 0 15px rgba(255, 255, 255, 0.2) !important; /* 약한 하양 */
 }
 
+/* 라이트 모드에서는 하얀 빛이 안 보이므로, 텍스트가 또렷해 보이게 아주 옅은 검은 그림자로 대체 */
+body.light-mode .post-title,
+body.light-mode .post-title a,
+body.light-mode .post-body h1, 
+body.light-mode .post-body h2, 
+body.light-mode .post-body h3 {
+  text-shadow: 0 0 15px rgba(0, 0, 0, 0.08) !important;
+}
 /* 🕹️ 3. 디스코드 스타일 쫀득한 타격감 (Bouncy Physics) */
 /* 모든 상호작용 요소에 '스프링' 같은 물리 엔진(cubic-bezier)을 달아줍니다. */
 .callout, button, .latex-overleaf-btn, a[href*="#fn"] {
@@ -5470,32 +5478,51 @@ body.light-mode .post-body td {
 
 
 
-
 /* =========================================================
-   [디테일 교정] 다크 모드 한 줄(인라인) 코드 가독성 패치
+   [인라인 코드] 공통 뼈대 및 다크 모드 색상
 ========================================================= */
-/* 다크 모드일 때만 한 줄 코드에 옅은 회색 박스 적용 */
-body:not(.light-mode) .post-body code:not([class*="language-"]),
-body:not(.light-mode) .post-body p code,
-body:not(.light-mode) .post-body li code,
-body:not(.light-mode) .callout-content code {
-  background-color: rgba(255, 255, 255, 0.12) !important; /* 살짝 밝은 반투명 회색 */
-  color: #F2F4F6 !important; /* 텍스트를 하얗고 선명하게 */
-  border: 1px solid rgba(255, 255, 255, 0.08) !important;
+.post-body code:not([class*="language-"]),
+.post-body p code,
+.post-body li code,
+.callout-content code {
+  /* 공통 뼈대 (모드 상관없이 폰트/여백 유지) */
   padding: 2px 6px !important;
   border-radius: 6px !important;
   font-family: 'JetBrains Mono', 'SF Mono', Consolas, monospace !important;
   font-size: 0.9em !important;
+  
+  /* 다크 모드 색상 */
+  background-color: rgba(255, 255, 255, 0.12) !important; /* 옅은 반투명 하양 */
+  color: #F2F4F6 !important; /* 선명한 하얀색 */
+  border: 1px solid rgba(255, 255, 255, 0.08) !important; /* 하얀 테두리 */
+}
+
+/* ☀️ 라이트 모드 색상 오버라이드 (회색 박스, 검은 라인, 검은 텍스트) */
+body.light-mode .post-body code:not([class*="language-"]),
+body.light-mode .post-body p code,
+body.light-mode .post-body li code,
+body.light-mode .callout-content code {
+  background-color: rgba(0, 0, 0, 0.06) !important; /* 옅은 회색 박스 */
+  color: #191F28 !important; /* 검은 텍스트 */
+  border-color: rgba(0, 0, 0, 0.15) !important; /* 검은 라인 */
 }
 
 /* 프리즘 코드블록(pre) 안의 원본 코드는 위 규칙에 영향받지 않도록 보호 */
-body:not(.light-mode) .post-body pre code {
+/* 🚨 프리즘 다중 코드블록(pre) 안의 원본 코드는 위 규칙에 영향받지 않도록 [절대 보호] */
+body .post-body pre code,
+body.light-mode .post-body pre code,
+body .callout-content pre code,
+body.light-mode .callout-content pre code {
   background-color: transparent !important;
   border: none !important;
   padding: 0 !important;
 }
 
-
+/* 추가로 라이트 모드일 때 코드블록 내부 글씨색이 까맣게 먹히는 현상 방어 */
+body.light-mode .post-body pre code,
+body.light-mode .callout-content pre code {
+  color: #24292E !important; /* 원래 코드블록 글자색 유지 */
+}
 
 
 /* =========================================================
@@ -6346,11 +6373,11 @@ body.is-loaded #comments { animation-delay: 0.15s; }
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
