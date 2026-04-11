@@ -6346,7 +6346,7 @@ body.is-loaded #comments { animation-delay: 0.15s; }
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
@@ -7909,7 +7909,7 @@ body.is-loaded #comments { animation-delay: 0.15s; }
           <b:widget-settings>
             <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
             <b:widget-setting name='display'>LIST</b:widget-setting>
-            <b:widget-setting name='selectedLabelsList'>1 1 1,11 1,1121312321,123123213213,22ㅈㅇㄴㅁㅇ,2ㄷ2ㄷ21ㄷ</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
             <b:widget-setting name='showType'>ALL</b:widget-setting>
             <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
           </b:widget-settings>
@@ -9076,21 +9076,20 @@ window.SkeletonMaster = {
 // 쉬머링 코드
 document.addEventListener("DOMContentLoaded", function() {
 
-  // ❌ [삭제됨] 1. 초기 로딩 JS 로직은 CSS가 더 완벽하게 처리하므로 과감히 지웁니다.
-
-// 🚀 2. [클릭 반응 - 글 카드] 메인 화면 글 카드 클릭 시 전체 포커스 (쉬머링 제거)
+// 🚀 2. [클릭 반응 - 글 카드] 메인 화면 글 카드 클릭 시 전체 포커스
   if (!document.body.classList.contains('item-view')) {
     document.body.addEventListener('click', function(e) {
-      // 클릭한 곳이 글 카드 내부인지 확인
       const card = e.target.closest('.post-outer-container, .PopularPosts .post');
       if (!card) return;
-      if (e.target.tagName.toLowerCase() === 'a' && e.target.target === '_blank') return;
       
-      // 💡 여기서 card.classList.add('skeleton-ui'); 를 지웠습니다!
-      // 클릭한 카드는 원본 모습 그대로 두고 중복 클릭만 방지합니다.
+      // 💡 [이슈 방어] <a> 태그의 target="_blank" 이거나, Ctrl/Cmd/Shift/휠 클릭(새 창 열기)인 경우 작동 취소!
+      if (e.target.tagName.toLowerCase() === 'a' && e.target.target === '_blank') return;
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+
+      // 원본은 놔두고 중복 클릭만 방지
       card.style.pointerEvents = 'none'; 
       
-      // 클릭하지 않은 나머지 카드만 흐리게 처리하여 시선 집중
+      // 나머지 카드들만 흐리게 처리
       document.querySelectorAll('.post-outer-container, .PopularPosts .post').forEach(other => {
         if (other !== card) {
           other.style.opacity = '0.4';
@@ -9100,12 +9099,16 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  // 🚀 3. [클릭 반응 - 내부 링크] 사이드바 태그, 카테고리, 시리즈 링크 등
+  // 🚀 3. [클릭 반응 - 내부 링크] 사이드바 등 위젯 스켈레톤 변환
   const internalLinks = document.querySelectorAll('.sidebar-container a, .series-list a, .series-dropdown-list a, .nav-btn');
   internalLinks.forEach(link => {
     link.addEventListener('click', function(e) {
+      // 💡 [이슈 방어] 새 창 열기 단축키 클릭 시 무시
+      if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+      
       const href = this.getAttribute('href');
       if (!href || href.startsWith('#') || this.target === '_blank') return;
+      
       const parentWidget = this.closest('.widget, .series-box, #modern-series-nav');
       if (parentWidget) {
         parentWidget.classList.add('skeleton-ui');
@@ -9114,6 +9117,24 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   });
 
+  // 🚀 [추가] 뒤로가기(Bfcache) 버그 완벽 복구 로직
+  window.addEventListener('pageshow', function(e) {
+    // 브라우저 뒤로가기/앞으로가기로 페이지에 진입했거나 캐시된 페이지일 때
+    if (e.persisted || (window.performance && window.performance.getEntriesByType("navigation")[0].type === 'back_forward')) {
+      
+      // 1. 글 카드 흐림 효과 및 클릭 방지 모두 해제 (초기화)
+      document.querySelectorAll('.post-outer-container, .PopularPosts .post').forEach(card => {
+        card.style.opacity = '';
+        card.style.pointerEvents = '';
+      });
+
+      // 2. 사이드바 등 위젯에 씌워졌던 스켈레톤 상태 강제 제거
+      document.querySelectorAll('.skeleton-ui').forEach(el => {
+        el.classList.remove('skeleton-ui');
+        el.style.pointerEvents = '';
+      });
+    }
+  });
   // 🚀 4. [글 본문 화면] 본문 가짜 스켈레톤 박스 생성
   const postBodyNode = document.querySelector('.post-body');
   let skelWrapper = null;
