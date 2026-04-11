@@ -7,6 +7,17 @@
     <b:include data='blog' name='all-head-content'/>
 
 
+    
+    
+    
+    
+
+    
+    
+    
+    
+    
+    
 <script type='text/javascript'>
 //<![CDATA[
 window.MathJax = {
@@ -4102,7 +4113,7 @@ body.light-mode:not(.item-view) .post-outer-container {
 .load-more-btn {
   padding: 14px 36px; background: #141518; border: 1px solid rgba(255, 255, 255, 0.08);
   border-radius: 30px; color: #F2F4F6; font-size: 0.95em; font-weight: 600;
-  cursor: pointer; transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  cursor: pointer; transition: transform 0.2s ease, background-color 0.2s, color 0.2s, box-shadow 0.2s, border-color 0.2s;
   display: flex; align-items: center; justify-content: center; gap: 12px; min-width: 180px; font-family: inherit;
 }
 
@@ -4163,7 +4174,7 @@ body.light-mode .lm-spinner { border-color: rgba(0, 0, 0, 0.1); border-top-color
   opacity: 0;
   transform: translate(-50%, -45%) scale(0.95) !important;
   pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1) !important;
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s !important;
   transform-origin: center !important;
 }
 #settings-panel.open {
@@ -4389,7 +4400,7 @@ body.light-mode pre[class*="language-"] {
   z-index: 10001; /* ToC보다 위에 둠 */
   display: flex; justify-content: center; align-items: center;
   opacity: 0; pointer-events: none;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1), visibility 0.3s;
 }
 body.light-mode #callout-modal-overlay { background: rgba(255, 255, 255, 0.9); }
 #callout-modal-overlay.open { opacity: 1; pointer-events: auto; }
@@ -4404,8 +4415,8 @@ body.light-mode #callout-modal-overlay { background: rgba(255, 255, 255, 0.9); }
   box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6);
   overflow: hidden; /* 내부 스크롤을 위해 */
   display: flex; flex-direction: column;
-  transform: scale(0.9) translateY(20px); /* 튀어나오는 애니메이션 시작점 */
-  transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1); /* 쫀득한 스프링 애니메이션 */
+transform: scale(0.9) translateY(20px); /* 튀어나오는 애니메이션 시작점 */
+  transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), background-color 0.3s, border-color 0.3s;
 }
 body.light-mode #callout-modal-box { background: #FFFFFF; border-color: rgba(0, 0, 0, 0.08); box-shadow: 0 10px 40px rgba(0,0,0,0.1); }
 #callout-modal-overlay.open #callout-modal-box { transform: scale(1) translateY(0); }
@@ -4576,7 +4587,7 @@ a[href*="#fn"]:not(.footnote-backref) {
   z-index: 5;
   text-decoration: none !important;
   border-radius: 6px;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1) !important;
+transition: transform 0.2s ease, background-color 0.2s ease, color 0.2s ease !important;
   cursor: pointer !important;
 }
 
@@ -4731,7 +4742,7 @@ body.latex-font .post-body {
 /* 🕹️ 3. 디스코드 스타일 쫀득한 타격감 (Bouncy Physics) */
 /* 모든 상호작용 요소에 '스프링' 같은 물리 엔진(cubic-bezier)을 달아줍니다. */
 .callout, button, .latex-overleaf-btn, a[href*="#fn"] {
-  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important; /* 통통 튀는 곡선 */
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275), background-color 0.2s, border-color 0.2s, box-shadow 0.2s, color 0.2s !important; /* 통통 튀는 곡선 (GPU 최적화) */
 }
 
 
@@ -5258,7 +5269,7 @@ div.code-toolbar > .toolbar .toolbar-item button {
   background: transparent !important; color: #8B95A1 !important; border: 1px solid rgba(139, 149, 161, 0.3) !important;
   border-radius: 6px !important; padding: 6px !important; min-width: 72px !important;
   display: flex !important; align-items: center !important; justify-content: center !important;
-  cursor: pointer !important; transition: all 0.2s ease !important; margin-left: 4px !important;
+  cursor: pointer !important; transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease, transform 0.2s ease !important; margin-left: 4px !important;
   font-family: 'Apple Color Emoji', 'Segoe UI Emoji', sans-serif !important; /* 사파리 이모지 흑백현상 방어 */
 }
 body.light-mode div.code-toolbar > .toolbar .toolbar-item button { border-color: rgba(0, 0, 0, 0.1) !important; color: #4E5968 !important; }
@@ -6070,13 +6081,17 @@ body:not(.item-view) .byline {
    <link href='https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css' rel='stylesheet'/>
 <link href='https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/toolbar/prism-toolbar.min.css' rel='stylesheet'/>
     
+<link crossorigin='anonymous' href='https://fonts.googleapis.com' rel='preconnect'/>
+    <link crossorigin='anonymous' href='https://fonts.gstatic.com' rel='preconnect'/>
+    <link crossorigin='anonymous' href='https://cdn.jsdelivr.net' rel='preconnect'/>
+    <link crossorigin='anonymous' href='https://fonts.cdnfonts.com' rel='preconnect'/>
+
     <link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap' rel='stylesheet'/>
     <script src='https://cdn.jsdelivr.net/gh/Mc-Zen/prism-typst@main/src/prism-typst.js'/>
     
-    
     <link href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css' rel='stylesheet'/>
-<link href='https://fonts.cdnfonts.com/css/latin-modern-roman' rel='stylesheet'/>
-<link href='https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;display=swap' rel='stylesheet'/>
+    <link href='https://fonts.cdnfonts.com/css/latin-modern-roman?display=swap' rel='stylesheet'/>
+    <link href='https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;display=swap' rel='stylesheet'/>
     
   </head>
 
@@ -6214,7 +6229,7 @@ body:not(.item-view) .byline {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
@@ -7777,7 +7792,7 @@ body:not(.item-view) .byline {
           <b:widget-settings>
             <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
             <b:widget-setting name='display'>LIST</b:widget-setting>
-            <b:widget-setting name='selectedLabelsList'>1 1 1,11 1,1121312321,123123213213,22ㅈㅇㄴㅁㅇ,2ㄷ2ㄷ21ㄷ</b:widget-setting>
+            <b:widget-setting name='selectedLabelsList'/>
             <b:widget-setting name='showType'>ALL</b:widget-setting>
             <b:widget-setting name='showFreqNumbers'>false</b:widget-setting>
           </b:widget-settings>
@@ -8606,45 +8621,95 @@ const checkIcon = `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" f
 </script>
     
     
-    
-    <script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
+    <b:if cond='data:view.isPost or data:view.isPage'>
+     
+      
+      
+      
+      
+      
+      
+      
+      <script>window.Prism = window.Prism || {}; window.Prism.manual = true;</script>
 
 <script src='https://cdn.jsdelivr.net/combine/npm/prismjs@1.29.0/prism.min.js,npm/prismjs@1.29.0/components/prism-python.min.js,npm/prismjs@1.29.0/components/prism-javascript.min.js,npm/prismjs@1.29.0/components/prism-bash.min.js,npm/prismjs@1.29.0/components/prism-latex.min.js,npm/prismjs@1.29.0/components/prism-json.min.js,npm/prismjs@1.29.0/plugins/toolbar/prism-toolbar.min.js,npm/prismjs@1.29.0/plugins/show-language/prism-show-language.min.js'/>
 
-
-    
-    
-    
-<script src='https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js'/>
 <script type='text/javascript'>
 //<![CDATA[
-  window.initImageZoom = function() {
-    // 1. 블로거 기본 팝업(a 태그) 클릭 이동 방지
-    document.querySelectorAll('.post-body a[imageanchor="1"]').forEach(function(anchor) {
-      anchor.onclick = function(e) { e.preventDefault(); };
+  document.addEventListener("DOMContentLoaded", function() {
+    // 마크다운/HTML에서 Prism이 인식하는 기본 형태인 <pre> 안의 <code> 태그를 모두 수집
+    const codeBlocks = document.querySelectorAll('pre code');
+    
+    // 만약 매우 구형 브라우저라 Observer를 지원하지 않으면 기존처럼 한 번에 모두 렌더링
+    if (!window.IntersectionObserver) {
+      Prism.highlightAll();
+      return;
+    }
+
+    const observer = new IntersectionObserver((entries, obs) => {
+      entries.forEach(entry => {
+        // 코드 블록이 화면에 들어왔을 때
+        if (entry.isIntersecting) {
+          // 해당 블록만 하이라이팅 실행 (병목 제거)
+          Prism.highlightElement(entry.target);
+          
+          // 한 번 색칠한 블록은 더 이상 관찰하지 않음 (메모리 확보)
+          obs.unobserve(entry.target);
+        }
+      });
+    }, { 
+      // 최적화 디테일: 화면에 닿기 200px 전부터 미리 렌더링을 시작하여
+      // 사용자가 스크롤을 빨리 내려도 색칠되지 않은 원본 코드가 보이지 않도록 방어
+      rootMargin: "200px 0px" 
     });
 
-    // 2. 기존 줌 효과가 있다면 리셋 (중복 방지)
-    if (window.myZoom) { window.myZoom.detach(); }
-
-    // 3. 현재 라이트/다크 모드 상태 확인
-    const isLight = document.body.classList.contains('light-mode');
-    const bgColor = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 16, 18, 0.95)';
-
-    // 4. 본문 안의 모든 이미지에 부드러운 줌 팝업 효과 적용
-    window.myZoom = mediumZoom('.post-body img:not(.emoji)', {
-      margin: 24,
-      background: bgColor,
-      scrollOffset: 40
-    });
-  };
-
-  // 문서 처음 로딩 시 1회 실행
-  document.addEventListener('DOMContentLoaded', window.initImageZoom);
+    // 수집한 모든 코드 블록에 감시자(Observer) 부착
+    codeBlocks.forEach(block => observer.observe(block));
+  });
 //]]>
 </script>
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+      
+
+      <script src='https://cdn.jsdelivr.net/npm/medium-zoom@1.1.0/dist/medium-zoom.min.js'/>
+      <script type='text/javascript'>
+      //<![CDATA[
+        window.initImageZoom = function() {
+          document.querySelectorAll('.post-body a[imageanchor="1"]').forEach(function(anchor) {
+            anchor.onclick = function(e) { e.preventDefault(); };
+          });
+          if (window.myZoom) { window.myZoom.detach(); }
+          const isLight = document.body.classList.contains('light-mode');
+          const bgColor = isLight ? 'rgba(255, 255, 255, 0.95)' : 'rgba(15, 16, 18, 0.95)';
+          window.myZoom = mediumZoom('.post-body img:not(.emoji)', {
+            margin: 24,
+            background: bgColor,
+            scrollOffset: 40
+          });
+        };
+        document.addEventListener('DOMContentLoaded', window.initImageZoom);
+      //]]>
+      </script>
+    </b:if>
+
+ 
     
-<script type='text/javascript'>
+    <script type='text/javascript'>
 //<![CDATA[
 document.addEventListener("DOMContentLoaded", () => {
   const seriesBoxes = document.querySelectorAll('.series-box');
@@ -8653,49 +8718,68 @@ document.addEventListener("DOMContentLoaded", () => {
     const tag = box.getAttribute('data-tag');
     if (!tag) return;
 
-    // XML 파싱 에러 방지를 위해 & 를 &amp; 로 변경
     const feedUrl = `/feeds/posts/summary/-/${encodeURIComponent(tag)}?alt=json&amp;max-results=50`;
-    
-    fetch(feedUrl)
-      .then(response => response.json())
-      .then(data => {
-        if (!data.feed.entry) return;
-        
-        const currentUrl = window.location.href.split('#')[0].split('?')[0];
-        let entries = data.feed.entry.reverse(); // 오래된 글부터 정렬 (1편, 2편...)
-        let currentIndex = -1;
-        
-        let listHtml = '<ul class="series-list">';
-        entries.forEach((entry, index) => {
-          let title = entry.title.$t;
-          let link = entry.link.find(l => l.rel === 'alternate').href;
-          let isCurrent = currentUrl === link.split('#')[0].split('?')[0];
-          
-          if (isCurrent) currentIndex = index + 1;
-          
-          listHtml += `
-            <li class="${isCurrent ? 'current' : ''}">
-              <a href="${link}">${index + 1}. ${title}</a>
-            </li>`;
-        });
-        listHtml += '</ul>';
+    const cacheKey = 'series_cache_' + tag;
+    const cachedData = sessionStorage.getItem(cacheKey);
 
-        // 카드 UI 생성
-        box.innerHTML = `
-          <div class="series-header">
-            <span class="series-badge">SERIES</span>
-            <h4 class="series-title">'${tag}' 시리즈</h4>
-            <span class="series-count">${currentIndex !== -1 ? currentIndex : '-'}/${entries.length}</span>
-          </div>
-          <div class="series-body">
-            ${listHtml}
-          </div>
-        `;
+    const renderSeries = (data) => {
+      if (!data.feed.entry) return;
+        
+      const currentUrl = window.location.href.split('#')[0].split('?')[0];
+      let entries = data.feed.entry.reverse();
+      let currentIndex = -1;
+      
+      let listHtml = '<ul class="series-list">';
+      entries.forEach((entry, index) => {
+        let title = entry.title.$t;
+        let link = entry.link.find(l => l.rel === 'alternate').href;
+        let isCurrent = currentUrl === link.split('#')[0].split('?')[0];
+        
+        if (isCurrent) currentIndex = index + 1;
+        
+        listHtml += `
+          <li class="${isCurrent ? 'current' : ''}">
+            <a href="${link}">${index + 1}. ${title}</a>
+          </li>`;
       });
+      listHtml += '</ul>';
+
+      box.innerHTML = `
+        <div class="series-header">
+          <span class="series-badge">SERIES</span>
+          <h4 class="series-title">'${tag}' 시리즈</h4>
+          <span class="series-count">${currentIndex !== -1 ? currentIndex : '-'}/${entries.length}</span>
+        </div>
+        <div class="series-body">
+          ${listHtml}
+        </div>
+      `;
+    };
+
+    if (cachedData) {
+      renderSeries(JSON.parse(cachedData));
+    } else {
+      fetch(feedUrl)
+        .then(response => response.json())
+        .then(data => {
+          sessionStorage.setItem(cacheKey, JSON.stringify(data));
+          renderSeries(data);
+        })
+        .catch(err => console.error(err));
+    }
   });
 });
 //]]>
 </script>
+    
+    
+    
+    
+    
+    
+    
+    
+    
     
 
   <script type='text/javascript'>
