@@ -6556,11 +6556,11 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -9886,11 +9886,8 @@ document.addEventListener("DOMContentLoaded", function() {
   let debounceTimer;
   let lastQuery = '';
 
-  // 💥 100% 인덱싱 보장 재귀 함수
-// 💥 전체 본문 인덱싱 버전 fetchAllPosts
   function fetchAllPosts(startIndex = 1) {
     isLoading = true;
-    // ① 주소를 summary에서 default로 변경 (글 전체 데이터 요청)
     const fetchUrl = `/feeds/posts/default?alt=json&start-index=${startIndex}&max-results=150`;
 
     fetch(fetchUrl)
@@ -9898,21 +9895,21 @@ document.addEventListener("DOMContentLoaded", function() {
       .then(data => {
         if (data.feed && data.feed.entry) {
           const entries = data.feed.entry.map(entry => {
-            // ② summary 대신 content.$t를 가져와서 전체 본문 확보
-            // (만약 content가 없으면 summary나 title이라도 가져오도록 방어막 설치)
             let rawContent = (entry.content && entry.content.$t) ? entry.content.$t : 
                              ((entry.summary && entry.summary.$t) ? entry.summary.$t : (entry.title.$t || ''));
-            
-            // HTML 태그 제거 (검색 정확도를 위해 필수!)
             let pureText = rawContent.replace(/<[^>]*>?/gm, ''); 
             let alternateLink = entry.link ? entry.link.find(l => l.rel === 'alternate') : null;
             
+            let tagsStr = entry.category ? entry.category.map(c => c.term).join('') : '';
+            let combinedText = (entry.title.$t + tagsStr + pureText).toLowerCase().replace(/\s+/g, '');
+
             return {
               title: entry.title.$t,
+              lowerTitle: entry.title.$t.toLowerCase().replace(/\s+/g, ''),
+              tagsStr: tagsStr.toLowerCase(),
               link: alternateLink ? alternateLink.href : '#',
               tags: entry.category ? entry.category.map(c => c.term) : [],
-              // 이제 fullText에 글 전체 본문(pureText)이 포함됩니다.
-              fullText: (entry.title.$t + (entry.category ? entry.category.map(c => c.term).join('') : '') + pureText).toLowerCase().replace(/\s+/g, ''),
+              fullText: combinedText,
               displaySummary: pureText.substring(0, 100) + '...'
             };
           });
@@ -9920,25 +9917,27 @@ document.addEventListener("DOMContentLoaded", function() {
           postCache = postCache.concat(entries);
           const totalResults = parseInt(data.feed.openSearch$totalResults.$t);
           
-          resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})</div>`;
-
           if (postCache.length < totalResults) {
+            resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})<br><small style="opacity:0.7">검색어를 미리 입력해두면 완료 즉시 결과를 보여줍니다.</small></div>`;
             fetchAllPosts(postCache.length + 1); 
           } else {
             isLoading = false;
             isCacheLoaded = true;
-            resultsBox.innerHTML = '<div class="search-hint">모든 글(본문 포함) 인덱싱 완료!</div>';
-            console.log(`[Spotlight] ${postCache.length}개 포스트 본문 전체 인덱싱 완료.`);
+
+            // 💥 픽스 1: 인덱싱 완료 직후, 입력창에 글자가 있으면 '자동 검색' 트리거!
+            if (input.value.trim().length > 0) {
+              lastQuery = ''; // 강제 실행을 위해 쿼리 캐시 초기화
+              input.dispatchEvent(new Event('input')); 
+            } else {
+              resultsBox.innerHTML = '<div class="search-hint">모든 글(본문 포함) 인덱싱 완료!</div>';
+            }
           }
         } else {
           isLoading = false;
           isCacheLoaded = true;
         }
       })
-      .catch(err => {
-        console.error("[Spotlight] 에러:", err);
-        isLoading = false;
-      });
+      .catch(err => { isLoading = false; });
   }
 
   function openSearch(e) {
@@ -9950,27 +9949,19 @@ document.addEventListener("DOMContentLoaded", function() {
     input.value = '';
     lastQuery = '';
     
-    // 로딩 상태에 따른 초기 메시지
-    if (!isCacheLoaded) {
-      resultsBox.innerHTML = '<div class="search-hint">인덱싱을 시작합니다...</div>';
-    } else {
-      resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
-    }
+    if (!isCacheLoaded) resultsBox.innerHTML = '<div class="search-hint">인덱싱을 시작합니다...</div>';
+    else resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
     
     document.body.style.overflow = 'hidden';
     setTimeout(() => input.focus(), 100);
 
-    // 창을 열 때 로딩 시작
-    if (!isCacheLoaded && !isLoading) {
-      fetchAllPosts();
-    }
+    if (!isCacheLoaded && !isLoading) fetchAllPosts();
   }
 
-  // 검색 로직
   input.addEventListener('input', function() {
-    // 💥 핵심: 인덱싱 완료 전에는 검색 실행 안 함
+    // 인덱싱 중일 때는 입력을 막지 않고 힌트만 줍니다. (위의 픽스 1이 나중에 알아서 실행해줌)
     if (!isCacheLoaded) {
-      resultsBox.innerHTML = `<div class="search-hint">데이터를 로드 중입니다. 잠시만 기다려 주세요... (${postCache.length}개 로드됨)</div>`;
+      resultsBox.innerHTML = `<div class="search-hint">데이터를 로드 중입니다... (${postCache.length}개 로드됨)<br><small style="opacity:0.7">인덱싱이 끝나면 자동으로 검색됩니다.</small></div>`;
       return;
     }
 
@@ -9988,20 +9979,37 @@ document.addEventListener("DOMContentLoaded", function() {
       resultsBox.innerHTML = '';
       selectedIndex = -1;
       let searchTerms = rawQuery.split(/\s+/);
+      let queryNoSpace = rawQuery.replace(/\s+/g, '');
       
-      let matchedPosts = postCache.filter(post => {
-        return searchTerms.every(term => post.fullText.includes(term.replace(/\s+/g, '')));
-      });
+      // 💥 픽스 2: 연관성(Relevance) 점수 채점 로직
+      let matchedPosts = postCache.map(post => {
+        // 모든 검색어가 포함되어 있는지 확인 (기본 통과 조건)
+        let isMatch = searchTerms.every(term => post.fullText.includes(term.replace(/\s+/g, '')));
+        if (!isMatch) return null; // 통과 못하면 버림
+
+        let score = 0;
+        // 1계급: 제목이 띄어쓰기 무시하고 완벽하게 100% 일치 (+100점)
+        if (post.lowerTitle === queryNoSpace) score += 100;
+        // 2계급: 제목 어딘가에 검색어들이 다 들어있음 (+50점)
+        else if (searchTerms.every(term => post.lowerTitle.includes(term.replace(/\s+/g, '')))) score += 50;
+        // 3계급: 태그(해시태그) 어딘가에 검색어들이 다 들어있음 (+30점)
+        else if (searchTerms.every(term => post.tagsStr.includes(term.replace(/\s+/g, '')))) score += 30;
+        // 4계급: 제목/태그엔 없고 본문에만 스쳐 지나감 (+10점)
+        else score += 10;
+
+        return { ...post, score };
+      }).filter(p => p !== null);
+
+      // 점수(계급) 내림차순으로 정렬. 점수가 같으면 기존 배열 순서(시간순/최신순)를 그대로 유지함.
+      matchedPosts.sort((a, b) => b.score - a.score);
 
       if (matchedPosts.length === 0) {
         resultsBox.innerHTML = '<div class="search-hint">검색 결과가 없습니다.</div>';
         return;
       }
 
-matchedPosts.slice(0, 15).forEach((post, index) => {
+      matchedPosts.slice(0, 15).forEach((post, index) => {
         let li = document.createElement('li');
-        
-        // 💥 태그가 존재할 경우에만 #태그 모양으로 만들어주는 코드 추가
         let tagsHtml = post.tags && post.tags.length > 0 
           ? `<div class="result-meta">${post.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}</div>` 
           : '';
@@ -10009,13 +10017,13 @@ matchedPosts.slice(0, 15).forEach((post, index) => {
         li.innerHTML = `<a href="${post.link}" class="result-item" data-index="${index}">
           <span class="result-title">${post.title}</span>
           <span class="result-summary">${post.displaySummary}</span>
-          ${tagsHtml} </a>`;
+          ${tagsHtml}
+        </a>`;
         resultsBox.appendChild(li);
       });
     }, 200);
   });
 
-  // (닫기 및 키보드 네비게이션 로직은 동일하게 유지)
   function closeSearch(fromPopstate = false) {
     if (!modal.classList.contains('active')) return;
     modal.classList.remove('active');
@@ -10060,9 +10068,6 @@ matchedPosts.slice(0, 15).forEach((post, index) => {
 });
 //]]>
 </script>
-    
-    
-    
     
     
     
