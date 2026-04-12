@@ -6584,11 +6584,11 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -9479,32 +9479,41 @@ document.addEventListener("DOMContentLoaded", function() {
   SkeletonMaster.apply(document); 
   
 const initRender = async () => {
-    if (window.MathJax && MathJax.typesetPromise) {
-      try { await MathJax.typesetPromise(); } catch(e){}
-    }
-    if (window.initCodeBlocks) window.initCodeBlocks();
+    // 1. 브라우저에게 메인 스레드 양보 (댓글창 통신 및 렌더링 우선권 부여)
+    await new Promise(resolve => setTimeout(resolve, 50));
+
+    // 2. 가벼운 DOM 조작인 콜아웃 파싱 먼저 실행
     if (window.initCallouts) window.initCallouts();
     
-    // ------------------------------------------------------------------
-    // 👇 여기서부터 지우고 새로운 코드로 덮어씌우세요! 👇
-    setTimeout(() => {
-      // 💡 최상단 렌더링 블락 해제 (스켈레톤 걷힘)
+    // 3. 다시 한번 숨 고르기 (작업 사이에 틈을 주어 댓글창이 멈추지 않게 함)
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    // 4. 코드 블록 하이라이팅 실행
+    if (window.initCodeBlocks) window.initCodeBlocks();
+
+    // 5. 가장 무거운 작업인 MathJax 수식 렌더링을 '우선순위 최하단'으로 강등
+    const renderMathAndFinish = async () => {
+      if (window.MathJax && MathJax.typesetPromise) {
+        try { await MathJax.typesetPromise(); } catch(e){}
+      }
+      
+      // 6. 모든 무거운 작업이 끝난 후 최종적으로 스켈레톤(뼈대) 해제
       document.documentElement.classList.remove('is-rendering');
-      
-      // 🔥 로딩 완료 신호탄: 이 클래스가 추가되면 CSS가 모든 요소에 팝 애니메이션을 작동시킵니다.
       document.body.classList.add('is-loaded'); 
-      
       SkeletonMaster.remove(document); 
       
-      if (skelWrapper) skelWrapper.remove(); // 본문용 가짜 박스 폭파
-      if (postBodyNode) {
-        postBodyNode.style.display = 'block'; // 숨겨뒀던 진짜 본문 등장
-        // (원래 여기 있던 JS 애니메이션 코드는 지웁니다. CSS가 대신합니다!)
-      }
-    }, 350); 
-    // 👆 여기까지 교체 👆
-    // ------------------------------------------------------------------
+      if (skelWrapper) skelWrapper.remove(); 
+      if (postBodyNode) postBodyNode.style.display = 'block'; 
+    };
+
+    // 브라우저가 여유로울 때(Idle) 수식 렌더링을 실행하도록 지시
+    if ('requestIdleCallback' in window) {
+      requestIdleCallback(renderMathAndFinish, { timeout: 2000 });
+    } else {
+      setTimeout(renderMathAndFinish, 200); // 지원하지 않는 브라우저를 위한 폴백
+    }
   };
+  
   initRender();
 
 
