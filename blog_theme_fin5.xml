@@ -6556,11 +6556,11 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -9998,12 +9998,18 @@ document.addEventListener("DOMContentLoaded", function() {
         return;
       }
 
-      matchedPosts.slice(0, 15).forEach((post, index) => {
+matchedPosts.slice(0, 15).forEach((post, index) => {
         let li = document.createElement('li');
+        
+        // 💥 태그가 존재할 경우에만 #태그 모양으로 만들어주는 코드 추가
+        let tagsHtml = post.tags && post.tags.length > 0 
+          ? `<div class="result-meta">${post.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}</div>` 
+          : '';
+
         li.innerHTML = `<a href="${post.link}" class="result-item" data-index="${index}">
           <span class="result-title">${post.title}</span>
           <span class="result-summary">${post.displaySummary}</span>
-        </a>`;
+          ${tagsHtml} </a>`;
         resultsBox.appendChild(li);
       });
     }, 200);
