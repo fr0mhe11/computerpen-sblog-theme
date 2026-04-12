@@ -6676,7 +6676,7 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
                   document.addEventListener("DOMContentLoaded", function() {
                     const board = document.getElementById('custom-notice-board');
                     const noticeLabel = encodeURIComponent('공지');
-                    const feedUrl = `/feeds/posts/summary/-/${noticeLabel}?alt=json&max-results=3`;
+                    const feedUrl = `/feeds/posts/default/-/${noticeLabel}?alt=json&max-results=3`;
                     
                     fetch(feedUrl)
                       .then(res => res.json())
@@ -9881,9 +9881,65 @@ document.addEventListener("DOMContentLoaded", function() {
 
   let postCache = [];
   let isCacheLoaded = false;
+  let isLoading = false;
   let selectedIndex = -1;
   let debounceTimer;
-  let lastQuery = ''; // 💥 버그 해결 핵심 변수: 직전 검색어 기억
+  let lastQuery = '';
+
+  // 💥 100% 인덱싱 보장 재귀 함수
+// 💥 전체 본문 인덱싱 버전 fetchAllPosts
+  function fetchAllPosts(startIndex = 1) {
+    isLoading = true;
+    // ① 주소를 summary에서 default로 변경 (글 전체 데이터 요청)
+    const fetchUrl = `/feeds/posts/default?alt=json&start-index=${startIndex}&max-results=150`;
+
+    fetch(fetchUrl)
+      .then(res => res.json())
+      .then(data => {
+        if (data.feed && data.feed.entry) {
+          const entries = data.feed.entry.map(entry => {
+            // ② summary 대신 content.$t를 가져와서 전체 본문 확보
+            // (만약 content가 없으면 summary나 title이라도 가져오도록 방어막 설치)
+            let rawContent = (entry.content && entry.content.$t) ? entry.content.$t : 
+                             ((entry.summary && entry.summary.$t) ? entry.summary.$t : (entry.title.$t || ''));
+            
+            // HTML 태그 제거 (검색 정확도를 위해 필수!)
+            let pureText = rawContent.replace(/<[^>]*>?/gm, ''); 
+            let alternateLink = entry.link ? entry.link.find(l => l.rel === 'alternate') : null;
+            
+            return {
+              title: entry.title.$t,
+              link: alternateLink ? alternateLink.href : '#',
+              tags: entry.category ? entry.category.map(c => c.term) : [],
+              // 이제 fullText에 글 전체 본문(pureText)이 포함됩니다.
+              fullText: (entry.title.$t + (entry.category ? entry.category.map(c => c.term).join('') : '') + pureText).toLowerCase().replace(/\s+/g, ''),
+              displaySummary: pureText.substring(0, 100) + '...'
+            };
+          });
+
+          postCache = postCache.concat(entries);
+          const totalResults = parseInt(data.feed.openSearch$totalResults.$t);
+          
+          resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})</div>`;
+
+          if (postCache.length < totalResults) {
+            fetchAllPosts(postCache.length + 1); 
+          } else {
+            isLoading = false;
+            isCacheLoaded = true;
+            resultsBox.innerHTML = '<div class="search-hint">모든 글(본문 포함) 인덱싱 완료!</div>';
+            console.log(`[Spotlight] ${postCache.length}개 포스트 본문 전체 인덱싱 완료.`);
+          }
+        } else {
+          isLoading = false;
+          isCacheLoaded = true;
+        }
+      })
+      .catch(err => {
+        console.error("[Spotlight] 에러:", err);
+        isLoading = false;
+      });
+  }
 
   function openSearch(e) {
     if (e) { e.preventDefault(); e.stopImmediatePropagation(); }
@@ -9892,119 +9948,91 @@ document.addEventListener("DOMContentLoaded", function() {
     history.pushState({ isSearchModalOpen: true }, '');
     modal.classList.add('active');
     input.value = '';
-    lastQuery = ''; // 창을 열 때 검색어 초기화
-    resultsBox.innerHTML = '<div class="search-hint">블로그 데이터를 불러오는 중입니다...</div>';
-    document.body.style.overflow = 'hidden';
-
-    setTimeout(() => input.focus(), 100);
-
+    lastQuery = '';
+    
+    // 로딩 상태에 따른 초기 메시지
     if (!isCacheLoaded) {
-      fetch('/feeds/posts/default?alt=json&max-results=500')
-        .then(res => res.json())
-        .then(data => {
-          if (data.feed.entry) {
-            postCache = data.feed.entry.map(entry => {
-              let rawContent = entry.content ? entry.content.$t : (entry.summary ? entry.summary.$t : '');
-              let pureText = rawContent.replace(/<[^>]*>?/gm, '');
-              return {
-                title: entry.title.$t,
-                link: entry.link.find(l => l.rel === 'alternate').href,
-                tags: entry.category ? entry.category.map(c => c.term) : [],
-                fullContent: pureText,
-                displaySummary: pureText.substring(0, 100) + '...'
-              };
-            });
-          }
-          isCacheLoaded = true;
-          resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
-        });
+      resultsBox.innerHTML = '<div class="search-hint">인덱싱을 시작합니다...</div>';
     } else {
       resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
     }
-  }
+    
+    document.body.style.overflow = 'hidden';
+    setTimeout(() => input.focus(), 100);
 
-  window.addEventListener('popstate', function(e) {
-    if (modal.classList.contains('active')) closeSearch(true);
-  });
-
-  function closeSearch(fromPopstate = false) {
-    if (!modal.classList.contains('active')) return;
-    modal.classList.remove('active');
-    document.body.style.overflow = '';
-    if (!fromPopstate && history.state && history.state.isSearchModalOpen) {
-      history.back();
+    // 창을 열 때 로딩 시작
+    if (!isCacheLoaded && !isLoading) {
+      fetchAllPosts();
     }
   }
 
-  document.addEventListener('keydown', function(e) {
-    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(e); }
-    if (e.key === 'Escape') closeSearch();
-  });
-
-  backdrop.addEventListener('click', () => closeSearch(false));
-  if (cancelBtn) cancelBtn.addEventListener('click', () => closeSearch(false));
-
-  const searchForms = document.querySelectorAll('form[action*="/search"]');
-  searchForms.forEach(form => form.addEventListener('submit', openSearch));
-  const searchButtons = document.querySelectorAll('.search-expand, .search-action, .search-button, .header-search');
-  searchButtons.forEach(btn => btn.addEventListener('click', openSearch, true));
-
+  // 검색 로직
   input.addEventListener('input', function() {
+    // 💥 핵심: 인덱싱 완료 전에는 검색 실행 안 함
+    if (!isCacheLoaded) {
+      resultsBox.innerHTML = `<div class="search-hint">데이터를 로드 중입니다. 잠시만 기다려 주세요... (${postCache.length}개 로드됨)</div>`;
+      return;
+    }
+
     let rawQuery = this.value.toLowerCase().trim();
-    
-    // 💥 철벽 방어 1: 실제 글자가 바뀌지 않았다면 무시 (한글 방향키 버그 원천 차단)
     if (rawQuery === lastQuery) return;
     lastQuery = rawQuery;
-
     clearTimeout(debounceTimer);
 
     if (rawQuery.length === 0) {
       resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
-      selectedIndex = -1;
       return;
     }
 
     debounceTimer = setTimeout(() => {
       resultsBox.innerHTML = '';
       selectedIndex = -1;
-
       let searchTerms = rawQuery.split(/\s+/);
+      
       let matchedPosts = postCache.filter(post => {
-        let combinedText = (post.title + post.tags.join('') + post.fullContent).toLowerCase().replace(/\s+/g, '');
-        return searchTerms.every(term => combinedText.includes(term.replace(/\s+/g, '')));
+        return searchTerms.every(term => post.fullText.includes(term.replace(/\s+/g, '')));
       });
 
       if (matchedPosts.length === 0) {
-        resultsBox.innerHTML = '<div class="search-hint">결과가 없습니다. 다른 키워드를 시도해 보세요.</div>';
+        resultsBox.innerHTML = '<div class="search-hint">검색 결과가 없습니다.</div>';
         return;
       }
 
-      matchedPosts.slice(0, 12).forEach((post, index) => {
+      matchedPosts.slice(0, 15).forEach((post, index) => {
         let li = document.createElement('li');
-        li.innerHTML = `
-          <a href="${post.link}" class="result-item" data-index="${index}">
-            <span class="result-title">${post.title}</span>
-            <span class="result-summary">${post.displaySummary}</span>
-            <div class="result-meta">
-              ${post.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}
-            </div>
-          </a>`;
+        li.innerHTML = `<a href="${post.link}" class="result-item" data-index="${index}">
+          <span class="result-title">${post.title}</span>
+          <span class="result-summary">${post.displaySummary}</span>
+        </a>`;
         resultsBox.appendChild(li);
       });
-    }, 250);
+    }, 200);
   });
+
+  // (닫기 및 키보드 네비게이션 로직은 동일하게 유지)
+  function closeSearch(fromPopstate = false) {
+    if (!modal.classList.contains('active')) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    if (!fromPopstate && history.state && history.state.isSearchModalOpen) history.back();
+  }
+  window.addEventListener('popstate', (e) => { if (modal.classList.contains('active')) closeSearch(true); });
+  backdrop.addEventListener('click', () => closeSearch(false));
+  if (cancelBtn) cancelBtn.addEventListener('click', () => closeSearch(false));
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(e); }
+    if (e.key === 'Escape') closeSearch();
+  });
+  const searchButtons = document.querySelectorAll('.search-expand, .search-action, .search-button, .header-search, form[action*="/search"]');
+  searchButtons.forEach(btn => btn.addEventListener('click', openSearch, true));
 
   input.addEventListener('keydown', function(e) {
     const items = resultsBox.querySelectorAll('.result-item');
     if (items.length === 0) return;
-
-    if (e.key === 'Enter' || e.keyCode === 13) {
+    if (e.key === 'Enter') {
       e.preventDefault();
-      // 💥 철벽 방어 2: 방향키로 아무것도 선택 안 했어도, 엔터를 치면 무조건 제일 위에 있는(0번) 글로 자동 이동!
       let targetIndex = selectedIndex >= 0 ? selectedIndex : 0;
-      if (items[targetIndex]) {
-        items[targetIndex].click(); 
-      }
+      if (items[targetIndex]) items[targetIndex].click();
     } else if (e.key === 'ArrowDown') {
       e.preventDefault();
       selectedIndex = (selectedIndex + 1) % items.length;
@@ -10026,8 +10054,6 @@ document.addEventListener("DOMContentLoaded", function() {
 });
 //]]>
 </script>
-    
-    
     
     
     
