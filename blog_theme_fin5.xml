@@ -5917,6 +5917,187 @@ body.is-loaded #comments { animation-delay: 0.15s; }
 
 
 
+
+
+/* =========================================================
+   📢 네이버/티스토리 스타일 리스트형 공지사항
+========================================================= */
+#custom-notice-board {
+  margin: 0 0 24px 0;
+  background: #141518;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+}
+
+.notice-list {
+  list-style: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.notice-list li {
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05) !important;
+  margin: 0 !important;
+}
+.notice-list li:last-child {
+  border-bottom: none !important;
+}
+
+.notice-list a {
+  display: flex;
+  align-items: center;
+  padding: 16px 20px;
+  text-decoration: none !important;
+  transition: background 0.2s;
+}
+.notice-list a:hover {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.notice-badge {
+  flex-shrink: 0;
+  background: rgba(49, 130, 246, 0.15);
+  color: #3182F6;
+  font-size: 0.75em;
+  font-weight: 800;
+  padding: 4px 8px;
+  border-radius: 6px;
+  margin-right: 12px;
+}
+
+.notice-title {
+  flex-grow: 1;
+  color: #E5E8EB;
+  font-weight: 600;
+  font-size: 0.95em;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 16px;
+}
+
+.notice-date {
+  flex-shrink: 0;
+  color: #8B95A1;
+  font-size: 0.85em;
+  font-weight: 500;
+}
+
+/* ☀️ 라이트 모드 동기화 */
+body.light-mode #custom-notice-board {
+  background: #FFFFFF;
+  border-color: rgba(0, 0, 0, 0.08);
+}
+body.light-mode .notice-list li {
+  border-bottom-color: rgba(0, 0, 0, 0.05) !important;
+}
+body.light-mode .notice-list a:hover {
+  background: #F9FAFB;
+}
+body.light-mode .notice-title {
+  color: #333D4B;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   🔍 통합 스포트라이트 검색 모달 (PC/모바일 무한 스크롤 방지)
+========================================================= */
+#spotlight-search-modal {
+  position: fixed; top: 0; left: 0; width: 100%; height: 100%; height: 100dvh;
+  z-index: 99999; display: flex; justify-content: center; align-items: center; /* 화면 정중앙 고정 */
+  visibility: hidden; opacity: 0; transition: opacity 0.2s ease, visibility 0.2s;
+}
+#spotlight-search-modal.active { visibility: visible; opacity: 1; }
+.search-modal-backdrop {
+  position: absolute; top: 0; left: 0; width: 100%; height: 100%;
+  background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+}
+.search-modal-content {
+  position: relative; width: 90%; max-width: 650px;
+  max-height: 80vh; max-height: 80dvh; /* 💥 핵심: 모달창이 화면의 80%를 절대 넘지 못하게 콘크리트 타설 */
+  display: flex; flex-direction: column; /* 💥 핵심: 내부 스크롤을 위한 플렉스 박스 레이아웃 */
+  background: #141518; border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+  transform: translateY(-20px) scale(0.98); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+#spotlight-search-modal.active .search-modal-content { transform: translateY(0) scale(1); }
+
+.search-input-wrapper {
+  display: flex; align-items: center; padding: 16px 20px;
+  border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+}
+.search-icon { font-size: 1.2em; margin-right: 12px; opacity: 0.7; }
+#spotlight-input {
+  flex-grow: 1; background: transparent; border: none; color: #E5E8EB;
+  font-size: 16px !important; outline: none; /* iOS 화면 자동 확대 버그 방어선 */
+}
+.search-shortcut-hint { font-size: 0.75em; color: #8B95A1; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; }
+.search-cancel-btn { display: none; }
+
+/* 검색 결과 리스트 */
+.search-results-wrapper {
+  flex-grow: 1; overflow-y: auto; padding: 12px; min-height: 0; /* 💥 핵심: 결과가 길어지면 모달창이 길어지는게 아니라 여기서 자체 스크롤됨 */
+}
+#spotlight-results { list-style: none; margin: 0; padding: 0; }
+.result-item {
+  display: flex; flex-direction: column; padding: 16px 20px !important;
+  margin-bottom: 8px; border-radius: 12px !important; border: 1px solid transparent; text-decoration: none !important; transition: background 0.1s;
+}
+.result-item.selected, .result-item:hover { background: rgba(49, 130, 246, 0.08) !important; border-color: rgba(49, 130, 246, 0.3); }
+.result-title { font-size: 1.05em; font-weight: 700; color: #3182F6; margin-bottom: 6px; }
+.result-summary {
+  font-size: 0.85em; color: #8B95A1; line-height: 1.5; margin-bottom: 8px;
+  display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; /* 요약글 2줄 초과 시 싹둑 자름 */
+}
+.result-meta { display: flex; gap: 8px; flex-wrap: wrap; }
+.tag-pill { font-size: 0.75em; font-weight: 600; background: rgba(255,255,255,0.05); padding: 4px 8px; border-radius: 6px; color: #6B7684; }
+.search-hint { padding: 40px; text-align: center; color: #4E5968; font-size: 0.95em; }
+
+/* 📱 모바일/아이패드 최적화 */
+@media screen and (max-width: 768px) {
+  /* 💥 추가된 부분: 모바일에서는 중앙 정렬을 풀고 위로 바짝 올림 (키보드 공간 확보) */
+  #spotlight-search-modal { 
+    align-items: flex-start; 
+    padding-top: 16px; 
+  }
+  
+  .search-shortcut-hint { display: none; }
+  .search-cancel-btn { display: block; background: transparent; border: none; color: #8B95A1; font-weight: 600; padding-left: 12px; font-size: 16px; cursor: pointer; }
+  
+  /* 모달창 높이와 너비 정돈 */
+  .search-modal-content { max-height: 75vh; max-height: 75dvh; width: 94%; }
+}
+
+/* ☀️ 라이트 모드 동기화 */
+body.light-mode .search-modal-backdrop { background: rgba(255, 255, 255, 0.6); }
+body.light-mode .search-modal-content { background: #FFFFFF; border-color: rgba(0,0,0,0.1); box-shadow: 0 16px 40px rgba(0,0,0,0.1); }
+body.light-mode .search-input-wrapper { border-bottom-color: rgba(0,0,0,0.08); }
+body.light-mode #spotlight-input { color: #333D4B; }
+body.light-mode .search-shortcut-hint { background: #F2F4F6; }
+body.light-mode .result-title { color: #1B64DA; }
+body.light-mode .result-summary { color: #4E5968; }
+body.light-mode .tag-pill { background: #F2F4F6; color: #4E5968; }
+body.light-mode .result-item.selected, body.light-mode .result-item:hover { background: #F9FAFB !important; border-color: rgba(49, 130, 246, 0.2); }
+
+
+
+
+
+
+
     ]]></b:skin>
     <b:template-skin>
       <![CDATA[
@@ -6486,6 +6667,70 @@ body.is-loaded #comments { animation-delay: 0.15s; }
 
        
               <main class='centered-bottom' id='main' role='main' tabindex='-1'>
+                
+                
+              <b:if cond='data:view.isMultipleItems'>
+                  <div class='skeleton-ui' id='custom-notice-board' style='display:block; min-height: 110px;'/>
+                  <script type='text/javascript'>
+                  //<![CDATA[
+                  document.addEventListener("DOMContentLoaded", function() {
+                    const board = document.getElementById('custom-notice-board');
+                    const noticeLabel = encodeURIComponent('공지');
+                    const feedUrl = `/feeds/posts/summary/-/${noticeLabel}?alt=json&max-results=3`;
+                    
+                    fetch(feedUrl)
+                      .then(res => res.json())
+                      .then(data => {
+                        // 공지글이 없으면 스켈레톤을 지우고 게시판을 완전히 숨깁니다
+                        if (!data.feed.entry || data.feed.entry.length === 0) {
+                          board.style.display = 'none';
+                          board.classList.remove('skeleton-ui');
+                          return;
+                        }
+                        
+                        let noticeHtml = '<ul class="notice-list">';
+                        data.feed.entry.forEach(entry => {
+                          let title = entry.title.$t;
+                          let link = entry.link.find(l => l.rel === 'alternate').href.split(/[?#]/)[0];
+                          let date = new Date(entry.published.$t).toLocaleDateString('ko-KR', {year: 'numeric', month: '2-digit', day: '2-digit'}).slice(0, -1);
+                          
+                          noticeHtml += `
+                            <li>
+                              <a href="${link}">
+                                <span class="notice-badge">공지</span>
+                                <span class="notice-title">${title}</span>
+                                <span class="notice-date">${date}</span>
+                              </a>
+                            </li>
+                          `;
+                        });
+                        noticeHtml += '</ul>';
+                        
+                        // 1. 뼈대(스켈레톤) 클래스 제거 및 임시 높이 초기화
+                        board.classList.remove('skeleton-ui');
+                        board.style.minHeight = 'auto';
+                        
+                        // 2. 실제 데이터 삽입
+                        board.innerHTML = noticeHtml;
+                        
+                        // 3. 통통 튀며 등장하는 팝(Pop) 애니메이션 연결 (기존 UI와 동기화)
+                        board.style.opacity = '0';
+                        board.style.animation = 'popInElements 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards';
+                      })
+                      .catch(err => {
+                        console.error('공지사항 로딩 실패:', err);
+                        board.style.display = 'none';
+                        board.classList.remove('skeleton-ui');
+                      });
+                  });
+                  //]]>
+                  </script>
+                </b:if>
+                
+                
+                
+                
+                
                 <b:if cond='data:view.isMultipleItems'>
                   <h2 class='main-heading'><data:messages.posts/></h2>
                 </b:if>
@@ -6510,9 +6755,9 @@ body.is-loaded #comments { animation-delay: 0.15s; }
                     <b:widget-settings>
                       <b:widget-setting name='showSnippet'>true</b:widget-setting>
                       <b:widget-setting name='showPostTitle'>true</b:widget-setting>
-                      <b:widget-setting name='postId'>0</b:widget-setting>
+                      <b:widget-setting name='postId'>79673219795595141</b:widget-setting>
                       <b:widget-setting name='showFirstImage'>true</b:widget-setting>
-                      <b:widget-setting name='useMostRecentPost'>true</b:widget-setting>
+                      <b:widget-setting name='useMostRecentPost'>false</b:widget-setting>
                     </b:widget-settings>
                     <b:includable id='main' var='this'>
   <b:include name='widget-title'/>
@@ -7998,6 +8243,24 @@ body.is-loaded #comments { animation-delay: 0.15s; }
           <b:includable id='main'>
   <b:include name='reportAbuse'/>
 </b:includable>
+        </b:widget>
+        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='true'>
+          <b:widget-settings>
+            <b:widget-setting name='content'/>
+          </b:widget-settings>
+          <b:includable id='main'>
+                        <b:if cond='data:content != &quot;&quot;'>
+                          <div class='custom-notice-banner'>
+                            <div class='notice-icon'>📢</div>
+                            <div class='notice-content'>
+                              <div class='notice-label'>NOTICE</div>
+                              <div class='notice-text'>
+                                <data:content/>
+                              </div>
+                            </div>
+                          </div>
+                        </b:if>
+                      </b:includable>
         </b:widget>
       </b:section>
     </aside>
@@ -9593,14 +9856,164 @@ document.addEventListener('touchend', function() {
 </script>
     
     
-    
+    <div id='spotlight-search-modal'>
+  <div class='search-modal-backdrop' id='search-backdrop'/>
+  <div class='search-modal-content'>
+    <div class='search-input-wrapper'>
+      <span class='search-icon'>🔍</span>
+      <input autocomplete='off' id='spotlight-input' placeholder='검색어를 입력하세요...' type='text'/>
+      <span class='search-shortcut-hint'>ESC</span>
+      <button class='search-cancel-btn' id='search-cancel-btn' type='button'>취소</button>
+    </div>
+    <div class='search-results-wrapper'>
+      <ul id='spotlight-results'/>
+    </div>
+  </div>
+</div>
 
-    
+<script type='text/javascript'>
+//<![CDATA[
+document.addEventListener("DOMContentLoaded", function() {
+  const modal = document.getElementById('spotlight-search-modal');
+  const backdrop = document.getElementById('search-backdrop');
+  const input = document.getElementById('spotlight-input');
+  const resultsBox = document.getElementById('spotlight-results');
+  const cancelBtn = document.getElementById('search-cancel-btn');
 
-    
-   
-    
+  let postCache = [];
+  let isCacheLoaded = false;
+  let selectedIndex = -1;
 
+  function openSearch(e) {
+    if (e) { e.preventDefault(); e.stopImmediatePropagation(); } // 블로거 기본 검색창 튀어나오는 거 원천 차단
+    if (modal.classList.contains('active')) return;
+
+    history.pushState({ isSearchModalOpen: true }, '');
+    modal.classList.add('active');
+    input.value = '';
+    resultsBox.innerHTML = '<div class="search-hint">블로그 데이터를 불러오는 중입니다...</div>';
+    document.body.style.overflow = 'hidden';
+
+    setTimeout(() => input.focus(), 100);
+
+    if (!isCacheLoaded) {
+      fetch('/feeds/posts/summary?alt=json&max-results=500')
+        .then(res => res.json())
+        .then(data => {
+          if (data.feed.entry) {
+            postCache = data.feed.entry.map(entry => ({
+              title: entry.title.$t,
+              link: entry.link.find(l => l.rel === 'alternate').href,
+              tags: entry.category ? entry.category.map(c => c.term) : [],
+              fullSummary: entry.summary ? entry.summary.$t : '',
+              displaySummary: entry.summary ? entry.summary.$t.substring(0, 100) + '...' : ''
+            }));
+          }
+          isCacheLoaded = true;
+          resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
+        });
+    } else {
+      resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
+    }
+  }
+
+  // 뒤로가기 스와이프 시 팝업만 닫기
+  window.addEventListener('popstate', function(e) {
+    if (modal.classList.contains('active')) closeSearch(true);
+  });
+
+  function closeSearch(fromPopstate = false) {
+    if (!modal.classList.contains('active')) return;
+    modal.classList.remove('active');
+    document.body.style.overflow = '';
+    if (!fromPopstate && history.state && history.state.isSearchModalOpen) {
+      history.back();
+    }
+  }
+
+  document.addEventListener('keydown', function(e) {
+    if ((e.ctrlKey || e.metaKey) && e.key === 'k') { e.preventDefault(); openSearch(e); }
+    if (e.key === 'Escape') closeSearch();
+  });
+
+  backdrop.addEventListener('click', () => closeSearch(false));
+  if (cancelBtn) cancelBtn.addEventListener('click', () => closeSearch(false));
+
+  // 블로그 내 모든 검색 버튼 납치
+  const searchForms = document.querySelectorAll('form[action*="/search"]');
+  searchForms.forEach(form => form.addEventListener('submit', openSearch));
+  const searchButtons = document.querySelectorAll('.search-expand, .search-action, .search-button, .header-search');
+  searchButtons.forEach(btn => btn.addEventListener('click', openSearch, true));
+
+  // 퍼지(Fuzzy) 다중 키워드 검색
+  input.addEventListener('input', function() {
+    let rawQuery = this.value.toLowerCase().trim();
+    resultsBox.innerHTML = '';
+    selectedIndex = -1;
+
+    if (rawQuery.length === 0) {
+      resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
+      return;
+    }
+
+    let searchTerms = rawQuery.split(/\s+/);
+    let matchedPosts = postCache.filter(post => {
+      let combinedText = (post.title + post.tags.join('') + post.fullSummary).toLowerCase().replace(/\s+/g, '');
+      return searchTerms.every(term => combinedText.includes(term.replace(/\s+/g, '')));
+    });
+
+    if (matchedPosts.length === 0) {
+      resultsBox.innerHTML = '<div class="search-hint">결과가 없습니다. 다른 키워드를 시도해 보세요.</div>';
+      return;
+    }
+
+    matchedPosts.slice(0, 12).forEach((post, index) => {
+      let li = document.createElement('li');
+      li.innerHTML = `
+        <a href="${post.link}" class="result-item" data-index="${index}">
+          <span class="result-title">${post.title}</span>
+          <span class="result-summary">${post.displaySummary}</span>
+          <div class="result-meta">
+            ${post.tags.map(t => `<span class="tag-pill">#${t}</span>`).join('')}
+          </div>
+        </a>`;
+      resultsBox.appendChild(li);
+    });
+  });
+
+  input.addEventListener('keydown', function(e) {
+    const items = resultsBox.querySelectorAll('.result-item');
+    if (items.length === 0) return;
+
+    if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex + 1) % items.length;
+      updateSelection(items);
+    } else if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      selectedIndex = (selectedIndex - 1 + items.length) % items.length;
+      updateSelection(items);
+    } else if (e.key === 'Enter' && selectedIndex >= 0) {
+      e.preventDefault();
+      window.location.href = items[selectedIndex].href;
+    }
+  });
+
+  function updateSelection(items) {
+    items.forEach(item => item.classList.remove('selected'));
+    if (selectedIndex >= 0) {
+      items[selectedIndex].classList.add('selected');
+      items[selectedIndex].scrollIntoView({ block: "nearest" });
+    }
+  }
+});
+//]]>
+</script>
+    
+    
+    
+    
+    
     
     
     
