@@ -3368,7 +3368,7 @@ mjx-container[display="true"],
 }
 
 
-/
+
 
 /* === 댓글창(iframe) 흰 바탕 튕김 현상 완벽 해결 === */
 .comment-form iframe, 
@@ -8272,9 +8272,9 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
   <b:include name='reportAbuse'/>
 </b:includable>
         </b:widget>
-        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='true'>
+        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='false'>
           <b:widget-settings>
-            <b:widget-setting name='content'/>
+            <b:widget-setting name='content'>엄.....</b:widget-setting>
           </b:widget-settings>
           <b:includable id='main'>
                         <b:if cond='data:content != &quot;&quot;'>
