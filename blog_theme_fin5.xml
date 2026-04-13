@@ -3368,7 +3368,7 @@ mjx-container[display="true"],
 }
 
 
-
+/
 
 /* === 댓글창(iframe) 흰 바탕 튕김 현상 완벽 해결 === */
 .comment-form iframe, 
@@ -6584,11 +6584,11 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -8272,9 +8272,9 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
   <b:include name='reportAbuse'/>
 </b:includable>
         </b:widget>
-        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='false'>
+        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='true'>
           <b:widget-settings>
-            <b:widget-setting name='content'>엄.....</b:widget-setting>
+            <b:widget-setting name='content'/>
           </b:widget-settings>
           <b:includable id='main'>
                         <b:if cond='data:content != &quot;&quot;'>
