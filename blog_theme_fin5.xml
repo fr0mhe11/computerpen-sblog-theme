@@ -9594,10 +9594,16 @@ document.addEventListener("DOMContentLoaded", function() {
     document.body.addEventListener('click', function(e) {
       const card = e.target.closest('.post-outer-container, .PopularPosts .post');
       if (!card) return;
-      
+
+      // 💡 [이슈 방어] 태그, 날짜, 하단 버튼 등 개별 클릭이 필요한 요소를 눌렀을 때는 무시
+      if (e.target.closest('.post-bottom, .post-labels, .byline')) return;
+
       // 💡 [이슈 방어] <a> 태그의 target="_blank" 이거나, Ctrl/Cmd/Shift/휠 클릭(새 창 열기)인 경우 작동 취소!
       if (e.target.tagName.toLowerCase() === 'a' && e.target.target === '_blank') return;
       if (e.ctrlKey || e.metaKey || e.shiftKey || e.button === 1) return;
+
+      const mainLink = card.querySelector('.post-title a, .item-title a');
+      if (!mainLink) return;
 
       // 원본은 놔두고 중복 클릭만 방지
       card.style.pointerEvents = 'none'; 
@@ -9609,6 +9615,11 @@ document.addEventListener("DOMContentLoaded", function() {
           other.style.pointerEvents = 'none';
         }
       });
+
+      // 🚀 핵심 버그 픽스: <a> 태그를 정확히 누르지 않고 카드 여백을 눌렀더라도 강제로 페이지 이동!
+      if (e.target.tagName.toLowerCase() !== 'a') {
+        window.location.href = mainLink.href;
+      }
     });
   }
 
