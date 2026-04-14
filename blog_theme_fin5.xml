@@ -8471,7 +8471,7 @@ body.light-mode .comments .comment-form {
   <b:include name='reportAbuse'/>
 </b:includable>
         </b:widget>
-        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='true'>
+        <b:widget id='HTML99' locked='false' title='공지사항' type='HTML' version='2' visible='false'>
           <b:widget-settings>
             <b:widget-setting name='content'/>
           </b:widget-settings>
@@ -10409,7 +10409,25 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
     
-    
+    <script type='text/javascript'>
+  //<![CDATA[
+  document.addEventListener("DOMContentLoaded", function() {
+    // 🚀 원본 이미지 링크로 튕겨버리는 빡치는 현상 강제 차단
+    const links = document.querySelectorAll('a');
+    links.forEach(function(link) {
+      if (link.querySelector('img')) {
+        const href = link.getAttribute('href');
+        // 링크 주소가 이미지 원본(블로거 이미지 서버 등)인 경우에만 이동 차단
+        if (href && (href.match(/\.(jpg|jpeg|png|gif|webp)$/i) || href.includes('blogger.googleusercontent.com'))) {
+          link.addEventListener('click', function(e) {
+            e.preventDefault(); // 여기서 링크 이동을 끊어버림!
+          });
+        }
+      }
+    });
+  });
+  //]]>
+</script>
 
     
     
