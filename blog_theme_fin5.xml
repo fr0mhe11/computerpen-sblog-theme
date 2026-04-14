@@ -3089,10 +3089,6 @@ span.math, span.math.inline, span.math.display {
   margin: 0 2px !important;
 
 }
-
-/* 블록(디스플레이) 수식 설정 */
-
-
 /* 일반 SVG (사용자 복붙용) 수평 정렬 */
 
 
@@ -3103,7 +3099,6 @@ span.math, span.math.inline, span.math.display {
   /* 클릭/드래그 방지 유지 */
   pointer-events: none !important;
 }
-
 
 
 
@@ -6122,14 +6117,17 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
 
 
-/* 기존 구글 댓글창 완전히 숨기기 */
-#comments, .comments, #comment-editor, .comment-thread {
-    display: none !important;
-    visibility: hidden !important;
-    height: 0 !important;
-    margin: 0 !important;
-    padding: 0 !important;
-}
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -7166,7 +7164,39 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
     <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='' width='100%'/>
     <data:post.cmtfpIframe/>
     <script type='text/javascript'>
-      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;);
+
+      //<![CDATA[
+
+      document.addEventListener("DOMContentLoaded", function() {
+
+        var cmtIframe = document.getElementById('comment-editor');
+
+        if (window.IntersectionObserver && cmtIframe) {
+
+          var cmtObs = new IntersectionObserver(function(e, o) {
+
+            if (e[0].isIntersecting) {
+
+              BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+
+              o.disconnect();
+
+            }
+
+          }, { rootMargin: '300px 0px' });
+
+          cmtObs.observe(cmtIframe);
+
+        } else {
+
+          BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+
+        }
+
+      });
+
+//]]>
+
     </script>
   </div>
 </b:includable>
@@ -7439,131 +7469,8 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
       <b:include data='post' name='post'/>
     </div>
 
-    <!-- Comments 댓글창-->
- 
-    <b:if cond='data:view.isSingleItem'>
-<style>
-#cmt-wrap{max-width:100%;margin:32px 0 0;padding:0 0 80px;font-family:-apple-system,&#39;Apple SD Gothic Neo&#39;,&#39;Malgun Gothic&#39;,sans-serif}
-#cmt-header{font-size:11px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:#556070;margin-bottom:28px}
-.cmt-card{display:flex;gap:14px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,0.05);opacity:0;transform:translateY(6px);animation:cmtIn .3s ease forwards}
-@keyframes cmtIn{to{opacity:1;transform:none}}
-.cmt-av{width:34px;height:34px;border-radius:50%;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;margin-top:1px}
-.cmt-meta{display:flex;align-items:center;gap:8px;margin-bottom:7px}
-.cmt-name{font-size:13px;font-weight:600;color:#e8eaed}
-.cmt-date{font-size:11px;color:#556070}
-.cmt-body{font-size:14px;line-height:1.75;color:#b0b8c4}
-.sk-card{display:flex;gap:14px;padding:22px 0;border-bottom:1px solid rgba(255,255,255,0.05)}
-.sk{background:linear-gradient(90deg,rgba(255,255,255,0.04) 25%,rgba(255,255,255,0.08) 50%,rgba(255,255,255,0.04) 75%);background-size:200% 100%;animation:sk 1.4s infinite;border-radius:6px}
-.sk-av{width:34px;height:34px;border-radius:50%;flex-shrink:0}
-.sk-l{height:11px;margin-bottom:7px}
-@keyframes sk{0%{background-position:200% 0}100%{background-position:-200% 0}}
-#cmt-empty{padding:44px 0;text-align:center;color:#556070;font-size:13px}
-#cmt-write-btn{margin-top:28px;padding:11px 24px;border-radius:10px;border:1px solid rgba(49,130,246,.25);background:rgba(49,130,246,.1);color:#6da8ff;cursor:pointer;font-weight:600;font-size:13px;font-family:inherit;transition:all .18s}
-#cmt-write-btn:hover{background:rgba(49,130,246,.22);border-color:rgba(49,130,246,.45);color:#93c5fd}
-#cmt-editor-wrap{display:none;margin-top:16px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,0.07);background:rgba(255,255,255,0.02)}
-#cmt-wrap mjx-container svg{stroke:currentColor !important;stroke-width:0.3px !important;shape-rendering:geometricPrecision !important}
-#cmt-wrap mjx-container[display=&quot;true&quot;]{display:block !important;width:100% !important;text-align:center !important;margin:1.2em auto !important;overflow-x:auto !important;overflow-y:hidden !important}
-#cmt-wrap svg{max-width:100%;height:auto;pointer-events:none !important}
-body.light-mode #cmt-header{color:#8B95A1}
-body.light-mode .cmt-card{border-bottom-color:rgba(0,0,0,0.06)}
-body.light-mode .cmt-name{color:#191F28}
-body.light-mode .cmt-date{color:#8B95A1}
-body.light-mode .cmt-body{color:#4E5968}
-body.light-mode .sk-card{border-bottom-color:rgba(0,0,0,0.06)}
-body.light-mode .sk{background:linear-gradient(90deg,rgba(0,0,0,0.04) 25%,rgba(0,0,0,0.07) 50%,rgba(0,0,0,0.04) 75%);background-size:200% 100%}
-body.light-mode #cmt-empty{color:#8B95A1}
-body.light-mode #cmt-write-btn{border-color:rgba(49,130,246,.3);background:rgba(49,130,246,.08);color:#3182F6}
-body.light-mode #cmt-write-btn:hover{background:rgba(49,130,246,.15);border-color:rgba(49,130,246,.5);color:#1a6fd8}
-body.light-mode #cmt-editor-wrap{border-color:rgba(0,0,0,0.08);background:rgba(0,0,0,0.02)}
-</style>
-
-<div id='cmt-wrap'>
-  <div id='cmt-header'>댓글</div>
-  <div id='cmt-list'>
-    <div class='sk-card'><div class='sk-av sk'/><div style='flex:1;padding-top:2px'><div class='sk-l sk' style='width:28%'/><div class='sk-l sk' style='width:75%'/><div class='sk-l sk' style='width:55%'/></div></div>
-    <div class='sk-card'><div class='sk-av sk'/><div style='flex:1;padding-top:2px'><div class='sk-l sk' style='width:22%'/><div class='sk-l sk' style='width:88%'/><div class='sk-l sk' style='width:40%'/></div></div>
-  </div>
-  <button id='cmt-write-btn'>댓글 쓰기</button>
-  <div id='cmt-editor-wrap'><div id='cmt-editor-inner'/></div>
-</div>
-
-<script type='text/javascript'>
-//<![CDATA[
-(function(){
-  var COLORS=['#3182F6','#6366f1','#8b5cf6','#ec4899','#14b8a6','#f59e0b','#10b981'];
-  function avColor(n){var h=0;for(var i=0;i<n.length;i++)h=n.charCodeAt(i)+((h<<5)-h);return COLORS[Math.abs(h)%COLORS.length];}
-  function relDate(iso){
-    var d=Math.floor((Date.now()-new Date(iso))/1000);
-    if(d<60)return '방금';
-    if(d<3600)return Math.floor(d/60)+'분 전';
-    if(d<86400)return Math.floor(d/3600)+'시간 전';
-    if(d<604800)return Math.floor(d/86400)+'일 전';
-    var dt=new Date(iso);
-    return dt.getFullYear()+'.'+String(dt.getMonth()+1).padStart(2,'0')+'.'+String(dt.getDate()).padStart(2,'0');
-  }
-  function run(){
-    var postId='',blogId='';
-    try{var data=_WidgetManager._GetAllData();postId=data.blog.postId;blogId=data.blog.blogId;}catch(e){}
-    var list=document.getElementById('cmt-list');
-    var btn=document.getElementById('cmt-write-btn');
-    if(!postId){list.innerHTML='';return;}
-    fetch('/feeds/'+postId+'/comments/default?alt=json&max-results=500')
-      .then(function(r){return r.json();})
-      .then(function(data){
-        var entries=data.feed.entry;
-        if(!entries||!entries.length){list.innerHTML='<div id="cmt-empty">첫 번째 댓글을 남겨보세요.</div>';return;}
-        var html='';
-        entries.forEach(function(e,i){
-          var name=e.author[0].name.$t;
-          var body=e.content.$t;
-          var date=relDate(e.published.$t);
-          var init=name.charAt(0).toUpperCase();
-          var bg=avColor(name);
-          html+='<div class="cmt-card" style="animation-delay:'+( i*0.045)+'s">'+
-            '<div class="cmt-av" style="background:'+bg+'">'+init+'</div>'+
-            '<div style="flex:1;min-width:0">'+
-              '<div class="cmt-meta"><span class="cmt-name">'+name+'</span><span class="cmt-date">'+date+'</span></div>'+
-              '<div class="cmt-body">'+body+'</div>'+
-            '</div></div>';
-        });
-        list.innerHTML=html;
-        // 수정 (startup.promise에 체이닝)
-if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){
-  MathJax.startup.promise=MathJax.startup.promise
-    .then(function(){return MathJax.typesetPromise([list]);})
-    .catch(function(e){console.warn('MathJax comment render failed:',e);});
-}
-      })
-      .catch(function(e){console.error('댓글 fetch 실패:',e);list.innerHTML='<div id="cmt-empty">댓글을 불러올 수 없습니다.</div>';});
-    btn.onclick=function(){
-      btn.style.display='none';
-      var w=document.getElementById('cmt-editor-wrap');
-      var inner=document.getElementById('cmt-editor-inner');
-      w.style.display='block';
-      inner.innerHTML='<iframe src="https://www.blogger.com/comment-iframe.g?blogID='+blogId+'&postID='+postId+'" width="100%" height="300" frameborder="0" scrolling="no" style="display:block"></iframe>';
-    };
-  }
-  if(document.readyState==='complete')run();else window.addEventListener('load',run);
-})();
-//]]>
-</script>
-</b:if>
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+    <!-- Comments -->
+    <b:include cond='data:view.isSingleItem' data='post' name='commentPicker'/>
 
     <!-- Show ad inside post container, after comments, if single item. -->
     <b:include cond='data:view.isSingleItem and data:post.includeAd' data='post' name='inlineAd'/>
@@ -7754,7 +7661,22 @@ if(window.MathJax&&MathJax.startup&&MathJax.startup.promise){
     <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='' width='100%'/>
     <data:post.cmtfpIframe/>
     <script type='text/javascript'>
-      BLOG_CMT_createIframe(&#39;<data:post.appRpcRelayPath/>&#39;);
+      //<![CDATA[
+      document.addEventListener("DOMContentLoaded", function() {
+        var cmtIframe = document.getElementById('comment-editor');
+        if (window.IntersectionObserver && cmtIframe) {
+          var cmtObs = new IntersectionObserver(function(e, o) {
+            if (e[0].isIntersecting) {
+              BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+              o.disconnect();
+            }
+          }, { rootMargin: '300px 0px' });
+          cmtObs.observe(cmtIframe);
+        } else {
+          BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+        }
+      });
+//]]>
     </script>
   </div>
 </b:includable>
@@ -10053,8 +9975,24 @@ document.addEventListener("DOMContentLoaded", function() {
   let debounceTimer;
   let lastQuery = '';
 
-  function fetchAllPosts(startIndex = 1) {
+function fetchAllPosts(startIndex = 1) {
     isLoading = true;
+    
+    // 캐시 확인 로직
+    const cachedPosts = sessionStorage.getItem('spotlight_cache');
+    if (cachedPosts && startIndex === 1) {
+      postCache = JSON.parse(cachedPosts);
+      isLoading = false;
+      isCacheLoaded = true;
+      if (input.value.trim().length > 0) {
+        lastQuery = ''; 
+        input.dispatchEvent(new Event('input')); 
+      } else {
+        resultsBox.innerHTML = '<div class="search-hint">검색 준비 완료!</div>';
+      }
+      return;
+    }
+
     const fetchUrl = `/feeds/posts/default?alt=json&start-index=${startIndex}&max-results=150`;
 
     fetch(fetchUrl)
@@ -10085,18 +10023,18 @@ document.addEventListener("DOMContentLoaded", function() {
           const totalResults = parseInt(data.feed.openSearch$totalResults.$t);
           
           if (postCache.length < totalResults) {
-            resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})<br><small style="opacity:0.7">검색어를 미리 입력해두면 완료 즉시 결과를 보여줍니다.</small></div>`;
+            resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})</div>`;
             fetchAllPosts(postCache.length + 1); 
           } else {
+            sessionStorage.setItem('spotlight_cache', JSON.stringify(postCache)); // 파싱 완료 후 저장
             isLoading = false;
             isCacheLoaded = true;
 
-            // 💥 픽스 1: 인덱싱 완료 직후, 입력창에 글자가 있으면 '자동 검색' 트리거!
             if (input.value.trim().length > 0) {
-              lastQuery = ''; // 강제 실행을 위해 쿼리 캐시 초기화
+              lastQuery = ''; 
               input.dispatchEvent(new Event('input')); 
             } else {
-              resultsBox.innerHTML = '<div class="search-hint">모든 글(본문 포함) 인덱싱 완료!</div>';
+              resultsBox.innerHTML = '<div class="search-hint">모든 글 인덱싱 완료!</div>';
             }
           }
         } else {
@@ -10241,34 +10179,13 @@ document.addEventListener("DOMContentLoaded", function() {
     
     
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+
     
     
     
     
     
   </body>
-  
-  
-  
-  
-  
-
-  
-  
   
   
   
