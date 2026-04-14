@@ -7799,25 +7799,31 @@ body.light-mode .comments .comment-form {
       <p><data:this.messages.blogComment/></p>
     </b:if>
     <b:include data='post' name='commentFormIframeSrc'/>
-    <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='' width='100%'/>
+    
+    <iframe allowtransparency='allowtransparency' class='blogger-iframe-colorize blogger-comment-from-post' expr:height='data:cmtIframeInitialHeight ?: &quot;90px&quot;' frameborder='0' id='comment-editor' name='comment-editor' src='about:blank' width='100%'/>
+    
     <data:post.cmtfpIframe/>
-    <script type='text/javascript'>
+    
+<script type='text/javascript'>
       //<![CDATA[
+      // 페이지의 기본 뼈대가 다 잡힌 직후에 안전하게 실행
       document.addEventListener("DOMContentLoaded", function() {
-        var cmtIframe = document.getElementById('comment-editor');
-        if (window.IntersectionObserver && cmtIframe) {
-          var cmtObs = new IntersectionObserver(function(e, o) {
-            if (e[0].isIntersecting) {
-              BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
-              o.disconnect();
-            }
-          }, { rootMargin: '300px 0px' });
-          cmtObs.observe(cmtIframe);
-        } else {
-          BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+        
+        function initComment() {
+          if (typeof BLOG_CMT_createIframe === 'function') {
+            BLOG_CMT_createIframe('<data:post.appRpcRelayPath/>');
+            return true;
+          }
+          return false;
+        }
+
+        // 1. 바로 실행 시도
+        if (!initComment()) {
+          // 2. 만약 블로거 기본 스크립트 로딩이 늦어진다면, 모든 리소스가 로드된 후 다시 시도 (안전망)
+          window.addEventListener('load', initComment);
         }
       });
-//]]>
+      //]]>
     </script>
   </div>
 </b:includable>
