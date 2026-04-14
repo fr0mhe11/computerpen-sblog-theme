@@ -6178,18 +6178,35 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
     overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; white-space: normal;
 }
 
-/* 9. 답글/삭제 버튼 (박스 제거, 깔끔한 텍스트형) */
-.comments .comment-actions { margin-top: 12px; }
+/* 🚀 9. 답글/삭제 버튼 (유령 버튼 부활 원천 차단 및 절대위치 해제) */
+#comments .comment .comment-actions:not(.hidden),
+.comments .comment-actions:not(.hidden) {
+    position: static !important; /* 원본의 바닥 강제 고정 버그 파괴 */
+    bottom: auto !important;
+    margin-top: 6px;
+    margin-bottom: 20px; /* 대댓글과의 넉넉한 여백 */
+    
+    /* 👻 핵심: 숨겨진 유령 버튼(.hidden)이 아닐 때만 flex 정렬 적용! */
+    display: flex; 
+    align-items: center; 
+    gap: 16px; 
+}
+
+#comments .comment .comment-actions a,
 .comments .comment-actions a {
-    color: #8B95A1; /* 평소에는 튀지 않는 차분한 회색 */
+    color: #8B95A1; 
     font-size: 0.85em; 
     font-weight: 600; 
     text-decoration: none;
     transition: color 0.2s;
-    margin-right: 16px; /* 답글과 삭제 버튼 사이 넉넉한 간격 */
+    padding: 8px 4px; 
+    margin: 0; 
+    display: block; 
 }
+
+#comments .comment .comment-actions a:hover,
 .comments .comment-actions a:hover { 
-    color: #3182F6; /* 마우스를 올리거나 터치할 때만 토스 파란색으로 강조 */
+    color: #3182F6; 
 }
 
 /* 10. 댓글 입력창 (Iframe) 영역 제한 */
@@ -6200,15 +6217,29 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 }
 .comments h4#comment-post-message { color: #F2F4F6; margin-bottom: 15px; font-weight: 700; font-size: 1.1em; }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 /* ☀️ 라이트 모드 동기화 */
 /* ☀️ 라이트 모드 동기화 - 답글/삭제 버튼 최적화 */
 
 /* 1. 배경 박스 완전히 제거 및 글자색 조정 */
+/* 1. 배경 박스 완전히 제거 및 글자색 조정 */
 body.light-mode .comments .comment-actions a {
-    background: none !important; /* 하늘색 박스 제거 */
+    background: transparent !important; /* none 대신 transparent를 써서 터치 영역 보호 */
     color: #6B7684; /* 라이트 모드에서 가독성이 좋은 진한 회색 */
-    padding: 0; /* 박스용 패딩 제거 */
-    margin-right: 16px;
+    padding: 8px 4px; /* 라이트 모드에서도 넓은 터치 영역 유지 */
+    margin: 0;
 }
 
 /* 2. 호버 시 다크 모드와 동일하게 파란색 강조 */
@@ -6223,6 +6254,19 @@ body.light-mode .comments .comment-form {
     background: #F9FAFB;
     border: 1px solid #E5E8EB;
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
     ]]></b:skin>
@@ -7248,13 +7292,10 @@ body.light-mode .comments .comment-form {
   </span>
 </b:includable>
                     <b:includable id='commentForm' var='post'>
-<button class='toss-btn-primary' id='open-comment-modal'>💬 댓글 남기기</button>
+
 
 <div class='comment-form' id='comment-iframe-modal'>
-  <div class='comment-modal-header'>
-    <span>댓글 작성</span>
-    <button id='close-comment-modal'>&#10005;</button>
-  </div>
+
   <a name='comment-form'/>
   <h4 id='comment-post-message' style='display:none;'><data:messages.postAComment/></h4>
     <b:if cond='data:this.messages.blogComment != &quot;&quot;'>
@@ -10059,6 +10100,10 @@ document.addEventListener('touchend', function() {
     </div>
   </div>
 </div>
+
+    
+    
+
 <script type='text/javascript'>
 //<![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
@@ -10075,22 +10120,34 @@ document.addEventListener("DOMContentLoaded", function() {
   let debounceTimer;
   let lastQuery = '';
 
-function fetchAllPosts(startIndex = 1) {
+  function fetchAllPosts(startIndex = 1) {
     isLoading = true;
-    
-    // 캐시 확인 로직
-    const cachedPosts = sessionStorage.getItem('spotlight_cache');
-    if (cachedPosts && startIndex === 1) {
-      postCache = JSON.parse(cachedPosts);
-      isLoading = false;
-      isCacheLoaded = true;
-      if (input.value.trim().length > 0) {
-        lastQuery = ''; 
-        input.dispatchEvent(new Event('input')); 
+
+    // 🚀 1. 신규 통신(startIndex=1)일 때만 5분 타이머 검사 및 초기화
+    if (startIndex === 1) {
+      const cachedPosts = sessionStorage.getItem('spotlight_cache');
+      const cacheTimestamp = sessionStorage.getItem('spotlight_cache_time');
+      const now = new Date().getTime();
+      const CACHE_EXPIRE_MS = 5 * 60 * 1000; // 5분 유통기한
+
+      // 캐시가 있고 5분이 안 지났다면 통신 생략
+      if (cachedPosts && cacheTimestamp && (now - parseInt(cacheTimestamp) < CACHE_EXPIRE_MS)) {
+        postCache = JSON.parse(cachedPosts);
+        isLoading = false;
+        isCacheLoaded = true;
+        if (input.value.trim().length > 0) {
+          lastQuery = ''; 
+          input.dispatchEvent(new Event('input')); 
+        } else {
+          resultsBox.innerHTML = '<div class="search-hint">모든 글 인덱싱 완료! (캐시 적용)</div>';
+        }
+        return;
       } else {
-        resultsBox.innerHTML = '<div class="search-hint">검색 준비 완료!</div>';
+        // 🚀 [버그 수정] 캐시가 만료되었으면 기존 배열(postCache)을 무조건 비워야 중복 복사 방지
+        postCache = [];
+        sessionStorage.removeItem('spotlight_cache');
+        sessionStorage.removeItem('spotlight_cache_time');
       }
-      return;
     }
 
     const fetchUrl = `/feeds/posts/default?alt=json&start-index=${startIndex}&max-results=150`;
@@ -10123,10 +10180,12 @@ function fetchAllPosts(startIndex = 1) {
           const totalResults = parseInt(data.feed.openSearch$totalResults.$t);
           
           if (postCache.length < totalResults) {
-            resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})</div>`;
+            resultsBox.innerHTML = `<div class="search-hint">인덱싱 중... (${postCache.length} / ${totalResults})<br><small style="opacity:0.7">검색어를 미리 입력해두면 완료 즉시 결과를 보여줍니다.</small></div>`;
             fetchAllPosts(postCache.length + 1); 
           } else {
-            sessionStorage.setItem('spotlight_cache', JSON.stringify(postCache)); // 파싱 완료 후 저장
+            // 🚀 파싱 완료 시 스토리지에 데이터 + 현재시간 동시 저장
+            sessionStorage.setItem('spotlight_cache', JSON.stringify(postCache)); 
+            sessionStorage.setItem('spotlight_cache_time', new Date().getTime().toString());
             isLoading = false;
             isCacheLoaded = true;
 
@@ -10142,7 +10201,7 @@ function fetchAllPosts(startIndex = 1) {
           isCacheLoaded = true;
         }
       })
-      .catch(err => { isLoading = false; });
+      .catch(err => { isLoading = false; resultsBox.innerHTML = '<div class="search-hint">데이터를 불러오는 중 오류가 발생했습니다.</div>'; });
   }
 
   function openSearch(e) {
@@ -10154,23 +10213,46 @@ function fetchAllPosts(startIndex = 1) {
     input.value = '';
     lastQuery = '';
     
-    if (!isCacheLoaded) resultsBox.innerHTML = '<div class="search-hint">인덱싱을 시작합니다...</div>';
-    else resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
-    
     document.body.style.overflow = 'hidden';
     setTimeout(() => input.focus(), 100);
 
-    if (!isCacheLoaded && !isLoading) fetchAllPosts();
+    // 🚀 2. [버그 수정] 검색창을 열 때 5분이 지났는지 재검사하여 자동 새로고침 진행
+    const cacheTimestamp = sessionStorage.getItem('spotlight_cache_time');
+    const now = new Date().getTime();
+    const CACHE_EXPIRE_MS = 5 * 60 * 1000;
+
+    if (!isCacheLoaded || (cacheTimestamp && (now - parseInt(cacheTimestamp) >= CACHE_EXPIRE_MS))) {
+      isCacheLoaded = false;
+      if (!isLoading) {
+        resultsBox.innerHTML = '<div class="search-hint">인덱싱을 시작합니다...</div>';
+        fetchAllPosts(1);
+      }
+    } else {
+      resultsBox.innerHTML = '<div class="search-hint">검색어를 입력해 주세요.</div>';
+    }
   }
 
   input.addEventListener('input', function() {
-    // 인덱싱 중일 때는 입력을 막지 않고 힌트만 줍니다. (위의 픽스 1이 나중에 알아서 실행해줌)
+    let rawQuery = this.value.toLowerCase().trim();
+
+    // 🚀 3. [버그 수정] 주인장 전용 초기화 명령어: 캐시 폭파 후 즉시 다시 인덱싱 시작
+    if (rawQuery === '/초기화') {
+      sessionStorage.removeItem('spotlight_cache');
+      sessionStorage.removeItem('spotlight_cache_time');
+      postCache = [];
+      isCacheLoaded = false;
+      this.value = '';
+      lastQuery = '';
+      resultsBox.innerHTML = '<div class="search-hint" style="color:#3182F6;">🔄 캐시 초기화 완료! 최신 글을 긁어옵니다...</div>';
+      fetchAllPosts(1); // 즉시 긁어오기
+      return;
+    }
+
     if (!isCacheLoaded) {
       resultsBox.innerHTML = `<div class="search-hint">데이터를 로드 중입니다... (${postCache.length}개 로드됨)<br><small style="opacity:0.7">인덱싱이 끝나면 자동으로 검색됩니다.</small></div>`;
       return;
     }
 
-    let rawQuery = this.value.toLowerCase().trim();
     if (rawQuery === lastQuery) return;
     lastQuery = rawQuery;
     clearTimeout(debounceTimer);
@@ -10186,26 +10268,19 @@ function fetchAllPosts(startIndex = 1) {
       let searchTerms = rawQuery.split(/\s+/);
       let queryNoSpace = rawQuery.replace(/\s+/g, '');
       
-      // 💥 픽스 2: 연관성(Relevance) 점수 채점 로직
       let matchedPosts = postCache.map(post => {
-        // 모든 검색어가 포함되어 있는지 확인 (기본 통과 조건)
         let isMatch = searchTerms.every(term => post.fullText.includes(term.replace(/\s+/g, '')));
-        if (!isMatch) return null; // 통과 못하면 버림
+        if (!isMatch) return null;
 
         let score = 0;
-        // 1계급: 제목이 띄어쓰기 무시하고 완벽하게 100% 일치 (+100점)
         if (post.lowerTitle === queryNoSpace) score += 100;
-        // 2계급: 제목 어딘가에 검색어들이 다 들어있음 (+50점)
         else if (searchTerms.every(term => post.lowerTitle.includes(term.replace(/\s+/g, '')))) score += 50;
-        // 3계급: 태그(해시태그) 어딘가에 검색어들이 다 들어있음 (+30점)
         else if (searchTerms.every(term => post.tagsStr.includes(term.replace(/\s+/g, '')))) score += 30;
-        // 4계급: 제목/태그엔 없고 본문에만 스쳐 지나감 (+10점)
         else score += 10;
 
         return { ...post, score };
       }).filter(p => p !== null);
 
-      // 점수(계급) 내림차순으로 정렬. 점수가 같으면 기존 배열 순서(시간순/최신순)를 그대로 유지함.
       matchedPosts.sort((a, b) => b.score - a.score);
 
       if (matchedPosts.length === 0) {
@@ -10271,7 +10346,45 @@ function fetchAllPosts(startIndex = 1) {
     }
   }
 });
-//]]>
+
+
+
+
+
+
+document.addEventListener("DOMContentLoaded", function() {
+  const commentsContainer = document.getElementById('comments');
+  if (!commentsContainer) return;
+
+  const relocateButtons = () => {
+    const realComments = document.querySelectorAll('.comment-thread > li.comment');
+    
+    realComments.forEach(comment => {
+      const commentBlock = comment.querySelector('.comment-block');
+      
+      // 🚀 핵심: 자바스크립트도 껍데기 유령 버튼(.hidden)은 철저히 무시하고 진짜 버튼만 추적함
+      const commentActions = comment.querySelector('.comment-actions:not(.hidden)');
+      
+      if (commentBlock && commentActions && commentActions.parentElement !== commentBlock) {
+        commentBlock.appendChild(commentActions);
+      }
+    });
+  };
+
+  const observer = new MutationObserver(() => {
+    relocateButtons();
+  });
+
+  observer.observe(commentsContainer, { childList: true, subtree: true });
+});
+
+
+
+
+
+
+
+//]]>  
 </script>
     
     
