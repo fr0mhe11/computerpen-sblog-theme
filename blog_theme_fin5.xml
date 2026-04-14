@@ -6118,17 +6118,111 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
 
 
+/* =========================================
+   블로거 순정 댓글창 Toss UI 강제 성형 (최종: 우측 뚫림 완벽 해결)
+   ========================================= */
 
+/* 1. 댓글 영역 전체 너비 통제 */
+.comments { margin-top: 40px; box-sizing: border-box; width: 100%; overflow-x: hidden; }
+.comments .comments-content { margin-bottom: 20px; width: 100%; box-sizing: border-box; }
+.comments .comment-thread { padding: 0; margin: 0; list-style: none; width: 100%; box-sizing: border-box; }
 
+/* 2. 각 댓글의 가로 기준점 잡기 */
+.comments .comment-thread > li { position: relative; width: 100%; box-sizing: border-box; }
 
+/* 3. 부모 댓글 아바타 */
+.comments .avatar-image-container {
+    position: absolute; left: 0; top: 20px;
+    width: 44px; height: 44px; border-radius: 50%; overflow: hidden; background: #222;
+}
+.comments .avatar-image-container img { width: 100%; height: 100%; object-fit: cover; }
 
+/* 🚀 4. 부모 댓글 텍스트 박스 (우측 뚫림 방지 계산식) */
+.comments .comment-block {
+    margin-left: 55px; /* 아바타 공간 55px */
+    padding: 20px 0 20px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+    box-sizing: border-box;
+    width: calc(100% - 55px); /* 전체 100%에서 아바타 공간만큼만 뺌 = 절대 안 뚫림 */
+}
 
+/* 🚀 5. 대댓글 들여쓰기 영역 전체 너비 통제 */
+.comments .comment-replies {
+    margin-left: 55px; /* 부모 텍스트 시작점에 맞춤 */
+    margin-top: 10px;
+    box-sizing: border-box;
+    width: calc(100% - 55px); /* 부모 박스 밖으로 안 나가게 강제 */
+}
 
+/* 6. 대댓글 아바타 (크기 축소) */
+.comments .comment-replies .comment-thread > li { margin-bottom: 10px; position: relative; }
+.comments .comment-replies .avatar-image-container { width: 34px; height: 34px; top: 15px; left: 0; }
 
+/* 🚀 7. 대댓글 텍스트 박스 (우측 뚫림 방지 계산식) */
+.comments .comment-replies .comment-block {
+    margin-left: 45px; /* 대댓글 아바타 공간 45px */
+    padding: 15px;
+    border-bottom: none;
+    background: rgba(0,0,0,0.1);
+    border-radius: 12px;
+    box-sizing: border-box;
+    width: calc(100% - 45px); /* 대댓글 아바타 공간만큼만 뺌 = 우측 여백 확보 */
+}
 
+/* 8. 닉네임, 날짜, 텍스트 줄바꿈 처리 */
+.comments .comment-header { display: flex; align-items: center; gap: 8px; margin-bottom: 6px; flex-wrap: wrap; }
+.comments .comment-header .user { font-weight: 700; color: #F2F4F6; text-decoration: none; font-size: 0.95em; word-break: break-all; }
+.comments .comment-header .datetime a { color: #8B95A1; font-size: 0.8em; text-decoration: none; }
+.comments .comment-content {
+    color: #B0B8C1; font-size: 0.95em; line-height: 1.6; margin-top: 4px;
+    overflow-wrap: break-word; word-wrap: break-word; word-break: break-word; white-space: normal;
+}
 
+/* 9. 답글/삭제 버튼 (박스 제거, 깔끔한 텍스트형) */
+.comments .comment-actions { margin-top: 12px; }
+.comments .comment-actions a {
+    color: #8B95A1; /* 평소에는 튀지 않는 차분한 회색 */
+    font-size: 0.85em; 
+    font-weight: 600; 
+    text-decoration: none;
+    transition: color 0.2s;
+    margin-right: 16px; /* 답글과 삭제 버튼 사이 넉넉한 간격 */
+}
+.comments .comment-actions a:hover { 
+    color: #3182F6; /* 마우스를 올리거나 터치할 때만 토스 파란색으로 강조 */
+}
 
+/* 10. 댓글 입력창 (Iframe) 영역 제한 */
+.comments .comment-form {
+    margin-top: 30px; background: #141518; padding: 20px;
+    border-radius: 16px; border: 1px solid rgba(255,255,255,0.05);
+    box-sizing: border-box; width: 100%; overflow: hidden;
+}
+.comments h4#comment-post-message { color: #F2F4F6; margin-bottom: 15px; font-weight: 700; font-size: 1.1em; }
 
+/* ☀️ 라이트 모드 동기화 */
+/* ☀️ 라이트 모드 동기화 - 답글/삭제 버튼 최적화 */
+
+/* 1. 배경 박스 완전히 제거 및 글자색 조정 */
+body.light-mode .comments .comment-actions a {
+    background: none !important; /* 하늘색 박스 제거 */
+    color: #6B7684; /* 라이트 모드에서 가독성이 좋은 진한 회색 */
+    padding: 0; /* 박스용 패딩 제거 */
+    margin-right: 16px;
+}
+
+/* 2. 호버 시 다크 모드와 동일하게 파란색 강조 */
+body.light-mode .comments .comment-actions a:hover {
+    background: none !important;
+    color: #3182F6;
+    text-decoration: underline; /* 선택 사항: 텍스트 버튼임을 강조하고 싶을 때 */
+}
+
+/* 3. 라이트 모드 댓글 폼 배경색 (선택 사항: 더 깔끔하게) */
+body.light-mode .comments .comment-form {
+    background: #F9FAFB;
+    border: 1px solid #E5E8EB;
+}
 
 
     ]]></b:skin>
@@ -7154,9 +7248,15 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
   </span>
 </b:includable>
                     <b:includable id='commentForm' var='post'>
-  <div class='comment-form'>
-    <a name='comment-form'/>
-    <h4 id='comment-post-message'><data:messages.postAComment/></h4>
+<button class='toss-btn-primary' id='open-comment-modal'>💬 댓글 남기기</button>
+
+<div class='comment-form' id='comment-iframe-modal'>
+  <div class='comment-modal-header'>
+    <span>댓글 작성</span>
+    <button id='close-comment-modal'>&#10005;</button>
+  </div>
+  <a name='comment-form'/>
+  <h4 id='comment-post-message' style='display:none;'><data:messages.postAComment/></h4>
     <b:if cond='data:this.messages.blogComment != &quot;&quot;'>
       <p><data:this.messages.blogComment/></p>
     </b:if>
@@ -7696,14 +7796,14 @@ body.light-mode .result-item.selected, body.light-mode .result-item:hover { back
 
     <b:include name='commentsTitle'/>
 
-    <div class='comments-content'>
-      <b:if cond='data:post.embedCommentForm'>
-        <b:include data='post' name='threadedCommentJs'/>
-      </b:if>
-      <div id='comment-holder'>
-         <data:post.commentHtml/>
-      </div>
-    </div>
+<div class='comments-content'>
+  <b:if cond='data:post.embedCommentForm'>
+    <b:include data='post' name='threadedCommentJs'/>
+  </b:if>
+  <div id='comment-holder'>
+     <data:post.commentHtml/>
+  </div>
+</div>
 
     <p class='comment-footer'>
       <b:if cond='data:post.allowNewComments'>
@@ -10179,7 +10279,12 @@ function fetchAllPosts(startIndex = 1) {
     
     
     
+    
 
+    
+    
+    
+    
     
     
     
