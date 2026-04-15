@@ -6260,13 +6260,260 @@ body.light-mode .comments .comment-form {
 
 
 
+/* =========================================================
+   [최종] 레퍼런스 팝업 (클릭형 + X 닫기 버튼 추가)
+========================================================= */
+.reference-tooltip {
+  position: absolute;
+  background: #202227; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3182F6;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* 🚀 오른쪽 패딩(40px)을 늘려서 X 버튼이 글씨를 가리지 않게 함 */
+  padding: 16px 40px 16px 20px; 
+  z-index: 10010;
+  max-width: 420px;
+  width: max-content;
+  color: #E5E8EB;
+  font-size: 0.95em; 
+  line-height: 1.6;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  pointer-events: auto;
+}
+
+/* 🚀 X (닫기) 버튼 스타일 */
+.ref-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: #E5E8EB;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10011;
+}
+.ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* 기존 디자인 유지 */
+.reference-tooltip .callout { margin: 0 !important; }
+.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
+.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
+
+/* ☀️ 라이트 모드 (기존 찐검정 유지 + X버튼 라이트모드 대응) */
+body.light-mode .reference-tooltip {
+  background: #FFFFFF !important;
+  color: #000000 !important; 
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-left: 4px solid #3182F6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+body.light-mode .reference-tooltip * { color: #000000 !important; }
+body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
+body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
+
+
+
+a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
+
+
+
+/* =========================================================
+   [최종] 레퍼런스 팝업 (클릭형 + X 닫기 버튼 추가 + 중첩 콜아웃 최적화)
+========================================================= */
+.reference-tooltip {
+  position: absolute;
+  background: #202227; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3182F6;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  /* 🚀 오른쪽 패딩(40px)을 늘려서 X 버튼이 글씨를 가리지 않게 함 */
+  padding: 16px 40px 16px 20px; 
+  z-index: 10010;
+  max-width: 420px;
+  width: max-content;
+  color: #E5E8EB;
+  font-size: 0.95em; 
+  line-height: 1.6;
+  opacity: 0;
+  visibility: hidden;
+  transform: translateY(10px);
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  pointer-events: auto;
+}
+
+/* 🚀 X (닫기) 버튼 스타일 */
+.ref-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: #E5E8EB;
+  font-size: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10011;
+}
+.ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
+
+/* 기존 디자인 유지 */
+.reference-tooltip > .callout { margin: 0 !important; }
+.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
+.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
+
+/* 🚀 중첩 콜아웃 최적화 (팝업 안의 팝업 크기 축소) */
+.reference-tooltip .callout .callout {
+  margin: 12px 0 0 0 !important; /* 위쪽 여백만 살짝 주기 */
+  padding: 12px 16px !important; /* 내부 여백 줄이기 */
+  font-size: 0.9em !important; /* 전체적인 글씨 크기 축소 */
+  border-radius: 8px !important;
+}
+.reference-tooltip .callout .callout .callout-title {
+  font-size: 0.95em !important; /* 중첩 콜아웃의 제목 크기 축소 */
+  margin-bottom: 6px !important;
+}
+.reference-tooltip .callout .callout p {
+  font-size: 1em !important; /* 상위 폰트(0.9em) 기준 상속 */
+  line-height: 1.5 !important;
+}
+
+/* ☀️ 라이트 모드 (기존 찐검정 유지 + X버튼 라이트모드 대응) */
+body.light-mode .reference-tooltip {
+  background: #FFFFFF !important;
+  color: #000000 !important; 
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-left: 4px solid #3182F6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+body.light-mode .reference-tooltip * { color: #000000 !important; }
+body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
+body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
+
+/* 📱 모바일 하단 팝업 */
+@media (max-width: 768px) {
+  .reference-tooltip {
+    position: fixed; top: auto !important; bottom: 0 !important; left: 0 !important;
+    width: 100% !important; max-width: 100% !important;
+    border-radius: 20px 20px 0 0; transform: translateY(100%);
+    padding: 24px 40px 40px 20px; border-left: none; border-top: 4px solid #3182F6;
+  }
+  .reference-tooltip.show-mobile { transform: translateY(0) !important; opacity: 1; visibility: visible; }
+  .ref-close-btn { top: 16px; right: 16px; width: 28px; height: 28px; font-size: 14px; }
+}
+
+a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
 
 
 
 
 
+/* =========================================================
+   [최종] 레퍼런스 팝업 (모바일/PC 완벽 호환 + 중첩 최적화)
+========================================================= */
+.reference-tooltip {
+  position: absolute;
+  background: #202227; 
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  border-left: 4px solid #3182F6;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  padding: 16px 40px 16px 20px; 
+  z-index: 10010;
+  max-width: 420px;
+  width: max-content;
+  color: #E5E8EB;
+  font-size: 0.95em; 
+  line-height: 1.6;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
+  pointer-events: auto;
+}
 
+/* 🚀 X (닫기) 버튼 스타일 */
+.ref-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 24px;
+  height: 24px;
+  background: rgba(255, 255, 255, 0.1);
+  border: none;
+  border-radius: 50%;
+  color: #E5E8EB;
+  font-size: 14px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: background 0.2s;
+  z-index: 10011;
+}
+.ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
+/* 원본 디자인 유지 */
+.reference-tooltip > p { margin-top: 0 !important; }
+.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
+.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
+
+/* 🚀 중첩 콜아웃 최적화 */
+.reference-tooltip .callout {
+  margin: 12px 0 0 0 !important;
+  padding: 12px 16px !important;
+  font-size: 0.9em !important;
+  border-radius: 8px !important;
+  box-shadow: none !important;
+}
+.reference-tooltip .callout .callout-title-inner,
+.reference-tooltip .callout .callout-title {
+  font-size: 0.95em !important;
+  margin-bottom: 6px !important;
+}
+
+/* ☀️ 라이트 모드 대응 */
+body.light-mode .reference-tooltip {
+  background: #FFFFFF !important;
+  color: #000000 !important; 
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-left: 4px solid #3182F6;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+}
+body.light-mode .reference-tooltip * { color: #000000 !important; }
+body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
+body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
+
+/* 📱 모바일 최적화: 가로 위치를 JS에서 빼앗고 CSS로 양옆 여백 15px 강제 고정 */
+@media (max-width: 768px) {
+  .reference-tooltip {
+    left: 15px !important;
+    right: 15px !important;
+    width: auto !important; 
+    max-width: none !important;
+    padding: 14px 36px 14px 16px !important;
+    font-size: 0.9em !important;
+  }
+}
+
+a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
 
 
     ]]></b:skin>
@@ -6590,7 +6837,65 @@ body.light-mode .comments .comment-form {
     <link href='https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&amp;display=swap' rel='stylesheet'/>
     <link href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css' rel='stylesheet'/>
     <link href='https://fonts.cdnfonts.com/css/latin-modern-roman?display=swap' rel='stylesheet'/>
-    <link href='https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;display=swap' rel='stylesheet'/>
+    <link href='https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;display=swap' rel='stylesheet'/>\
+    
+    
+    
+    
+    
+    
+    
+    
+<style>
+/* =========================================
+   팝업 내부 및 중첩 인용구/콜아웃 스타일 폭주 방지 (라이트/다크 완벽 대응)
+   ========================================= */
+
+/* 1. 배경/테두리를 &#39;중립 회색&#39;으로 설정하고 텍스트 색상을 상속받도록 수정 */
+.floating-footnote-content blockquote,
+.reference-tooltip blockquote,
+blockquote blockquote {
+    font-size: 1em !important;
+    text-align: left !important;
+    /* 🚀 흰색/검은색 배경 어디서든 은은하게 보이는 회색 반투명으로 변경 */
+    background: rgba(128, 128, 128, 0.08) !important;
+    border: 1px solid rgba(128, 128, 128, 0.25) !important;
+    border-left: 4px solid #3182F6 !important;
+    /* 🚀 다크모드 텍스트 뭉개짐 해결: 무조건 부모(팝업)의 텍스트 색상(흰/검)을 따라가게 함 */
+    color: inherit !important; 
+    padding: 16px 20px !important;
+    margin: 0.5em 0 !important;
+    border-radius: 6px !important;
+    box-shadow: none !important;
+}
+
+/* 2. 팝업창 내부 콜아웃 정렬 및 글씨색 상속 */
+.floating-footnote-content .callout,
+.reference-tooltip .callout,
+blockquote .callout {
+    text-align: left !important;
+    color: inherit !important; /* 여기도 텍스트 색상 상속 추가 */
+}
+
+/* 3. 내부 디테일 요소들도 색상/정렬 강제 고정 */
+.floating-footnote-content .callout-title-inner,
+.reference-tooltip .callout-title-inner,
+blockquote .callout-title-inner,
+.floating-footnote-content .callout-content,
+.reference-tooltip .callout-content,
+blockquote .callout-content {
+    text-align: left !important;
+    color: inherit !important; /* 여기도 텍스트 색상 상속 추가 */
+}
+</style>
+    
+    
+    
+    
+    
+    
+    
+    
   </head>
 
   <body>
@@ -8715,6 +9020,8 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
   }
 
 
+
+
 // ==========================================
   // 3. 모바일 최적화 각주 (모달 팝업 및 중첩 각주 완벽 지원)
   // ==========================================
@@ -8747,8 +9054,10 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
       existingPopup.remove(); // 기존 팝업 삭제
     }
     
-    const targetId = ref.getAttribute('href').substring(1);
-    const targetLi = document.getElementById(targetId);
+ // 🚀 모바일(?m=1) 절대경로 해시 파싱 버그 완벽 해결
+const hashVal = ref.hash ? ref.hash : ('#' + ref.getAttribute('href').split('#')[1]);
+const targetId = hashVal.substring(1);
+const targetLi = document.getElementById(targetId);
     
     if (targetLi) {
       const popup = document.createElement('div');
@@ -8804,7 +9113,8 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
 
   // PC 클릭 및 모바일 터치 완벽 대응
   const closeFootnotePopup = function(e) {
-    if (!e.target.closest('.floating-footnote-content') && !e.target.closest('a[href^="#fn"]')) {
+// 🚀 링크 시작(^)이 아닌 포함(*)으로 변경하여 모바일 터치 오작동 차단
+if (!e.target.closest('.floating-footnote-content') && !e.target.closest('a[href*="#fn"]')) {
       const existingPopup = document.querySelector('.floating-footnote-content');
       if (existingPopup) existingPopup.remove();
     }
@@ -8812,6 +9122,14 @@ header.querySelector('.toc-toggle-btn').onclick = () => {
   
   document.addEventListener('click', closeFootnotePopup);
   document.addEventListener('touchstart', closeFootnotePopup, { passive: true });
+
+
+
+
+
+
+
+
 
   // ==========================================
   // 5. 글 섹션 초기 로딩 접기 & 클릭 제어 (강력한 동기화)
@@ -10429,11 +10747,163 @@ document.addEventListener("DOMContentLoaded", function() {
   //]]>
 </script>
 
+<script type='text/javascript'>
+//<![CDATA[
+document.addEventListener("DOMContentLoaded", function() {
+  const usedIds = new Set(); 
+
+  // 1. 콜아웃 중복 ID 방지 및 해시태그 파싱
+  document.querySelectorAll('.callout, .post-body blockquote').forEach((callout) => {
+    const titleEl = callout.querySelector('.callout-title-inner') || callout.querySelector('.callout-title') || callout.querySelector('p');
+    if (!titleEl || callout.id) return;
+
+    let newId = '';
+    const hashMatch = titleEl.textContent.match(/#([^\s]+)/); 
+
+    if (hashMatch) {
+      newId = hashMatch[1];
+      titleEl.innerHTML = titleEl.innerHTML.replace(hashMatch[0], '').trim();
+    } else {
+      newId = titleEl.textContent.trim().replace(/\s+/g, '').substring(0, 20);
+    }
+
+    if (!newId) newId = 'callout-box';
+
+    let finalId = newId;
+    let counter = 1;
+    while (usedIds.has(finalId)) {
+      finalId = newId + '-' + counter;
+      counter++;
+    }
     
-    
-    
-    
-    
+    callout.id = finalId;
+    usedIds.add(finalId);
+  });
+
+  // 2. 참조 링크에 식별 클래스 추가 (새로운 위임 시스템용)
+  const refLinks = document.querySelectorAll('.post-body a[href^="#"]:not([href*="#fn"])');
+  refLinks.forEach(link => {
+    link.classList.add('ref-link');
+  });
+}); // DOMContentLoaded 종료
+
+/* =========================================
+   레퍼런스(참조) 전용 팝업 시스템 (각주 코드와 분리!)
+   ========================================= */
+(function() {
+    let activeTooltip = null;
+
+    function removeActiveTooltip() {
+        if (activeTooltip) {
+            activeTooltip.style.opacity = '0';
+            activeTooltip.style.transform = 'translateY(10px)';
+            const target = activeTooltip;
+            setTimeout(() => { if(target && target.parentNode) target.remove(); }, 200);
+            activeTooltip = null;
+        }
+    }
+
+    document.addEventListener('click', function(e) {
+        // 🚀 각주 링크를 클릭한 거라면 이 스크립트는 즉시 정지 (살려두신 각주 코드가 작동하도록 양보)
+        if (e.target.closest('a[href*="#fn"]')) return;
+
+        // 각주가 아닌, 레퍼런스 링크(.ref-link, #ref)만 감지
+        const refLink = e.target.closest('.ref-link, a[href*="#ref"]');
+        
+        if (refLink) {
+            e.preventDefault();
+            e.stopPropagation();
+
+            removeActiveTooltip();
+
+            let refHash = refLink.hash ? refLink.hash : ('#' + refLink.getAttribute('href').split('#')[1]);
+            const targetId = decodeURIComponent(refHash.substring(1));
+            let targetEl = document.getElementById(targetId) || document.querySelector(`[name="${targetId}"]`);
+
+            if (targetEl && targetEl.closest('.callout')) {
+                targetEl = targetEl.closest('.callout');
+            } else if (targetEl && targetEl.closest('blockquote')) {
+                targetEl = targetEl.closest('blockquote');
+            }
+
+            if (!targetEl) return;
+
+            const tooltip = document.createElement('div');
+            // 🚀 기존 각주(floating-footnote-content)와 클래스 이름이 겹치지 않게 분리
+            tooltip.className = 'reference-tooltip';
+            
+            let contentHtml = targetEl.innerHTML;
+            contentHtml = contentHtml.replace(/<a[^>]*class="[^"]*footnote-backref[^"]*"[^>]*>.*?<\/a>/gi, '');
+            tooltip.innerHTML = contentHtml;
+
+            // 🚀 X (닫기) 버튼 강제 주입
+            const closeBtn = document.createElement('div');
+            closeBtn.innerHTML = '✕';
+            closeBtn.style.cssText = 'position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 16px; opacity: 0.6; font-family: sans-serif; line-height: 1; z-index: 999;';
+            closeBtn.onclick = function(ev) {
+                ev.preventDefault();
+                ev.stopPropagation();
+                removeActiveTooltip();
+            };
+            tooltip.appendChild(closeBtn);
+            tooltip.style.setProperty('padding-right', '35px', 'important'); 
+
+            document.body.appendChild(tooltip);
+            activeTooltip = tooltip;
+
+            // 위치 및 스크롤 계산 로직 (유지)
+            const rect = refLink.getBoundingClientRect();
+            const tooltipHeight = tooltip.scrollHeight;
+            const tooltipWidth = tooltip.offsetWidth;
+            const spaceBelow = window.innerHeight - rect.bottom;
+            const spaceAbove = rect.top;
+
+            let topPos, startTransform, maxHeight;
+
+            if (tooltipHeight + 20 > spaceBelow && spaceAbove > spaceBelow) {
+                maxHeight = spaceAbove - 20;
+                topPos = rect.top + window.scrollY - Math.min(tooltipHeight, maxHeight) - 10;
+                startTransform = 'translateY(-10px)';
+            } else {
+                maxHeight = spaceBelow - 20;
+                topPos = rect.bottom + window.scrollY + 10;
+                startTransform = 'translateY(10px)';
+            }
+
+            if (window.innerWidth <= 768) {
+                tooltip.style.left = '15px';
+                tooltip.style.right = '15px';
+                tooltip.style.width = 'auto';
+            } else {
+                let leftPos = rect.left + window.scrollX;
+                if (leftPos + tooltipWidth > window.innerWidth - 15) {
+                    leftPos = window.innerWidth - tooltipWidth - 15;
+                }
+                if (leftPos < 15) leftPos = 15;
+                tooltip.style.left = leftPos + 'px';
+            }
+
+            tooltip.style.setProperty('max-height', maxHeight + 'px', 'important');
+            tooltip.style.setProperty('overflow-y', 'auto', 'important');
+            tooltip.style.setProperty('overscroll-behavior', 'contain', 'important');
+            tooltip.style.setProperty('top', topPos + 'px', 'important');
+            tooltip.style.setProperty('bottom', 'auto', 'important');
+            tooltip.style.setProperty('position', 'absolute', 'important');
+            tooltip.style.setProperty('visibility', 'visible', 'important');
+            tooltip.style.setProperty('opacity', '1', 'important');
+            tooltip.style.transform = 'translateY(0)';
+
+            if (window.MathJax && window.MathJax.typesetPromise) {
+                window.MathJax.typesetPromise([tooltip]);
+            }
+        } 
+        else if (activeTooltip && !e.target.closest('.reference-tooltip')) {
+            removeActiveTooltip();
+        }
+    });
+})();
+//]]>
+</script>
     
     
     
