@@ -67,6 +67,20 @@ loader: {
     max-width: 100%;
     padding: 10px 0;
   }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
 </style>
     
     
@@ -6261,7 +6275,7 @@ body.light-mode .comments .comment-form {
 
 
 /* =========================================================
-   [최종] 레퍼런스 팝업 (클릭형 + X 닫기 버튼 추가)
+   [최종] 레퍼런스 팝업 (모바일/PC 완벽 호환 + 중첩 최적화 + X버튼 고정)
 ========================================================= */
 .reference-tooltip {
   position: absolute;
@@ -6270,173 +6284,8 @@ body.light-mode .comments .comment-form {
   border-left: 4px solid #3182F6;
   border-radius: 12px;
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  /* 🚀 오른쪽 패딩(40px)을 늘려서 X 버튼이 글씨를 가리지 않게 함 */
-  padding: 16px 40px 16px 20px; 
-  z-index: 10010;
-  max-width: 420px;
-  width: max-content;
-  color: #E5E8EB;
-  font-size: 0.95em; 
-  line-height: 1.6;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-  pointer-events: auto;
-}
-
-/* 🚀 X (닫기) 버튼 스타일 */
-.ref-close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  color: #E5E8EB;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  z-index: 10011;
-}
-.ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-/* 기존 디자인 유지 */
-.reference-tooltip .callout { margin: 0 !important; }
-.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
-.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
-
-/* ☀️ 라이트 모드 (기존 찐검정 유지 + X버튼 라이트모드 대응) */
-body.light-mode .reference-tooltip {
-  background: #FFFFFF !important;
-  color: #000000 !important; 
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-left: 4px solid #3182F6;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-}
-body.light-mode .reference-tooltip * { color: #000000 !important; }
-body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
-body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
-
-
-
-a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
-
-
-
-/* =========================================================
-   [최종] 레퍼런스 팝업 (클릭형 + X 닫기 버튼 추가 + 중첩 콜아웃 최적화)
-========================================================= */
-.reference-tooltip {
-  position: absolute;
-  background: #202227; 
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid #3182F6;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  /* 🚀 오른쪽 패딩(40px)을 늘려서 X 버튼이 글씨를 가리지 않게 함 */
-  padding: 16px 40px 16px 20px; 
-  z-index: 10010;
-  max-width: 420px;
-  width: max-content;
-  color: #E5E8EB;
-  font-size: 0.95em; 
-  line-height: 1.6;
-  opacity: 0;
-  visibility: hidden;
-  transform: translateY(10px);
-  transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
-  pointer-events: auto;
-}
-
-/* 🚀 X (닫기) 버튼 스타일 */
-.ref-close-btn {
-  position: absolute;
-  top: 12px;
-  right: 12px;
-  width: 24px;
-  height: 24px;
-  background: rgba(255, 255, 255, 0.1);
-  border: none;
-  border-radius: 50%;
-  color: #E5E8EB;
-  font-size: 12px;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: background 0.2s;
-  z-index: 10011;
-}
-.ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
-
-/* 기존 디자인 유지 */
-.reference-tooltip > .callout { margin: 0 !important; }
-.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
-.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
-
-/* 🚀 중첩 콜아웃 최적화 (팝업 안의 팝업 크기 축소) */
-.reference-tooltip .callout .callout {
-  margin: 12px 0 0 0 !important; /* 위쪽 여백만 살짝 주기 */
-  padding: 12px 16px !important; /* 내부 여백 줄이기 */
-  font-size: 0.9em !important; /* 전체적인 글씨 크기 축소 */
-  border-radius: 8px !important;
-}
-.reference-tooltip .callout .callout .callout-title {
-  font-size: 0.95em !important; /* 중첩 콜아웃의 제목 크기 축소 */
-  margin-bottom: 6px !important;
-}
-.reference-tooltip .callout .callout p {
-  font-size: 1em !important; /* 상위 폰트(0.9em) 기준 상속 */
-  line-height: 1.5 !important;
-}
-
-/* ☀️ 라이트 모드 (기존 찐검정 유지 + X버튼 라이트모드 대응) */
-body.light-mode .reference-tooltip {
-  background: #FFFFFF !important;
-  color: #000000 !important; 
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-left: 4px solid #3182F6;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
-}
-body.light-mode .reference-tooltip * { color: #000000 !important; }
-body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
-body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
-
-/* 📱 모바일 하단 팝업 */
-@media (max-width: 768px) {
-  .reference-tooltip {
-    position: fixed; top: auto !important; bottom: 0 !important; left: 0 !important;
-    width: 100% !important; max-width: 100% !important;
-    border-radius: 20px 20px 0 0; transform: translateY(100%);
-    padding: 24px 40px 40px 20px; border-left: none; border-top: 4px solid #3182F6;
-  }
-  .reference-tooltip.show-mobile { transform: translateY(0) !important; opacity: 1; visibility: visible; }
-  .ref-close-btn { top: 16px; right: 16px; width: 28px; height: 28px; font-size: 14px; }
-}
-
-a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
-
-
-
-
-
-/* =========================================================
-   [최종] 레퍼런스 팝업 (모바일/PC 완벽 호환 + 중첩 최적화)
-========================================================= */
-.reference-tooltip {
-  position: absolute;
-  background: #202227; 
-  border: 1px solid rgba(255, 255, 255, 0.1);
-  border-left: 4px solid #3182F6;
-  border-radius: 12px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
-  padding: 16px 40px 16px 20px; 
+  /* 🚀 패딩 삭제 -> 내부 스크롤 래퍼로 이동시킴 */
+  padding: 0 !important; 
   z-index: 10010;
   max-width: 420px;
   width: max-content;
@@ -6447,6 +6296,14 @@ a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !importan
   visibility: hidden;
   transition: opacity 0.2s, transform 0.2s, visibility 0.2s;
   pointer-events: auto;
+  overflow: hidden; /* 🚀 X버튼 고정의 핵심! 팝업 자체의 스크롤을 막음 */
+}
+
+/* 🚀 내부 스크롤 영역 (이 안에서만 스크롤이 발생하므로 X버튼은 밀리지 않음) */
+.ref-inner-scroll {
+  padding: 16px 40px 16px 20px !important;
+  overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 /* 🚀 X (닫기) 버튼 스타일 */
@@ -6466,12 +6323,12 @@ a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !importan
   align-items: center;
   justify-content: center;
   transition: background 0.2s;
-  z-index: 10011;
+  z-index: 10011; /* 스크롤 콘텐츠보다 무조건 위에 오도록 설정 */
 }
 .ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
 /* 원본 디자인 유지 */
-.reference-tooltip > p { margin-top: 0 !important; }
+.reference-tooltip > p, .ref-inner-scroll > p { margin-top: 0 !important; }
 .reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
 .reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
 
@@ -6489,31 +6346,117 @@ a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !importan
   margin-bottom: 6px !important;
 }
 
-/* ☀️ 라이트 모드 대응 */
+/* ☀️ 라이트 모드 대응 (거슬리는 가이드라인 완화 + 텍스트 색상 유기적 동기화) */
 body.light-mode .reference-tooltip {
   background: #FFFFFF !important;
-  color: #000000 !important; 
-  border: 1px solid rgba(0, 0, 0, 0.2);
-  border-left: 4px solid #3182F6;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  color: #333D4B !important; /* 쌩블랙(#000000)에서 토스 스타일 진회색으로 부드럽게 */
+  border: 1px solid rgba(0, 0, 0, 0.08) !important; /* 0.2 였던 시꺼먼 가이드라인(테두리)을 0.08로 줄여 이질감 제거 */
+  border-left: 4px solid #3182F6 !important; 
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important; /* 그림자도 조금 부드럽게 */
 }
-body.light-mode .reference-tooltip * { color: #000000 !important; }
-body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #000000 !important; }
-body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; }
+body.light-mode .reference-tooltip * { color: #333D4B !important; }
+body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #8B95A1 !important; }
+body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; color: #191F28 !important; }
 
-/* 📱 모바일 최적화: 가로 위치를 JS에서 빼앗고 CSS로 양옆 여백 15px 강제 고정 */
+/* 📱 모바일 최적화 */
 @media (max-width: 768px) {
   .reference-tooltip {
     left: 15px !important;
     right: 15px !important;
     width: auto !important; 
     max-width: none !important;
+  }
+  .ref-inner-scroll {
     padding: 14px 36px 14px 16px !important;
     font-size: 0.9em !important;
   }
 }
 
 a.ref-link { text-decoration: underline dashed rgba(49, 130, 246, 0.5) !important; text-underline-offset: 4px; color: #3182F6 !important; font-weight: 600; cursor: pointer; }
+
+
+
+
+
+
+/* =========================================================
+   [디자인 보완] 각주/참조 팝업 라이트/다크 테마 유기적 동기화
+========================================================= */
+
+/* 1. 각주 팝업(Footnote) X 버튼: 다크 모드에서 배경과 자연스럽게 어우러지도록 수정 */
+.footnote-close-btn {
+  background: rgba(255, 255, 255, 0.1) !important;
+  color: #E5E8EB !important;
+  box-shadow: none !important; /* 어색하게 떠 있던 그림자 제거 */
+}
+.footnote-close-btn:hover {
+  background: rgba(255, 255, 255, 0.2) !important;
+  color: #FFFFFF !important;
+}
+
+/* 2. 각주 & 참조 팝업 X 버튼: 라이트 모드 색상 완벽 동기화 */
+body.light-mode .ref-close-btn,
+body.light-mode .floating-footnote-content .footnote-close-btn {
+  background: rgba(0, 0, 0, 0.05) !important;
+  color: #8B95A1 !important;
+}
+body.light-mode .ref-close-btn:hover,
+body.light-mode .floating-footnote-content .footnote-close-btn:hover {
+  background: rgba(0, 0, 0, 0.15) !important;
+  color: #191F28 !important;
+}
+
+/* 3. 라이트 모드 참조(Reference) 팝업: 이질적인 파란색 세로선 제거 */
+body.light-mode .reference-tooltip {
+  border: 1px solid rgba(0, 0, 0, 0.08) !important;
+  border-left: 1px solid rgba(0, 0, 0, 0.08) !important; /* 세로선 두께와 색상을 일반 테두리와 동일하게 처리 */
+}
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   [스크롤 UX] 모든 팝업 끝부분 '쫀득한' 바운스 스크롤 (모멘텀 스크롤)
+========================================================= */
+.ref-inner-scroll, 
+.footnote-inner-scroll {
+  /* 🚀 스크롤 끝에 도달했을 때 쫀득하게 늘어나는 네이티브 모멘텀 스크롤 강제 활성화 */
+  -webkit-overflow-scrolling: touch !important; 
+  
+  /* 🚀 바운스 효과가 뒤쪽의 본문 페이지로 번지지 않고, 오직 팝업 안에서만 걸리도록 가둬둠 */
+  overscroll-behavior-y: contain !important; 
+  overscroll-behavior-x: none !important;
+  
+  /* 스크롤 감도를 부드럽게 윤활 */
+  scroll-behavior: smooth !important;
+}
+
+/* 쫀득한 스크롤에 어울리도록 팝업 내부 스크롤바 디자인 슬림화 */
+.ref-inner-scroll::-webkit-scrollbar, 
+.footnote-inner-scroll::-webkit-scrollbar {
+  width: 6px !important;
+}
+.ref-inner-scroll::-webkit-scrollbar-thumb, 
+.footnote-inner-scroll::-webkit-scrollbar-thumb {
+  background: rgba(139, 149, 161, 0.4) !important;
+  border-radius: 10px !important;
+}
+
+
+
+
+
+.ref-inner-scroll, 
+.footnote-inner-scroll {
+  -webkit-overflow-scrolling: touch !important; 
+  overscroll-behavior-y: contain !important; 
+  overscroll-behavior-x: none !important;
+}
 
 
     ]]></b:skin>
@@ -6946,6 +6889,147 @@ blockquote .callout-content {
           }, 100);
         });
       })();
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   [최종 종결] 팝업 바운스 스크롤 & 배경 화면 덜컹거림 완벽 차단
+========================================================= */
+/* =========================================================
+   [최종 종결] 팝업 바운스 스크롤 & 짧은 팝업 배경 스크롤 허용
+========================================================= */
+/* =========================================================
+   [최종 종결] 팝업 바운스 스크롤 & 모바일/PC 짧은 팝업 배경 스크롤 완벽 허용
+========================================================= */
+(function() {
+    const isApple = /Mac|iPod|iPhone|iPad/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    
+    function rubberBand(distance, dimension) {
+        return (distance * dimension * 0.55) / (dimension + distance * 0.55);
+    }
+
+    function isScrollable(el) {
+        return (el.scrollHeight - el.clientHeight) > 5;
+    }
+
+    // 💡 [핵심] 짧은 팝업일 경우 CSS에 걸려있는 '스크롤 가두기'를 강제로 풀어주는 함수
+    function updateOverscrollTrap(target) {
+        if (isScrollable(target)) {
+            // 긴 팝업: 스크롤 가두기 유지 (바운스 효과를 위해)
+            target.style.setProperty('overscroll-behavior', 'contain', 'important');
+            if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'contain', 'important');
+        } else {
+            // 짧은 팝업: 스크롤 가두기 해제 -> 모바일/PC 상관없이 배경화면 스크롤 허용!
+            target.style.setProperty('overscroll-behavior', 'auto', 'important');
+            if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'auto', 'important');
+        }
+    }
+
+    let startY = 0;
+    let isPulling = false;
+
+    // 📱 터치 디바이스 (모바일/태블릿) 제어
+    document.addEventListener('touchstart', function(e) {
+        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
+        if (!target) return;
+        
+        // 터치하는 순간 팝업 길이를 계산해서 스크롤 트랩을 끄거나 켬
+        updateOverscrollTrap(target);
+
+        // 짧은 팝업이면 여기서 멈춤 -> 이후 touchmove에서 브라우저 기본 배경 스크롤이 작동함
+        if (!isScrollable(target)) return; 
+        
+        startY = e.touches[0].clientY;
+        target.style.transition = 'none';
+        isPulling = false;
+    }, { passive: true });
+
+    document.addEventListener('touchmove', function(e) {
+        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
+        if (!target || !isScrollable(target)) return; 
+
+        const clientY = e.touches[0].clientY;
+        const deltaY = clientY - startY;
+
+        const isAtTop = target.scrollTop <= 0;
+        const isAtBottom = (target.scrollTop + target.clientHeight + 1) >= target.scrollHeight;
+
+        if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
+            if (e.cancelable) e.preventDefault(); 
+            
+            if (!isApple) {
+                isPulling = true;
+                const move = rubberBand(Math.abs(deltaY), target.clientHeight) * Math.sign(deltaY);
+                target.style.transform = `translateY(${move}px)`;
+            }
+        }
+    }, { passive: false });
+
+    document.addEventListener('touchend', function(e) {
+        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
+        if (!target || !isPulling) return;
+        
+        isPulling = false;
+        target.style.transition = 'transform 0.4s cubic-bezier(0.25, 1.3, 0.3, 1)';
+        target.style.transform = 'translateY(0)';
+    });
+
+    // 💻 마우스 휠 (윈도우 PC 등) 제어
+    let wheelTimer = null;
+    let currentOffset = 0;
+
+    // 마우스를 팝업 위에 올리는 순간에도 스크롤 트랩을 제어해줍니다.
+    document.addEventListener('mouseover', function(e) {
+        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
+        if (target) updateOverscrollTrap(target);
+    });
+
+    document.addEventListener('wheel', function(e) {
+        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
+        if (!target || !isScrollable(target)) return; 
+
+        const isAtTop = target.scrollTop <= 0;
+        const isAtBottom = (target.scrollTop + target.clientHeight + 1) >= target.scrollHeight;
+
+        if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
+            if (e.cancelable) e.preventDefault();
+
+            if (!isApple) {
+                currentOffset += (e.deltaY < 0 ? 15 : -15);
+                if (currentOffset > 50) currentOffset = 50;
+                if (currentOffset < -50) currentOffset = -50;
+
+                target.style.transition = 'transform 0.1s ease-out';
+                target.style.transform = `translateY(${currentOffset}px)`;
+
+                clearTimeout(wheelTimer);
+                wheelTimer = setTimeout(() => {
+                    target.style.transition = 'transform 0.4s cubic-bezier(0.25, 1.3, 0.3, 1)';
+                    target.style.transform = 'translateY(0)';
+                    currentOffset = 0;
+                }, 100);
+            }
+        }
+    }, { passive: false });
+})();
+
+
+
+
+
     //]]>
     </script>
 
@@ -10821,8 +10905,7 @@ document.addEventListener("DOMContentLoaded", function() {
 
         // 각주가 아닌, 레퍼런스 링크(.ref-link, #ref)만 감지
         const refLink = e.target.closest('.ref-link, a[href*="#ref"]');
-        
-        if (refLink) {
+      if (refLink) {
             e.preventDefault();
             e.stopPropagation();
 
@@ -10841,29 +10924,50 @@ document.addEventListener("DOMContentLoaded", function() {
             if (!targetEl) return;
 
             const tooltip = document.createElement('div');
-            // 🚀 기존 각주(floating-footnote-content)와 클래스 이름이 겹치지 않게 분리
             tooltip.className = 'reference-tooltip';
             
-            let contentHtml = targetEl.innerHTML;
+            // 🚀 X버튼을 고정시키기 위한 '내부 스크롤 래퍼' 추가
+            const innerScroll = document.createElement('div');
+            innerScroll.className = 'ref-inner-scroll';
+
+let contentHtml = targetEl.innerHTML;
             contentHtml = contentHtml.replace(/<a[^>]*class="[^"]*footnote-backref[^"]*"[^>]*>.*?<\/a>/gi, '');
-            tooltip.innerHTML = contentHtml;
+            innerScroll.innerHTML = contentHtml; // 툴팁 본체가 아닌 래퍼 안에 내용을 넣음
+
+            // 🚀 [추가] 팝업 내부의 접힌 콜아웃(Foldable Callout) 펼치기/접기 기능 부활
+            const popupCallouts = innerScroll.querySelectorAll('.callout.is-collapsible');
+            popupCallouts.forEach(callout => {
+                const titleArea = callout.querySelector('.callout-title');
+                if (titleArea) {
+                    titleArea.style.cursor = 'pointer';
+                    titleArea.addEventListener('click', function(ev) {
+                        ev.preventDefault();
+                        ev.stopPropagation(); // 클릭 시 팝업이 닫히거나 스크롤이 튀는 현상 방지
+                        callout.classList.toggle('is-collapsed');
+                    });
+                }
+            });
 
             // 🚀 X (닫기) 버튼 강제 주입
-            const closeBtn = document.createElement('div');
+
+            // 🚀 X (닫기) 버튼 강제 주입
+            const closeBtn = document.createElement('button');
+            closeBtn.className = 'ref-close-btn'; // 위에서 정의한 CSS 클래스 연동
             closeBtn.innerHTML = '✕';
-            closeBtn.style.cssText = 'position: absolute; top: 12px; right: 15px; cursor: pointer; font-size: 16px; opacity: 0.6; font-family: sans-serif; line-height: 1; z-index: 999;';
             closeBtn.onclick = function(ev) {
                 ev.preventDefault();
                 ev.stopPropagation();
                 removeActiveTooltip();
             };
+            
+            // 버튼과 스크롤 래퍼를 각각 본체에 삽입
             tooltip.appendChild(closeBtn);
-            tooltip.style.setProperty('padding-right', '35px', 'important'); 
+            tooltip.appendChild(innerScroll);
 
             document.body.appendChild(tooltip);
             activeTooltip = tooltip;
 
-            // 위치 및 스크롤 계산 로직 (유지)
+            // 위치 및 스크롤 계산 로직
             const rect = refLink.getBoundingClientRect();
             const tooltipHeight = tooltip.scrollHeight;
             const tooltipWidth = tooltip.offsetWidth;
@@ -10882,11 +10986,7 @@ document.addEventListener("DOMContentLoaded", function() {
                 startTransform = 'translateY(10px)';
             }
 
-            if (window.innerWidth <= 768) {
-                tooltip.style.left = '15px';
-                tooltip.style.right = '15px';
-                tooltip.style.width = 'auto';
-            } else {
+            if (window.innerWidth > 768) {
                 let leftPos = rect.left + window.scrollX;
                 if (leftPos + tooltipWidth > window.innerWidth - 15) {
                     leftPos = window.innerWidth - tooltipWidth - 15;
@@ -10895,25 +10995,68 @@ document.addEventListener("DOMContentLoaded", function() {
                 tooltip.style.left = leftPos + 'px';
             }
 
-            tooltip.style.setProperty('max-height', maxHeight + 'px', 'important');
-            tooltip.style.setProperty('overflow-y', 'auto', 'important');
-            tooltip.style.setProperty('overscroll-behavior', 'contain', 'important');
             tooltip.style.setProperty('top', topPos + 'px', 'important');
             tooltip.style.setProperty('bottom', 'auto', 'important');
             tooltip.style.setProperty('position', 'absolute', 'important');
             tooltip.style.setProperty('visibility', 'visible', 'important');
             tooltip.style.setProperty('opacity', '1', 'important');
             tooltip.style.transform = 'translateY(0)';
+            
+            // 🚀 스크롤 속성을 툴팁 본체가 아니라 '내부 래퍼'에 부여! (X버튼 고정)
+            innerScroll.style.setProperty('max-height', maxHeight + 'px', 'important');
 
             if (window.MathJax && window.MathJax.typesetPromise) {
                 window.MathJax.typesetPromise([tooltip]);
             }
-        } 
+        }
         else if (activeTooltip && !e.target.closest('.reference-tooltip')) {
             removeActiveTooltip();
         }
     });
 })();
+
+
+
+
+/* =========================================================
+   [팝업 통합 제어] 참조 팝업과 각주 팝업 상호 배제 (동시 실행 방지)
+========================================================= */
+document.addEventListener('click', function(e) {
+    // 1. 참조 링크를 클릭했는지 감지
+    const clickedRef = e.target.closest('a.ref-link');
+    
+    // 2. 각주 링크를 클릭했는지 감지 (다양한 각주 태그 형태 모두 호환)
+    const clickedFootnote = e.target.closest('a.footnote-ref, a.footnote-backref, sup a, a[href^="#fn"]');
+
+    if (clickedRef) {
+        // 🚀 참조 링크를 눌렀다면 -> 기존에 열려있는 '각주 팝업'을 부드럽게 지움
+        document.querySelectorAll('.floating-footnote-content, .footnote-tooltip, [class*="footnote-content"]').forEach(el => {
+            el.style.opacity = '0'; 
+            setTimeout(() => el.remove(), 200); // 0.2초 페이드아웃 애니메이션 후 DOM에서 완전히 삭제
+        });
+    }
+
+    if (clickedFootnote) {
+        // 🚀 각주 링크를 눌렀다면 -> 기존에 열려있는 '참조 팝업'을 부드럽게 지움
+        document.querySelectorAll('.reference-tooltip').forEach(el => {
+            el.style.opacity = '0';
+            setTimeout(() => el.remove(), 200);
+        });
+    }
+}, true); // 이벤트 캡처링(true)을 켜서 기존 팝업 스크립트들이 작동하기 '직전'에 선빵을 날려 청소합니다!
+
+
+
+
+
+
+
+
+
+
+
+
+
 //]]>
 </script>
     
