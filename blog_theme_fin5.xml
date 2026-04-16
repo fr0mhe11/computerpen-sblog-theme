@@ -6459,6 +6459,62 @@ body.light-mode .reference-tooltip {
 }
 
 
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   [디자인 보완] 팝업 내부 강조 텍스트(마커, 볼드) 토스 블루 적용
+========================================================= */
+
+/* 1. 형광펜 하이라이트  토스 스타일 */
+.reference-tooltip mark,
+.footnote-tooltip mark,
+.floating-footnote-content mark {
+  background-color: rgba(49, 130, 246, 0.15) !important; /* 연한 토스 블루 배경 */
+  color: #3182F6 !important; /* 토스 블루 텍스트 */
+  padding: 2px 4px !important;
+  border-radius: 4px !important;
+  font-weight: 600 !important;
+}
+
+/* 2. 일반 굵은 글씨 포인트 컬러 */
+.reference-tooltip strong,
+.reference-tooltip b,
+.footnote-tooltip strong,
+.footnote-tooltip b,
+.floating-footnote-content strong,
+.floating-footnote-content b {
+  color: #3182F6 !important;
+  font-weight: 600 !important;
+}
+
+/* 🌙 다크 모드에서의 가독성 보정 (선택 사항, 필요 시 작동) */
+body:not(.light-mode) .reference-tooltip mark,
+body:not(.light-mode) .footnote-tooltip mark,
+body:not(.light-mode) .floating-footnote-content mark {
+  background-color: rgba(49, 130, 246, 0.25) !important; /* 다크모드에선 배경을 살짝 더 진하게 */
+  color: #3182F6 !important; /* 텍스트는 살짝 더 밝은 파란색으로 가독성 확보 */
+}
+body:not(.light-mode) .reference-tooltip strong,
+body:not(.light-mode) .footnote-tooltip strong,
+body:not(.light-mode) .floating-footnote-content strong {
+  color: #3182F6 !important;
+}
+
+
+
+
+
+
+
+
+
     ]]></b:skin>
     <b:template-skin>
       <![CDATA[
@@ -6914,25 +6970,26 @@ blockquote .callout-content {
 /* =========================================================
    [최종 종결] 팝업 바운스 스크롤 & 모바일/PC 짧은 팝업 배경 스크롤 완벽 허용
 ========================================================= */
+/* =========================================================
+   [전 기기 통합] 애플(iOS) 스타일 정밀 바운스 스크롤 (애플 기기 포함 강제 적용)
+========================================================= */
 (function() {
-    const isApple = /Mac|iPod|iPhone|iPad/.test(navigator.platform) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    // 🚀 [수정] isApple 체크를 제거하여 아이폰/맥에서도 우리 엔진이 작동하게 함
     
     function rubberBand(distance, dimension) {
-        return (distance * dimension * 0.55) / (dimension + distance * 0.55);
+        const c = 0.65; 
+        return (distance * dimension * c) / (dimension + distance * c);
     }
 
     function isScrollable(el) {
         return (el.scrollHeight - el.clientHeight) > 5;
     }
 
-    // 💡 [핵심] 짧은 팝업일 경우 CSS에 걸려있는 '스크롤 가두기'를 강제로 풀어주는 함수
     function updateOverscrollTrap(target) {
         if (isScrollable(target)) {
-            // 긴 팝업: 스크롤 가두기 유지 (바운스 효과를 위해)
             target.style.setProperty('overscroll-behavior', 'contain', 'important');
             if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'contain', 'important');
         } else {
-            // 짧은 팝업: 스크롤 가두기 해제 -> 모바일/PC 상관없이 배경화면 스크롤 허용!
             target.style.setProperty('overscroll-behavior', 'auto', 'important');
             if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'auto', 'important');
         }
@@ -6941,15 +6998,12 @@ blockquote .callout-content {
     let startY = 0;
     let isPulling = false;
 
-    // 📱 터치 디바이스 (모바일/태블릿) 제어
+    // 📱 터치 디바이스 제어
     document.addEventListener('touchstart', function(e) {
         const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
         if (!target) return;
         
-        // 터치하는 순간 팝업 길이를 계산해서 스크롤 트랩을 끄거나 켬
         updateOverscrollTrap(target);
-
-        // 짧은 팝업이면 여기서 멈춤 -> 이후 touchmove에서 브라우저 기본 배경 스크롤이 작동함
         if (!isScrollable(target)) return; 
         
         startY = e.touches[0].clientY;
@@ -6970,11 +7024,10 @@ blockquote .callout-content {
         if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
             if (e.cancelable) e.preventDefault(); 
             
-            if (!isApple) {
-                isPulling = true;
-                const move = rubberBand(Math.abs(deltaY), target.clientHeight) * Math.sign(deltaY);
-                target.style.transform = `translateY(${move}px)`;
-            }
+            // 🚀 모든 기기에서 물리 엔진 가동
+            isPulling = true;
+            const move = rubberBand(Math.abs(deltaY), target.clientHeight) * Math.sign(deltaY);
+            target.style.transform = `translateY(${move}px)`;
         }
     }, { passive: false });
 
@@ -6983,19 +7036,13 @@ blockquote .callout-content {
         if (!target || !isPulling) return;
         
         isPulling = false;
-        target.style.transition = 'transform 0.4s cubic-bezier(0.25, 1.3, 0.3, 1)';
+        target.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
         target.style.transform = 'translateY(0)';
     });
 
-    // 💻 마우스 휠 (윈도우 PC 등) 제어
+    // 💻 마우스 휠 (윈도우/맥 공통) 제어
     let wheelTimer = null;
     let currentOffset = 0;
-
-    // 마우스를 팝업 위에 올리는 순간에도 스크롤 트랩을 제어해줍니다.
-    document.addEventListener('mouseover', function(e) {
-        const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
-        if (target) updateOverscrollTrap(target);
-    });
 
     document.addEventListener('wheel', function(e) {
         const target = e.target.closest('.ref-inner-scroll, .footnote-inner-scroll');
@@ -7007,25 +7054,22 @@ blockquote .callout-content {
         if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
             if (e.cancelable) e.preventDefault();
 
-            if (!isApple) {
-                currentOffset += (e.deltaY < 0 ? 15 : -15);
-                if (currentOffset > 50) currentOffset = 50;
-                if (currentOffset < -50) currentOffset = -50;
+            currentOffset -= (e.deltaY * 0.4); 
+            if (currentOffset > 80) currentOffset = 80;
+            if (currentOffset < -80) currentOffset = -80;
 
-                target.style.transition = 'transform 0.1s ease-out';
-                target.style.transform = `translateY(${currentOffset}px)`;
+            target.style.transition = 'transform 0.15s ease-out';
+            target.style.transform = `translateY(${currentOffset}px)`;
 
-                clearTimeout(wheelTimer);
-                wheelTimer = setTimeout(() => {
-                    target.style.transition = 'transform 0.4s cubic-bezier(0.25, 1.3, 0.3, 1)';
-                    target.style.transform = 'translateY(0)';
-                    currentOffset = 0;
-                }, 100);
-            }
+            clearTimeout(wheelTimer);
+            wheelTimer = setTimeout(() => {
+                target.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+                target.style.transform = 'translateY(0)';
+                currentOffset = 0;
+            }, 120);
         }
     }, { passive: false });
 })();
-
 
 
 
