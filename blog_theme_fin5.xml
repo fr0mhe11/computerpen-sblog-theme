@@ -6964,69 +6964,52 @@ blockquote .callout-content {
 /* =========================================================
    [최종 종결] 팝업 바운스 스크롤 & 짧은 팝업 배경 스크롤 허용
 ========================================================= */
+
 /* =========================================================
-   [최종 종결] 팝업 바운스 스크롤 & 모바일/PC 짧은 팝업 배경 스크롤 완벽 허용
+   [완전무결 최종판] 팝업 바운스 스크롤 & 고무줄 여백(Gap) 스크롤 꼬임 완벽 방어
 ========================================================= */
-/* =========================================================
-   [전 기기 통합] 애플(iOS) 스타일 정밀 바운스 스크롤 (애플 기기 포함 강제 적용)
-========================================================= */
-// =========================================================
-// [전 기기 통합] 애플(iOS) 스타일 정밀 바운스 스크롤 (여백 스크롤 새어나감 완벽 차단)
-// =========================================================
 (function() {
     function rubberBand(distance, dimension) {
-        const c = 0.65; 
-        return (distance * dimension * c) / (dimension + distance * c);
+        return (distance * dimension * 0.65) / (dimension + distance * 0.65);
     }
 
     function isScrollable(el) {
-        return (el.scrollHeight - el.clientHeight) > 5;
+        return (el.scrollHeight - el.clientHeight) > 3;
     }
 
-    function updateOverscrollTrap(target) {
-        if (isScrollable(target)) {
-            target.style.setProperty('overscroll-behavior', 'contain', 'important');
-            if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'contain', 'important');
-        } else {
-            target.style.setProperty('overscroll-behavior', 'auto', 'important');
-            if (target.parentElement) target.parentElement.style.setProperty('overscroll-behavior', 'auto', 'important');
-        }
+    function updateOverscrollTrap(popup) {
+        const inner = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll') || popup;
+        const scrollable = isScrollable(inner);
+        const trapValue = scrollable ? 'contain' : 'auto';
+        popup.style.setProperty('overscroll-behavior', trapValue, 'important');
+        inner.style.setProperty('overscroll-behavior', trapValue, 'important');
+        return scrollable;
     }
 
     let startY = 0;
     let isPulling = false;
 
-    // 🚀 헬퍼 함수: 마우스/터치가 '팝업 전체(빈 공간 포함)'에 있는지 확인하고 알맹이를 찾음
-    function getScrollTarget(e) {
-        const popup = e.target.closest('.reference-tooltip, .floating-footnote-content');
-        if (!popup) return null;
-        return popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll');
-    }
-
-    // 📱 터치 디바이스 제어
+    // 📱 터치 디바이스 (모바일/태블릿)
     document.addEventListener('touchstart', function(e) {
-        const target = getScrollTarget(e);
-        if (!target) return;
-        
-        updateOverscrollTrap(target);
-        if (!isScrollable(target)) return; 
-        
+        const popup = e.target.closest('.reference-tooltip, .footnote-tooltip, .floating-footnote-content');
+        if (!popup) return;
+
+        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll') || popup;
+        const scrollable = updateOverscrollTrap(popup);
+
+        if (!scrollable) return;
+
         startY = e.touches[0].clientY;
         target.style.transition = 'none';
         isPulling = false;
     }, { passive: true });
 
     document.addEventListener('touchmove', function(e) {
-        const popup = e.target.closest('.reference-tooltip, .floating-footnote-content');
-        if (!popup) return; // 팝업 밖이면 패스
+        const popup = e.target.closest('.reference-tooltip, .footnote-tooltip, .floating-footnote-content');
+        if (!popup) return;
 
-        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll');
-
-        // 🚀 핵심: 팝업 안쪽(빈 여백 포함)을 터치했는데 스크롤 알맹이가 없거나 스크롤이 불가능하면 뒷배경 스크롤 원천 차단!
-        if (!target || !isScrollable(target)) {
-            if (e.cancelable) e.preventDefault();
-            return;
-        }
+        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll') || popup;
+        if (!isScrollable(target)) return;
 
         const clientY = e.touches[0].clientY;
         const deltaY = clientY - startY;
@@ -7035,49 +7018,62 @@ blockquote .callout-content {
         const isAtBottom = (target.scrollTop + target.clientHeight + 1) >= target.scrollHeight;
 
         if ((isAtTop && deltaY > 0) || (isAtBottom && deltaY < 0)) {
-            if (e.cancelable) e.preventDefault(); 
-            
+            // 🚀 양끝 도달 시 고무줄 효과
+            if (e.cancelable) e.preventDefault();
             isPulling = true;
             const move = rubberBand(Math.abs(deltaY), target.clientHeight) * Math.sign(deltaY);
             target.style.transform = `translateY(${move}px)`;
         } else {
-            // 정상 스크롤 중에도 이벤트가 뒤로 새는 것을 방어 (overscroll-behavior 백업)
-            e.stopPropagation();
+            // 🚀 [핵심] 고무줄로 생긴 '빈 여백'을 터치하고 스크롤할 때!
+            if (!e.target.closest('.ref-inner-scroll, .footnote-inner-scroll')) {
+                if (e.cancelable) e.preventDefault(); // 뒤쪽 블로그 글 스크롤 차단
+                target.scrollTop -= deltaY; // 손가락 움직임만큼 알맹이를 강제로 스크롤시킴
+            }
+            startY = clientY; // 위치 갱신으로 덜컹거림 원천 차단
+            
+            if (isPulling) {
+                target.style.transform = 'translateY(0)';
+                isPulling = false;
+            }
         }
     }, { passive: false });
 
     document.addEventListener('touchend', function(e) {
-        const target = getScrollTarget(e);
-        if (!target || !isPulling) return;
-        
-        isPulling = false;
-        target.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
-        target.style.transform = 'translateY(0)';
+        const popup = e.target.closest('.reference-tooltip, .footnote-tooltip, .floating-footnote-content');
+        if (!popup) return;
+        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll') || popup;
+
+        if (isPulling && target) {
+            isPulling = false;
+            target.style.transition = 'transform 0.5s cubic-bezier(0.16, 1, 0.3, 1)';
+            target.style.transform = 'translateY(0)';
+        }
     });
 
-    // 💻 마우스 휠 (윈도우/맥 공통) 제어
+    // 💻 마우스 휠 (PC)
     let wheelTimer = null;
     let currentOffset = 0;
 
+    document.addEventListener('mouseover', function(e) {
+        const popup = e.target.closest('.reference-tooltip, .footnote-tooltip, .floating-footnote-content');
+        if (popup) updateOverscrollTrap(popup);
+    });
+
     document.addEventListener('wheel', function(e) {
-        const popup = e.target.closest('.reference-tooltip, .floating-footnote-content');
-        if (!popup) return; // 팝업 밖이면 패스
+        const popup = e.target.closest('.reference-tooltip, .footnote-tooltip, .floating-footnote-content');
+        if (!popup) return;
 
-        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll');
-
-        // 🚀 핵심: 팝업 빈 공간(여백)에 마우스가 있을 때 휠을 굴리면 무조건 뒷배경 스크롤 차단!
-        if (!target || !isScrollable(target)) {
-            if (e.cancelable) e.preventDefault();
-            return;
-        }
+        const target = popup.querySelector('.ref-inner-scroll, .footnote-inner-scroll') || popup;
+        if (!isScrollable(target)) return;
 
         const isAtTop = target.scrollTop <= 0;
         const isAtBottom = (target.scrollTop + target.clientHeight + 1) >= target.scrollHeight;
 
         if ((isAtTop && e.deltaY < 0) || (isAtBottom && e.deltaY > 0)) {
+            // 🚀 양끝 도달 시 고무줄 효과
             if (e.cancelable) e.preventDefault();
 
-            currentOffset -= (e.deltaY * 0.4); 
+            currentOffset -= (e.deltaY * 0.4);
             if (currentOffset > 80) currentOffset = 80;
             if (currentOffset < -80) currentOffset = -80;
 
@@ -7091,13 +7087,14 @@ blockquote .callout-content {
                 currentOffset = 0;
             }, 120);
         } else {
-            // 이벤트 버블링 차단
-            e.stopPropagation();
+            // 🚀 [핵심] 고무줄로 생긴 '빈 여백' 위에서 휠을 굴릴 때!
+            if (!e.target.closest('.ref-inner-scroll, .footnote-inner-scroll')) {
+                if (e.cancelable) e.preventDefault(); // 뒤쪽 블로그 글 스크롤 차단
+                target.scrollTop += e.deltaY; // 휠 굴린 만큼 알맹이를 강제로 스크롤시킴
+            }
         }
     }, { passive: false });
 })();
-
-
 
     //]]>
     </script>
