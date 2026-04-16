@@ -10239,19 +10239,27 @@ const initRender = async () => {
 
   if (!targetContainer) return;
 
+  // 🚀 [핵심 수정 부분] 현재 접속한 URL 경로를 가져와서 고유한 캐시 키를 만듭니다.
+  const currentPath = window.location.pathname + window.location.search;
+  const cacheHtmlKey = 'blogger_saved_posts_' + currentPath;
+  const cacheUrlKey = 'blogger_saved_next_url_' + currentPath;
+  const cacheScrollKey = 'blogger_saved_scroll_' + currentPath;
+
   if (window.performance) {
     const navEntries = window.performance.getEntriesByType("navigation");
     if (navEntries.length > 0) {
       if (navEntries[0].type === "reload") {
-        sessionStorage.removeItem('blogger_saved_posts');
-        sessionStorage.removeItem('blogger_saved_next_url');
-        sessionStorage.removeItem('blogger_saved_scroll');
+        // 고정된 문자열 대신 동적 키(Key) 사용
+        sessionStorage.removeItem(cacheHtmlKey);
+        sessionStorage.removeItem(cacheUrlKey);
+        sessionStorage.removeItem(cacheScrollKey);
       }
     }
   }
 
-  const savedHtml = sessionStorage.getItem('blogger_saved_posts');
-  const savedNextUrl = sessionStorage.getItem('blogger_saved_next_url');
+  // 고정된 문자열 대신 동적 키(Key) 사용
+  const savedHtml = sessionStorage.getItem(cacheHtmlKey);
+  const savedNextUrl = sessionStorage.getItem(cacheUrlKey);
 
   if (savedHtml) {
     targetContainer.insertAdjacentHTML('beforeend', savedHtml);
@@ -10270,7 +10278,8 @@ const initRender = async () => {
     };
     finalizeRestore();
 
-    const savedScroll = sessionStorage.getItem('blogger_saved_scroll');
+    // 고정된 문자열 대신 동적 키(Key) 사용
+    const savedScroll = sessionStorage.getItem(cacheScrollKey);
     if (savedScroll) {
       setTimeout(function() { window.scrollTo(0, parseInt(savedScroll, 10)); }, 150);
     }
@@ -10305,7 +10314,8 @@ const initRender = async () => {
       loadMoreBtn.innerHTML = '더보기 ↓';
       loadMoreBtn.disabled = false;
     }
-    sessionStorage.setItem('blogger_saved_next_url', nextPageUrl);
+    // 고정된 문자열 대신 동적 키(Key) 사용
+    sessionStorage.setItem(cacheUrlKey, nextPageUrl);
   }
 
   loadMoreBtn.addEventListener('click', async function() {
@@ -10335,18 +10345,19 @@ const initRender = async () => {
             rawHtmlToSave = rawHtmlToSave + post.outerHTML; 
           });
 
- const prevSaved = sessionStorage.getItem('blogger_saved_posts') || '';
+          // 고정된 문자열 대신 동적 키(Key) 사용
+          const prevSaved = sessionStorage.getItem(cacheHtmlKey) || '';
           try {
             // 1. 평소처럼 누적 저장을 시도합니다.
-            sessionStorage.setItem('blogger_saved_posts', prevSaved + rawHtmlToSave);
+            sessionStorage.setItem(cacheHtmlKey, prevSaved + rawHtmlToSave);
           } catch (error) {
             // 2. 🚨 5MB 용량 제한에 걸려 에러(QuotaExceededError)가 나면 뻗지 않고 이곳으로 빠집니다.
             console.warn('⚠️ 캐시 용량(5MB) 초과: 브라우저 다운을 방지하기 위해 캐시를 초기화합니다.');
             
             // 3. 페이지가 망가지지 않도록 기존에 무겁게 쌓인 캐시만 안전하게 날려버립니다.
-            sessionStorage.removeItem('blogger_saved_posts');
-            sessionStorage.removeItem('blogger_saved_next_url');
-            sessionStorage.removeItem('blogger_saved_scroll');
+            sessionStorage.removeItem(cacheHtmlKey);
+            sessionStorage.removeItem(cacheUrlKey);
+            sessionStorage.removeItem(cacheScrollKey);
             
             // 캐시 저장을 포기할 뿐, '더보기' 기능과 글 불러오기는 중단 없이 완벽하게 계속 작동합니다.
           }
@@ -10375,7 +10386,8 @@ const initRender = async () => {
   });
 
   window.addEventListener('beforeunload', function() {
-    sessionStorage.setItem('blogger_saved_scroll', window.scrollY);
+    // 고정된 문자열 대신 동적 키(Key) 사용
+    sessionStorage.setItem(cacheScrollKey, window.scrollY);
   });
 });
 //]]>
