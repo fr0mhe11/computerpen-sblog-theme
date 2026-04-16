@@ -9874,13 +9874,37 @@ document.addEventListener("DOMContentLoaded", () => {
     
     
 
-  <script type='text/javascript'>
+    
+    
+    <script type='text/javascript'>
 //<![CDATA[
 document.addEventListener("DOMContentLoaded", function() {
-    const labelLinks = document.querySelectorAll('.post-labels a, .byline.post-labels a');
+    // 🚀 모든 태그 요소(본문 및 사이드바 포함) 가져오기
+    const labelLinks = document.querySelectorAll('.post-labels a, .byline.post-labels a, .Label a');
     if (labelLinks.length === 0) return;
-    
-    const seriesTag = labelLinks[0].textContent.trim();
+
+    let seriesTag = null;
+    let cleanSeriesName = null;
+
+    // 1. 태그 중 '시리즈:'로 시작하는 진짜 시리즈 태그 찾기
+    labelLinks.forEach(link => {
+        let text = link.textContent.trim();
+        // 사이드바 위젯의 (글 개수) 텍스트 분리
+        let pureText = text.split('(')[0].trim(); 
+
+        if (pureText.startsWith('시리즈:')) {
+            if (!seriesTag) {
+                seriesTag = pureText; // 내부 검색용 (예: "시리즈: 자바스크립트")
+                cleanSeriesName = pureText.replace('시리즈:', '').trim(); // UI 출력용 (예: "자바스크립트")
+            }
+            // 화면에 렌더링되는 모든 곳에서 '시리즈:' 글자를 감쪽같이 지움 (사용자 눈엔 안 보임)
+            link.innerHTML = link.innerHTML.replace('시리즈:', '').trim();
+        }
+    });
+
+    // 2. '시리즈:' 태그가 달리지 않은 일반 글(공지만 있는 글 등)이면 시리즈 UI 생성 없이 조용히 종료
+    if (!seriesTag) return;
+
     const currentUrl = window.location.href.split(/[?#]/)[0];
 
     // 번호 추출 함수
@@ -9901,106 +9925,105 @@ document.addEventListener("DOMContentLoaded", function() {
         return 0;
     };
 
-    // 제목 깔끔하게 포맷팅하는 함수 (번호 + 텍스트)
+    // 제목 깔끔하게 포맷팅하는 함수
     const formatTitle = (num, title) => {
         if (!num) return title;
-        // 원래 제목에서 번호를 지우고, 맨 앞에 남은 하이픈이나 공백 제거
         const cleanText = title.replace(num, '').replace(/^[\s\-.:_]+/, '').trim();
         return `${num} ${cleanText}`;
     };
 
-    const feedUrl = `/feeds/posts/default/-/${encodeURIComponent(seriesTag)}?alt=json&amp;max-results=100`;
-    
+    // 🚀 찾아낸 시리즈 태그(seriesTag)로 해당 태그가 달린 글만 정확히 긁어옴
+    const feedUrl = `/feeds/posts/default/-/${encodeURIComponent(seriesTag)}?alt=json&max-results=100`;
+
     fetch(feedUrl)
-    .then(res => res.json())
-    .then(data => {
-        const entries = data.feed.entry || [];
-        let postList = entries.map(entry => {
-            const title = entry.title.$t;
-            const content = entry.content ? entry.content.$t : "";
-            const link = entry.link.find(l => l.rel === 'alternate').href.split(/[?#]/)[0];
-            
-            let num = extractNumber(title);
-            if (!num && content) {
-                const h1Match = content.match(/<h1[^>]*>(.*?)<\/h1>/i);
-                if (h1Match) num = extractNumber(h1Match[1]);
-            }
-            return { title, link, num };
-        })
-        .filter(p => p.num) // 번호가 있는 글만
-        .sort((a, b) => compareNumbers(a.num, b.num));
+        .then(res => res.json())
+        .then(data => {
+            const entries = data.feed.entry || [];
+            let postList = entries.map(entry => {
+                const title = entry.title.$t;
+                const content = entry.content ? entry.content.$t : "";
+                const link = entry.link.find(l => l.rel === 'alternate').href.split(/[?#]/)[0];
 
-        const currentIndex = postList.findIndex(p => p.link === currentUrl);
-        if (currentIndex === -1) return;
+                let num = extractNumber(title);
+                if (!num && content) {
+                    const h1Match = content.match(/<h1[^>]*>(.*?)<\/h1>/i);
+                    if (h1Match) num = extractNumber(h1Match[1]);
+                }
 
-        const prevPost = postList[currentIndex - 1];
-        const nextPost = postList[currentIndex + 1];
+                return { title, link, num };
+            })
+            .filter(p => p.num) // 번호 있는 글만 필터링
+            .sort((a, b) => compareNumbers(a.num, b.num));
 
-        // 1. 전체 목록(Dropdown) HTML 생성
-        let listHtml = '<ul class="series-dropdown-list">';
-        postList.forEach((p, idx) => {
-            const isCurrent = (idx === currentIndex);
-            const displayTitle = formatTitle(p.num, p.title);
-            listHtml += `<li class="${isCurrent ? 'current' : ''}">
-                <a href="${p.link}">${displayTitle}</a>
-            </li>`;
-        });
-        listHtml += '</ul>';
+            const currentIndex = postList.findIndex(p => p.link === currentUrl);
+            if (currentIndex === -1) return;
 
-        // 2. 이전/다음 버튼 제목 포맷팅
-        const prevTitle = prevPost ? formatTitle(prevPost.num, prevPost.title) : '';
-        const nextTitle = nextPost ? formatTitle(nextPost.num, nextPost.title) : '';
+            const prevPost = postList[currentIndex - 1];
+            const nextPost = postList[currentIndex + 1];
 
-        // UI 래퍼 생성
-        const navWrapper = document.createElement('div');
-        navWrapper.id = 'modern-series-nav';
-        navWrapper.innerHTML = `
-            <div class="series-header" id="series-toggle-btn">
-                <div class="series-meta">
-                    <span class="badge">SERIES</span>
-                    <span class="series-title">'${seriesTag}' 모아보기</span>
+            // 3. 드롭다운 HTML 생성
+            let listHtml = '<ul class="series-dropdown-list">';
+            postList.forEach((p, idx) => {
+                const isCurrent = (idx === currentIndex);
+                const displayTitle = formatTitle(p.num, p.title);
+                listHtml += `<li class="${isCurrent ? 'current' : ''}">
+                                <a href="${p.link}">${displayTitle}</a>
+                             </li>`;
+            });
+            listHtml += '</ul>';
+
+            const prevTitle = prevPost ? formatTitle(prevPost.num, prevPost.title) : '';
+            const nextTitle = nextPost ? formatTitle(nextPost.num, nextPost.title) : '';
+
+            // 4. UI 래퍼 생성 (타이틀에 'cleanSeriesName' 적용)
+            const navWrapper = document.createElement('div');
+            navWrapper.id = 'modern-series-nav';
+            navWrapper.innerHTML = `
+                <div class="series-header" id="series-toggle-btn">
+                    <div class="series-meta">
+                        <span class="badge">SERIES</span>
+                        <span class="series-title">'${cleanSeriesName}' 모아보기</span>
+                    </div>
+                    <div class="series-meta-right">
+                        <span class="series-count">${currentIndex + 1} / ${postList.length}</span>
+                        <span class="toggle-icon">▼</span>
+                    </div>
                 </div>
-                <div class="series-meta-right">
-                    <span class="series-count">${currentIndex + 1} / ${postList.length}</span>
-                    <span class="toggle-icon">▼</span>
+                <div class="series-dropdown" id="series-dropdown-content" style="display: none;">
+                    ${listHtml}
                 </div>
-            </div>
-            
-            <div class="series-dropdown" id="series-dropdown-content" style="display: none;">
-                ${listHtml}
-            </div>
-            
-            <div class="series-nav-footer">
-                ${prevPost ? `
-                    <a href="${prevPost.link}" class="nav-btn prev">
-                        <span class="dir">← 이전 편</span>
-                        <span class="tit">${prevTitle}</span>
-                    </a>
-                ` : '<div class="nav-btn empty"></div>'}
-                
-                ${nextPost ? `
-                    <a href="${nextPost.link}" class="nav-btn next">
-                        <span class="dir">다음 편 →</span>
-                        <span class="tit">${nextTitle}</span>
-                    </a>
-                ` : '<div class="nav-btn empty"></div>'}
-            </div>
-        `;
-        
-        const postBody = document.querySelector('.post-body');
-        if (postBody) postBody.parentNode.insertBefore(navWrapper, postBody.nextSibling);
+                <div class="series-nav-footer">
+                    ${prevPost ? `
+                        <a href="${prevPost.link}" class="nav-btn prev">
+                            <span class="dir">← 이전 편</span>
+                            <span class="tit">${prevTitle}</span>
+                        </a>
+                    ` : '<div class="nav-btn empty"></div>'}
+                    ${nextPost ? `
+                        <a href="${nextPost.link}" class="nav-btn next">
+                            <span class="dir">다음 편 →</span>
+                            <span class="tit">${nextTitle}</span>
+                        </a>
+                    ` : '<div class="nav-btn empty"></div>'}
+                </div>
+            `;
 
-        // 토글 클릭 이벤트
-        document.getElementById('series-toggle-btn').addEventListener('click', function() {
-            const dropdown = document.getElementById('series-dropdown-content');
-            const isHidden = dropdown.style.display === 'none';
-            dropdown.style.display = isHidden ? 'block' : 'none';
-            this.classList.toggle('open', isHidden);
+            const postBody = document.querySelector('.post-body');
+            if (postBody) postBody.parentNode.insertBefore(navWrapper, postBody.nextSibling);
+
+            // 드롭다운 토글 클릭 이벤트
+            document.getElementById('series-toggle-btn').addEventListener('click', function() {
+                const dropdown = document.getElementById('series-dropdown-content');
+                const isHidden = dropdown.style.display === 'none';
+                dropdown.style.display = isHidden ? 'block' : 'none';
+                this.classList.toggle('open', isHidden);
+            });
         });
-    });
 });
 //]]>
 </script>
+    
+    
     
     
     
