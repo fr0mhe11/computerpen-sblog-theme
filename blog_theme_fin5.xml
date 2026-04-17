@@ -4957,8 +4957,10 @@ body.light-mode .callout .callout {
 /* 핵심 수정: column을 row로 변경하여 수식 줄바꿈 방지 */
 /* 핵심 수정: flex 대신 일반 block으로 변경하여 텍스트와 기호 분리 현상 방지 */
 /* 핵심 수정: 제목 텍스트 박스 레이아웃 최적화 (수식 뒤 기호 줄바꿈 방지) */
+/* 핵심 수정: flex 대신 일반 block으로 변경하여 텍스트와 기호 분리 현상 방지 */
+/* 핵심 수정: 제목 텍스트 박스 레이아웃 최적화 (수식 뒤 기호 줄바꿈 방지) */
 .callout-title-inner { 
-   display: block !important; 
+    display: block !important; 
     flex: 1 !important; 
     width: auto !important; 
     max-width: 100% !important;
@@ -4969,7 +4971,6 @@ body.light-mode .callout .callout {
     word-break: break-word !important;
     white-space: normal !important;
 }
-
 
 
 /* 콜아웃 내용 (가로선 추가) */
@@ -4998,7 +4999,7 @@ body.light-mode .callout .callout {
 .callout[data-callout="따름정리"] > .callout-title > .callout-title-inner::before,
 .callout[data-callout="example"] > .callout-title > .callout-title-inner::before, 
 .callout[data-callout="예시"] > .callout-title > .callout-title-inner::before {
-     display: block !important; /* 한 줄을 온전히 차지하도록 블록 처리 */
+   display: block !important; /* 한 줄을 온전히 차지하도록 블록 처리 */
     margin-bottom: 4px !important; /* 제목과의 간격 */
 }
 
@@ -5897,16 +5898,6 @@ body:not(.item-view) .byline {
 
 
 
-/* 🚀 최종 교정: 수식 원본 너비 보호 (뒤에 오는 텍스트 줄바꿈 원인 제거) */
-.callout-title-inner mjx-container,
-.callout-title-inner mjx-container svg,
-.callout-title-inner .MathJax_SVG,
-.callout-title-inner .math {
-    display: inline-block !important;
-    margin: 0 3px !important;
-    vertical-align: middle !important;
-    white-space: nowrap !important; /* 🚀 수식 내부나 주변에서 텍스트가 꺾이는 현상 절대 방지 */
-}
 
 
 
