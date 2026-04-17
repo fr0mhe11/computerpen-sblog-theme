@@ -3239,13 +3239,14 @@ body.light-mode div.code-toolbar.hidden-section-content,
 .post-body h2 { border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: #F2F4F6; }
 .post-body strong, .post-body b { color: #3182F6 !important; font-weight: 700; }
 
-/* 수식 선명도 보정 */
-mjx-container svg { stroke: currentColor !important; stroke-width: 0.3px !important; shape-rendering: geometricPrecision !important; }
 
 /* 스크롤바 커스텀 */
 ::-webkit-scrollbar { width: 6px; height: 6px; }
 ::-webkit-scrollbar-track { background: transparent; }
 ::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.15); border-radius: 10px; }
+
+
+
 
 /* 목차 & 각주 스타일 */
 
@@ -5897,7 +5898,12 @@ body:not(.item-view) .byline {
 
 
 
-
+/* MathJax 한글 \text{} 겹침 현상 해결 */
+mjx-container svg text {
+    stroke: none !important;
+    stroke-width: 0 !important;
+    letter-spacing: normal !important;
+}
 
 
 
@@ -9537,7 +9543,7 @@ if (!e.target.closest('.floating-footnote-content') && !e.target.closest('a[href
   }
 
  window.initCallouts = function(container = document) {
-    let maxLimit = 200; 
+    let maxLimit = 8500; 
     let count = 0;
 
     while (count < maxLimit) {
