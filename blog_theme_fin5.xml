@@ -2803,7 +2803,7 @@ span.math, span.math.inline, span.math.display {
 }
 
 /* 1. 헤딩 (부드럽고 굵게) */
-.post-body h1, .post-body h2, .post-body h3, .post-body h4 {
+.post-body h1, .post-body h2, .post-body h3, .post-body h4, .post-body h5 {
   font-weight: 700;
   line-height: 1.4;
   margin-top: 2.5em;
@@ -2817,7 +2817,26 @@ span.math, span.math.inline, span.math.display {
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
 }
 
-.post-body h3 { font-size: 1.25em; }
+.post-body h3 {
+  font-size: 1.25em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
+.post-body h4 {
+  font-size: 1em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.post-body h5 {
+  font-size: 0.8em;
+  padding-bottom: 0.4em;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+
 
 /* 2. 링크 (토스 블루 + 은은한 호버 그라데이션) */
 .post-body a { color: #3182F6 !important; text-decoration: none; transition: all 0.2s ease; }
@@ -3118,7 +3137,7 @@ span.math, span.math.inline, span.math.display {
 
 
 /* 만약 제목(H2, H3 등) 안에 SVG가 들어갈 경우의 정렬 */
-.post-body h2 svg, .post-body h3 svg, .post-body h4 svg {
+.post-body h2 svg, .post-body h3 svg, .post-body h4 svg , .post-body h5 svg {
   vertical-align: middle !important;
 }
 
@@ -3394,7 +3413,7 @@ mjx-container[display="true"],
 }
 
 /* === 모바일 섹션 제목 터치 최적화 및 상단바 가림 방지 === */
-.post-body h2, .post-body h3, .post-body h4 {
+.post-body h2, .post-body h3, .post-body h4, .post-body h5 {
   /* 목차 이동 시 모바일 고정 상단바에 제목이 가려지지 않게 여백 확보 */
   scroll-margin-top: 80px !important; 
   /* 모바일에서 손가락으로 누르기 쉽게 터치 영역(위아래 간격) 확보 */
@@ -3403,7 +3422,7 @@ mjx-container[display="true"],
 }
 
 /* 핵심: 제목 안의 수식(SVG)이나 굵은 글씨를 눌러도 무조건 '제목을 누른 것'으로 인식하게 강제 (터치 씹힘 완벽 해결) */
-.post-body h2 *, .post-body h3 *, .post-body h4 * {
+.post-body h2 *, .post-body h3 *, .post-body h4 *, .post-body h5 * {
   pointer-events: none !important;
 }
 
@@ -4118,7 +4137,8 @@ body.light-mode .b-notification {
 body.light-mode .post-body h1, 
 body.light-mode .post-body h2, 
 body.light-mode .post-body h3, 
-body.light-mode .post-body h4 { 
+body.light-mode .post-body h4,
+ body.light-mode .post-body h5 { 
   color: #191F28 !important; 
   border-bottom-color: rgba(0, 0, 0, 0.06) !important; 
 }
@@ -11241,7 +11261,7 @@ document.addEventListener('click', function(e) {
     
   </body>
   
- 
+
   
   
 </html>
