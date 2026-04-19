@@ -4810,7 +4810,7 @@ body.latex-font h1, body.latex-font h2, body.latex-font h3, body.latex-font h4, 
 body.latex-font .callout-content, 
 body.latex-font .callout-title-inner,
 body.latex-font #callout-modal-body {
-  font-family: 'Latin Modern Roman', 'Nanum Myeongjo', serif !important;
+  font-family: 'Latin Modern Roman', 'RIDIBatang', serif !important;
 }
 
 /* 명조체 특성상 가독성을 위해 줄간격과 크기를 아주 미세하게 보정 */
@@ -4818,10 +4818,6 @@ body.latex-font .post-body {
   line-height: 1.8 !important; 
   font-size: 1.05em !important; 
 }
-
-
-
-
 
 
 
