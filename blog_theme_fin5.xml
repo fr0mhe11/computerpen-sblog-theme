@@ -10,15 +10,6 @@
 
     
     
-    
-    
-
-    
-    
-    
-    
-    
-    
 <script type='text/javascript'>
 //<![CDATA[
 window.MathJax = {
@@ -35,10 +26,13 @@ loader: {
     processEscapes: true
   },
   // [리사이징 설정] 기존에 90% 정도를 쓰셨다면 아래 scale 값을 조절하세요
-  svg: {
-    scale: 0.95,        // 전체적인 수식 크기 (0.95 = 95%)
-    minScale: 0.5,      // 모바일에서 너무 작아지지 않게 방지
-    displayAlign: 'center'
+svg: {
+    scale: 0.95,        
+    minScale: 0.5,      
+    displayAlign: 'center',
+    mtextInheritFont: false, // 🔥 true 대신 false를 써서 MathJax 내부 폰트 메트릭스를 우선 사용 (겹침 방지)
+    unknownFamily: "'Latin Modern Roman', 'RIDIBatang', serif",
+    fontCache: 'none'        // 🔥 글자 폭 계산 오류 방지를 위해 캐시 비활성화 권장
   },
   options: {
     renderActions: {
@@ -5899,13 +5893,50 @@ body:not(.item-view) .byline {
 
 
 /* MathJax 내부 \text{} 한글 겹침 현상 근본 해결 */
+/* MathJax 내부 \text{} 한글 겹침 현상 근본 해결 */
 mjx-container svg text {
-    letter-spacing: normal !important; /* 강제 적용된 좁은 자간 해제 */
-    word-spacing: normal !important;   /* 단어 간격 초기화 */
-    font-family: inherit !important;   /* 폰트 충돌 방지 */
-    stroke: none !important;           /* 혹시 모를 테두리 간섭 원천 차단 */
+    letter-spacing: normal !important; 
+    word-spacing: normal !important;   
+
+    font-family: 'Latin Modern Roman', 'RIDIBatang', serif !important;   
+    stroke: none !important;           
     stroke-width: 0 !important;
 }
+
+
+
+
+/* 1. 수식과 일반 글자 사이의 불필요한 간격 제거 및 수평 정렬 */
+mjx-container {
+    display: inline-block !important; /* 수식을 글자처럼 취급 */
+    margin: 0 0.1em !important;      /* 양옆에 아주 미세한 간격만 부여 */
+ 
+}
+
+/* 2. \text{} 내부 한글/영문 겹침 및 침범 이슈 해결 */
+mjx-container svg text {
+    letter-spacing: normal !important; 
+    word-spacing: normal !important;   
+    /* 폰트 상속을 제거하고 명확히 지정하여 침범 방지 */
+    font-family: 'Latin Modern Roman', 'RIDIBatang', serif !important;   
+    stroke: none !important;           
+    stroke-width: 0 !important;
+    /* 글자가 영역을 뚫고 나가지 않도록 설정 */
+    inline-size: auto !important;
+}
+
+/* 3. 모바일에서 긴 수식이 줄바꿈되지 않아 발생하는 레이아웃 파괴 방지 */
+.post-body {
+    overflow-wrap: break-word;
+}
+
+
+
+
+
+
+
+
 
 
 
@@ -6666,6 +6697,16 @@ body:not(.light-mode) .floating-footnote-content strong {
     flex-shrink: 0 !important;
 }
 
+
+
+.post-body {
+    word-break: break-all !important; /* 긴 영문/수식도 줄바꿈 허용 */
+    overflow-wrap: break-word !important;
+}
+
+
+
+
 ]]></b:skin>
     <b:template-skin>
       <![CDATA[
@@ -6988,8 +7029,9 @@ body:not(.light-mode) .floating-footnote-content strong {
     <link href='https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css' rel='stylesheet'/>
     <link href='https://fonts.cdnfonts.com/css/latin-modern-roman?display=swap' rel='stylesheet'/>
     <link href='https://fonts.googleapis.com/css2?family=Nanum+Myeongjo:wght@400;700;800&amp;display=swap' rel='stylesheet'/>
-    
-    
+    <link href='https://fonts.googleapis.com/css2?family=Noto+Serif+KR:wght@400;600;700&amp;display=swap' rel='stylesheet'/>
+    <link href='https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_twelve@1.0/RIDIBatang.woff' rel='stylesheet' type='text/css'/>
+    <link href='https://cdn.jsdelivr.net/gh/projectnoonnu/noonfonts_2201-2@1.0/KoPubWorldBatang.woff' rel='stylesheet' type='text/css'/>
     
     
     
@@ -7350,11 +7392,11 @@ document.addEventListener('touchend', function(e) {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -10635,16 +10677,25 @@ themeBtns.forEach(btn => {
 
 
 // --- 폰트 변경 로직 ---
+// --- 폰트 변경 로직 ---
   const fontBtns = document.querySelectorAll('#font-group button');
   const applyFont = (font) => {
     document.body.classList.remove('latex-font');
     fontBtns.forEach(b => b.classList.remove('active'));
-    
+
     const activeBtn = document.querySelector(`#font-group [data-font="${font}"]`);
     if (activeBtn) activeBtn.classList.add('active');
-    
+
     if (font === 'latex') document.body.classList.add('latex-font');
     localStorage.setItem('blog-font-style', font);
+
+    // 🔥 모드 변경 시 글자 폭이 달라져서 수식이 겹치는 버그 완벽 해결
+    if (window.MathJax && MathJax.typesetClear) {
+      setTimeout(() => {
+        MathJax.typesetClear();
+        MathJax.typesetPromise();
+      }, 50);
+    }
   };
 
   fontBtns.forEach(btn => {
