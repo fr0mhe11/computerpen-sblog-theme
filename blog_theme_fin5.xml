@@ -7464,11 +7464,11 @@ document.addEventListener('touchend', function(e) {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -9175,7 +9175,7 @@ document.addEventListener('touchend', function(e) {
           <b:include data='{                               buttonClass: &quot;pill-button&quot;,                               items: data:this.labels,                               itemSet: &quot;labels&quot;,                               itemsMarkup: &quot;super.list&quot;                             }' name='extendableItems'/>
         </b:includable>
         </b:widget>
-        <b:widget id='Followers1' locked='false' title='following me' type='Followers' visible='true'>
+        <b:widget id='Followers1' locked='false' mobile='yes' title='following me' type='Followers' visible='true'>
           <b:widget-settings>
             <b:widget-setting name='borderColorTransparent'>true</b:widget-setting>
             <b:widget-setting name='useTemplateDefaultStyles'>true</b:widget-setting>
