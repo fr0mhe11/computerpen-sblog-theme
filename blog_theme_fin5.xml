@@ -22,7 +22,8 @@ startup: {
 
 loader: {
     // 🔥 MathJax의 모든 확장 패키지를 한 번에 불러옵니다
-   load: ['[tex]/autoload']
+   load: ['[tex]/autoload', '[tex]/enclose'],
+timeout: 30000
   },
 
   tex: {
@@ -3546,6 +3547,11 @@ body .callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([da
     color: rgb(var(--c-color, 139, 149, 161)) !important;
 }
 
+
+
+
+
+
 /* =========================================================
    [추가 옵시디언 콜아웃] 배경색 없는 투명 스타일
 ========================================================= */
@@ -4085,7 +4091,7 @@ body.zen-mode .zen-toggle-btn {
 /* 버튼 전체는 살짝 커지기만 합니다 */
 body.zen-mode #settings-fab:hover {
   transform: scale(1.05) !important; 
-  color: #3182F6 !important;
+ 
 }
 
 /* 🚀 내부 톱니바퀴 알맹이만 부드럽게 회전시킵니다 */
@@ -4445,10 +4451,8 @@ body.light-mode .post-body li {
   color: #333D4B !important;
 }
 
-body.light-mode .post-body span:not([style*="color"]):not([class*="math"]):not([class*="mjx"]):not([class*="token"]), 
-body.light-mode .post-body div:not([style*="color"]):not(.callout):not([class*="math"]):not([class*="mjx"]):not(.code-toolbar):not(.toolbar):not(.toolbar-item) {
-  color: #333D4B !important;
-}
+
+
 
 
 
@@ -4568,24 +4572,25 @@ body.callout-modal-open { overflow: hidden !important; }
 /* =========================================================
    [라이트 모드] 콜아웃 팝업(모달) 내부 글씨 & 수식 색상 강제 교정
 ========================================================= */
-/* 팝업창 내부의 제목, 본문 텍스트를 진회색으로 강제 변경 */
+/* 1. 팝업창 내부 텍스트 색상 지정 (고유 색상 덮어쓰지 않도록 !important 제거) */
 body.light-mode #callout-modal-body .callout-title-inner,
 body.light-mode #callout-modal-body .callout-content,
 body.light-mode #callout-modal-body .callout-content p {
-  color: #333D4B !important;
+  color: #333D4B;
 }
 
+/* 2. 모달창 내부에 누락되었던 파란색 강조 텍스트(strong, b, a) 규칙 추가 */
+#callout-modal-body strong,
+#callout-modal-body b,
+#callout-modal-body a {
+  color: #3182F6 !important;
+}
 
-/* 팝업창 내부 수식의 기본 글씨만 검은색으로 강제 변경 (파란색 등 강조 색상은 보호) */
+/* 3. 수식 색상 지정 (!important와 무식한 fill 강제 덮어쓰기 완전 삭제) */
 body.light-mode #callout-modal-body mjx-container,
 body.light-mode #callout-modal-body .MathJax_SVG {
-  color: #191F28 !important;
+  color: #191F28;
 }
-body.light-mode #callout-modal-body mjx-container svg [fill="currentColor"],
-body.light-mode #callout-modal-body .MathJax_SVG [fill="currentColor"] {
-  fill: #191F28 !important;
-}
-
 
 
 
@@ -4652,12 +4657,12 @@ strong mjx-container, b mjx-container, a mjx-container {
   color: #3182F6 !important;
 }
 
-/* 수식 전체의 기본 바탕색만 먹색으로 지정하여, \color{blue} 등의 내부 강조색이 정상 작동하게 만듦 */
+/* 수식 전체의 기본 색상을 지정하되, \color{} 명령어나 부모 태그(a, strong)의 색상을 상속받을 수 있도록 !important 제거 */
 body.light-mode mjx-container,
 body.light-mode .MathJax_SVG,
 body.light-mode #callout-modal-body mjx-container,
 body.light-mode #callout-modal-body .MathJax_SVG {
-  color: #191F28 !important;
+  color: #191F28; 
 }
 
 /* 수식 내부의 링크나 참조 번호(eqref) 등은 뚜렷한 파란색으로 강조 */
@@ -4682,7 +4687,7 @@ body.light-mode .floating-footnote-content {
 /* 각주 내부 텍스트 색상 또렷한 진회색으로 */
 body.light-mode .floating-footnote-content .footnote-inner-scroll,
 body.light-mode .floating-footnote-content p {
-  color: #333D4B !important;
+  color: #333D4B 
 }
 
 /* 닫기(X) 버튼 색상 보정 */
@@ -4823,12 +4828,12 @@ body.latex-font #callout-modal-body {
 body.latex-font .post-body {
   line-height: 1.8 !important; 
   /* 1. 일반 텍스트 크기를 살짝 더 키웁니다 (1.05em -> 1.1em) */
-  font-size: 1.1em !important; 
+  font-size: 1.05em !important; 
 }
 
 /* 2. 논문 폰트 모드에서 인라인 수식 크기를 주변 텍스트와 맞게 키웁니다 */
 body.latex-font mjx-container {
-  font-size: 1.05em !important; /* MathJax의 기본 축소 비율을 상쇄시킴 */
+  font-size: 1.04em !important; /* MathJax의 기본 축소 비율을 상쇄시킴 */
 }
 
 /* 3. 디스플레이 수식($$)은 조금 더 크게 보일 수 있으니 원래 배율을 유지하거나 살짝만 키웁니다 */
@@ -6500,7 +6505,7 @@ body.light-mode .reference-tooltip {
   border-left: 4px solid #3182F6 !important; 
   box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1) !important; /* 그림자도 조금 부드럽게 */
 }
-body.light-mode .reference-tooltip * { color: #333D4B !important; }
+
 body.light-mode .ref-close-btn { background: rgba(0, 0, 0, 0.05) !important; color: #8B95A1 !important; }
 body.light-mode .ref-close-btn:hover { background: rgba(0, 0, 0, 0.15) !important; color: #191F28 !important; }
 
@@ -6614,9 +6619,7 @@ body.light-mode .reference-tooltip {
 
 
 
-/* =========================================================
-   [디자인 보완] 팝업 내부 강조 텍스트(마커, 볼드) 토스 블루 적용
-========================================================= */
+
 
 /* 1. 형광펜 하이라이트  토스 스타일 */
 .reference-tooltip mark,
@@ -6654,69 +6657,123 @@ body:not(.light-mode) .floating-footnote-content strong {
 }
 
 
-/* =========================================================
-   일반 콜아웃 가로선 및 상단 여백 제거 (수학 콜아웃 제외)
-========================================================= */
-.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]) .callout-content {
-    border-top: none !important;
-    padding-top: 4px !important; /* 가로선이 없어졌으니 본문과 제목 사이를 조금 밀착시킴 */
+
+/* 🏗️ 2. 공통 디자인 뼈대 (배경색 제거 버전) + 호버 버그 픽스 */
+.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]) {
+    border-left: 4px solid rgb(var(--c-color, 139, 149, 161)) !important;
+    background-color: transparent !important; /* 평소에는 투명 유지 */
+    margin: 1em 0;
+}
+
+/* 🔥 무식하게 높았던 우선순위와 동일한 레벨로 호버(hover) 상태를 직접 선언하여 원인 해결 */
+.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]):hover {
+    background-color: rgba(var(--c-color, 139, 149, 161), 0.074) !important; 
 }
 
 
-
 /* =========================================================
-   일반 콜아웃 아이콘 보이기 및 정렬 (옵시디안 스타일)
+   일반 콜아웃 아이콘 보이기 및 정렬 (옵시디안 스타일 최적화)
 ========================================================= */
+
+
 
 .callout-icon { 
     display: flex !important; 
     align-items: center !important; 
-    margin-right: 6px !important;
-    color: rgb(var(--c-color, 139, 149, 161)) !important; /* 💡 핵심: 콜아웃 고유 테마 색상 변수를 끌어와 아이콘에 입힘 */
+    justify-content: center !important; /* 아이콘 내부를 중앙 정렬 */
+    color: rgb(var(--c-color, 139, 149, 161)) !important; 
+    
+    width: 18px !important; /* SVG 기본 너비 고정 */
+    
+    /* 🌟 X좌표 정렬: 아이콘 너비의 딱 절반(-9px)을 당겨서 아이콘의 중심을 콜아웃 내용 시작점과 일치시킴 */
+    margin-left: -9px !important; 
+    margin-right: 8px !important; /* 텍스트와의 적절한 여백 */
+    
+    /* 🌟 Y좌표 정렬: 상단 여백을 없애서 제목 텍스트와 세로 중앙선을 완벽히 맞춤 */
+    margin-top: 0 !important; 
+
+    flex-shrink: 0 !important; 
 }
 
-   
-.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]) .callout-title {
-    gap: 4px !important; /* 아이콘과 텍스트 사이 간격을 확 줄임 (필요하면 2px로 더 줄여도 됨) */
-}
-
-.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]) .callout-icon {
-    margin-right: 0px !important; /* 아이콘 자체에 걸려있는 우측 마진 제거 */
-}
-
-.callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([data-callout="lemma"]):not([data-callout="보조정리"]):not([data-callout="proof"]):not([data-callout="증명"]):not([data-callout="definition"]):not([data-callout="정의"]):not([data-callout="corollary"]):not([data-callout="따름정리"]):not([data-callout="example"]):not([data-callout="예시"]) .callout-title-inner {
-    margin-left: 0px !important; /* 텍스트 쪽에 걸려있는 불필요한 여백 제거 */
-} 
-
-
+/* 콜아웃 제목 전체 레이아웃 정돈 */
 .callout-title {
-    padding-left: 0px !important; /* 제목 전체를 감싸는 박스의 왼쪽 여백 제거 */
+    display: flex !important;
+    align-items: center !important; /* 세로 중앙 정렬 */
+    padding-left: 0 !important; /* 불필요한 기본 여백 제거 */
+    gap: 0 !important; /* 아이콘과 텍스트 사이의 간격은 아이콘의 margin-right가 담당하므로 gap은 초기화 */
 }
 
-.callout-icon {
-    margin-left: 0px !important; 
-    padding-left: 0px !important;
-    margin-right: 8px !important; /* 아이콘과 글자 사이의 간격만 적당히 유지 */
-}
-
+/* 텍스트 영역 여백 초기화 */
 .callout-title-inner {
-    margin-left: 0px !important;
-    padding-left: 0px !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
+}
+
+/* 접기/펴기 가능한 콜아웃일 때, 화살표 아이콘 우측에 적당한 여백 주기 */
+.callout.is-collapsible .callout-fold-icon {
+    margin-right: 12px !important;
+    flex-shrink: 0 !important;
 }
 
 /* 콜아웃 내부 MathJax 수식 찌그러짐 방지 */
 .callout mjx-container, .callout mjx-container svg {
-    flex-shrink: 0 !important;
+    flex-shrink: 0 !important;
+}
+
+
+/* 화살표(접기/펴기)와 아이콘이 같이 있을 때 화살표 간격 통일 */
+.callout-fold-icon + .callout-icon {
+    margin-left: 0 !important;
 }
 
 
 
-.post-body {
-    word-break: break-all !important; /* 긴 영문/수식도 줄바꿈 허용 */
-    overflow-wrap: break-word !important;
+
+/* =========================================================
+   [폰트 보호 1] UI 요소들은 현대적인 고딕(Pretendard) 스택 유지
+========================================================= */
+#settings-fab, 
+.toc-btn, 
+.settings-close,
+#settings-panel,               /* 설정창 팝업 전체 */
+#toc-wrapper,                  /* 플로팅 목차 전체 */
+#modern-series-nav,            /* 시리즈 모아보기 전체 */
+#spotlight-search-modal,       /* 검색창 전체 */
+.load-more-btn,                /* 더보기 버튼 */
+.series-badge, .notice-badge,  /* 뱃지류 */
+.Label a, .tag-pill,           /* 태그 텍스트 */
+.byline, .comment-header,      /* 메타데이터 및 댓글 작성자 */
+div.code-toolbar > .toolbar,   /* 코드블록 툴바 */
+.flat-button, .pill-button     /* 기본 버튼 */
+{
+    font-family: 'Pretendard', sans-serif !important;
+    letter-spacing: -0.02em !important; 
+}
+
+/* =========================================================
+   [폰트 보호 2] 블로그 로고는 사용자가 테마에서 설정한 고유 폰트 절대 유지
+========================================================= */
+body.latex-font .Header h1,
+body.latex-font .Header h1 a {
+    font-family: $(blog.title.font.family) !important; /* 크기는 건드리지 않고 글씨체만 방어! */
 }
 
 
+
+
+/* =========================================================
+   [라이트 모드] 레퍼런스 팝업 내부 각주 링크(숫자) 파란색 강제 고정
+========================================================= */
+body.light-mode .reference-tooltip a,
+body.light-mode .reference-tooltip sup a {
+  color: #3182F6 !important;
+}
+
+
+body:not(.light-mode) .reference-tooltip a,
+body:not(.light-mode) .reference-tooltip sup a {
+  color: #3182F6 !important;
+}
 
 
 ]]></b:skin>
@@ -7141,6 +7198,9 @@ blockquote .callout-content {
           if (window.matchMedia('(prefers-color-scheme: light)').matches) {
             document.body.classList.add('light-mode');
           }
+        }
+if (localStorage.getItem('blog-zen-mode') === 'on') {
+          document.body.classList.add('zen-mode');
         }
         
         // 3. 브라우저가 화면을 100% 다 그리고 나면, 애니메이션을 다시 켜줍니다.
@@ -10734,19 +10794,59 @@ themeBtns.forEach(btn => {
 
 
 
-
-
-  // --- 4. 집중 모드 (데스크탑 전용) ---
+// --- 4. 집중 모드 (데스크탑 전용) ---
   const zenBtn = document.getElementById('st-zen-btn');
-  if (window.innerWidth <= 800) document.getElementById('zen-option-item').style.display = 'none';
+  const zenOptionItem = document.getElementById('zen-option-item');
+  
+  // 모바일에서는 젠 모드 메뉴 숨김 (안전망 추가)
+  if (window.innerWidth <= 800 && zenOptionItem) {
+    zenOptionItem.style.display = 'none';
+  }
+  
+  // 1. 페이지 로딩 시 브라우저에 저장된 젠 모드 상태 불러오기
+  const isZenSaved = localStorage.getItem('blog-zen-mode') === 'on';
+  if (isZenSaved) {
+    zenBtn.textContent = "ON";
+    zenBtn.classList.add('active');
+    
+    // 설정 버튼 미리 밖으로 빼놓기
+    const fabBtn = document.getElementById('settings-fab');
+    if (fabBtn) {
+      document.body.appendChild(fabBtn);
+      fabBtn.style.cssText = "position:fixed; bottom:30px; right:30px; z-index:9999; font-size:24px; background:rgba(30,31,36,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:48px; height:48px; display:flex; justify-content:center; align-items:center; cursor:pointer;";
+    }
+  }
+
   zenBtn.onclick = () => {
     document.body.classList.toggle('zen-mode');
-    zenBtn.textContent = document.body.classList.contains('zen-mode') ? "ON" : "OFF";
-    zenBtn.classList.toggle('active');
+    const isZen = document.body.classList.contains('zen-mode');
+    
+    // 2. 젠 모드 켜고 끌 때마다 브라우저에 상태 저장하기
+    localStorage.setItem('blog-zen-mode', isZen ? 'on' : 'off');
+    
+    zenBtn.textContent = isZen ? "ON" : "OFF";
+    zenBtn.classList.toggle('active', isZen);
+    
+    const fabBtn = document.getElementById('settings-fab');
+    const tocHeaderBtns = document.querySelector('.toc-header-btns');
+    
+    // 💡 [안전망] 요소가 확실히 존재할 때만 스타일 조작
+    if (fabBtn) {
+      if (isZen) {
+        document.body.appendChild(fabBtn);
+        fabBtn.style.cssText = "position:fixed; bottom:30px; right:30px; z-index:9999; font-size:24px; background:rgba(30,31,36,0.8); border:1px solid rgba(255,255,255,0.1); border-radius:50%; width:48px; height:48px; display:flex; justify-content:center; align-items:center; cursor:pointer;";
+      } else {
+        if (tocHeaderBtns) {
+          fabBtn.style.cssText = ""; 
+          tocHeaderBtns.prepend(fabBtn);
+        }
+        // 목차 헤더가 없다면(홈 화면 등) 아무 작업도 안 함 -> 플로팅 상태 유지! (완벽한 흐름)
+      }
+    }
+
     setTimeout(() => { if (typeof window.syncFolding === 'function') window.syncFolding(); }, 400);
   };
 });
-
 //]]>
 </script>
     
