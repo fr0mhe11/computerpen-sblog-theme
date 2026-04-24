@@ -6776,6 +6776,77 @@ body:not(.light-mode) .reference-tooltip sup a {
 }
 
 
+
+/* =========================================================
+   ✨ 옵시디언 위키링크 ([[문서명]]) 스타일 (나무위키풍 노랑 + 우선순위 강화)
+========================================================= */
+/* 1. 명시도(Specificity)를 최상위로 끌어올려 본문의 일반 파란색 링크 설정에 먹히지 않게 방어 */
+body #page_body .post-body a.obsidian-wikilink,
+body .floating-footnote-content a.obsidian-wikilink,
+body .reference-tooltip a.obsidian-wikilink,
+body #callout-modal-body a.obsidian-wikilink {
+  color: #FBBF24 !important; /* 가독성 좋은 진한 노란색 텍스트 */
+  background-color: rgba(251, 191, 36, 0.12) !important; /* 연한 노란색 배경 */
+  padding: 0 4px !important;
+  margin: 0 2px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  text-decoration: none !important;
+  text-shadow: none !important; /* 기존 파란색 링크의 네온 발광 효과 제거 */
+  transition: background-color 0.2s ease, color 0.2s ease, transform 0.2s ease !important;
+  display: inline-block;
+}
+
+/* 2. 일반 링크 밑에 깔리는 밑줄(::after) 효과 완전히 제거 */
+body #page_body .post-body a.obsidian-wikilink::after,
+body .floating-footnote-content a.obsidian-wikilink::after,
+body .reference-tooltip a.obsidian-wikilink::after,
+body #callout-modal-body a.obsidian-wikilink::after {
+  display: none !important;
+}
+
+/* 3. 마우스 오버(Hover) 시 살짝 더 밝아지는 효과 */
+body #page_body .post-body a.obsidian-wikilink:hover,
+body .floating-footnote-content a.obsidian-wikilink:hover,
+body .reference-tooltip a.obsidian-wikilink:hover,
+body #callout-modal-body a.obsidian-wikilink:hover {
+  background-color: rgba(251, 191, 36, 0.25) !important;
+  color: #FDE68A !important;
+  transform: translateY(-1px); 
+}
+
+/* 4. 클릭(Active) 시 쫀득하게 눌리는 효과 */
+body #page_body .post-body a.obsidian-wikilink:active,
+body .floating-footnote-content a.obsidian-wikilink:active,
+body .reference-tooltip a.obsidian-wikilink:active,
+body #callout-modal-body a.obsidian-wikilink:active {
+  transform: translateY(0) scale(0.96) !important;
+}
+
+/* ☀️ 5. 라이트 모드 동기화 (눈에 잘 띄는 귤색/주황색 계열로 가독성 확보) */
+body.light-mode #page_body .post-body a.obsidian-wikilink,
+body.light-mode .floating-footnote-content a.obsidian-wikilink,
+body.light-mode .reference-tooltip a.obsidian-wikilink,
+body.light-mode #callout-modal-body a.obsidian-wikilink {
+  color: #D97706 !important; 
+  background-color: rgba(217, 119, 6, 0.08) !important;
+  text-shadow: none !important;
+}
+
+body.light-mode #page_body .post-body a.obsidian-wikilink:hover,
+body.light-mode .floating-footnote-content a.obsidian-wikilink:hover,
+body.light-mode .reference-tooltip a.obsidian-wikilink:hover,
+body.light-mode #callout-modal-body a.obsidian-wikilink:hover {
+  background-color: rgba(217, 119, 6, 0.15) !important;
+  color: #B45309 !important;
+}
+
+
+
+
+
+
+
 ]]></b:skin>
     <b:template-skin>
       <![CDATA[
@@ -9823,6 +9894,120 @@ let titleDiv = document.createElement('div');
   initCallouts();
 
 
+
+
+// ==========================================
+// 🚀 [옵시디언 호환] [[위키링크]] 파싱 & 스포트라이트 검색 연동 (Ctrl+K 호출, 엔터 안 침)
+// ==========================================
+// 🚀 [옵시디언 호환] [[위키링크]] 파싱 & 스포트라이트 검색 연동 (팝업/모달 완벽 호환)
+window.parseWikilinks = function() {
+  document.querySelectorAll('.post-body').forEach(body => {
+
+    // 1. 이미 <a> 태그로 변환된 위키링크들 처리 (Pandoc 등)
+    const existingLinks = body.querySelectorAll('a[href]:not(.obsidian-wikilink)');
+    existingLinks.forEach(a => {
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('http') || href.startsWith('//') || href.startsWith('#') || href.startsWith('mailto:')) return;
+      
+      a.classList.add('obsidian-wikilink'); 
+      
+      let targetKeyword = href.replace(/\.[a-zA-Z0-9]+$/, '').replace(/^\//, '');
+      try { targetKeyword = decodeURIComponent(targetKeyword); } catch(e) {}
+      
+      a.href = 'javascript:void(0);'; 
+      // 💡 개별 리스너 대신 data 속성에 검색어 주입
+      a.setAttribute('data-wiki-target', targetKeyword); 
+    });
+
+    // 2. 텍스트로 남아있는 [[위키링크]] 파싱
+    const walker = document.createTreeWalker(body, NodeFilter.SHOW_TEXT, null, false);
+    const nodesToReplace = [];
+    let node;
+    
+    while (node = walker.nextNode()) {
+      const parentTag = node.parentNode.tagName.toUpperCase();
+      if (['CODE', 'PRE', 'SCRIPT', 'STYLE', 'A'].includes(parentTag) || node.parentNode.closest('mjx-container') || node.parentNode.closest('.MathJax_SVG')) continue;
+      if (node.nodeValue.includes('[[')) nodesToReplace.push(node);
+    }
+
+    nodesToReplace.forEach(txtNode => {
+      const text = txtNode.nodeValue;
+      const regex = /\[\[([^\]|]+)(?:\|([^\]]+))?\]\]/g;
+      if (!regex.test(text)) return;
+      
+      const fragment = document.createDocumentFragment();
+      let lastIndex = 0;
+      regex.lastIndex = 0;
+      
+      let match;
+      while ((match = regex.exec(text)) !== null) {
+        if (match.index > lastIndex) fragment.appendChild(document.createTextNode(text.substring(lastIndex, match.index)));
+        
+        const target = match[1].trim();
+        const alias = match[2] ? match[2].trim() : target;
+        
+        const a = document.createElement('a');
+        a.className = 'obsidian-wikilink';
+        a.href = 'javascript:void(0);'; 
+        a.textContent = alias;
+        // 💡 개별 리스너 대신 data 속성에 검색어 주입
+        a.setAttribute('data-wiki-target', target);
+        
+        fragment.appendChild(a);
+        lastIndex = regex.lastIndex;
+      }
+      if (lastIndex < text.length) fragment.appendChild(document.createTextNode(text.substring(lastIndex)));
+      txtNode.parentNode.replaceChild(fragment, txtNode);
+    });
+  });
+  
+  // 🚀 3. 이벤트 위임(Event Delegation) 처리
+  // 팝업/모달로 복제되어 이벤트 리스너가 날아간 링크들도 클릭할 수 있도록 body 레벨에서 클릭을 감지함
+  if (!document.body.dataset.wikiEventBound) {
+    document.body.addEventListener('click', function(e) {
+      const wikiLink = e.target.closest('a.obsidian-wikilink');
+      if (wikiLink && wikiLink.hasAttribute('data-wiki-target')) {
+        e.preventDefault();
+        e.stopPropagation(); // 각주 팝업 등 다른 클릭 이벤트와 겹치지 않게 차단
+        triggerSpotlightSearch(wikiLink.getAttribute('data-wiki-target'));
+      }
+    });
+    // 이벤트가 중복 바인딩되지 않게 플래그 기록
+    document.body.dataset.wikiEventBound = "true"; 
+  }
+
+  // 🚀 진짜 Ctrl+K 신호를 보내고 글자만 입력하는 함수
+  function triggerSpotlightSearch(keyword) {
+    const ctrlKEvent = new KeyboardEvent('keydown', {
+      key: 'k',
+      code: 'KeyK',
+      keyCode: 75,
+      which: 75,
+      ctrlKey: true,
+      metaKey: true, 
+      bubbles: true,
+      cancelable: true
+    });
+    
+    document.dispatchEvent(ctrlKEvent);
+
+    setTimeout(() => {
+      const searchInput = document.getElementById('spotlight-input');
+      if (searchInput) {
+        const nativeInputValueSetter = Object.getOwnPropertyDescriptor(window.HTMLInputElement.prototype, "value").set;
+        if (nativeInputValueSetter) {
+          nativeInputValueSetter.call(searchInput, keyword);
+        } else {
+          searchInput.value = keyword;
+        }
+        
+        searchInput.dispatchEvent(new Event('input', { bubbles: true }));
+        searchInput.focus();
+      }
+    }, 100);
+  }
+};
+
 // ==========================================
   // 🚀 [옵시디언 호환] ==형광펜== 문법 자동 파싱
   // ==========================================
@@ -10451,6 +10636,7 @@ const initRender = async () => {
     
     // 4. 코드 블록 하이라이팅 실행
     if (window.initCodeBlocks) window.initCodeBlocks();
+if (window.parseWikilinks) window.parseWikilinks();
 
     // 5. 가장 무거운 작업인 MathJax 수식 렌더링을 '우선순위 최하단'으로 강등
     const renderMathAndFinish = async () => {
