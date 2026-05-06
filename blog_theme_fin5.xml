@@ -6491,6 +6491,25 @@ body.light-mode .comments .comment-form {
   border-radius: 8px !important;
   box-shadow: none !important;
 }
+
+
+/* --- 📌 팝업 내 가상 요소 완전 숨김 --- */
+.reference-tooltip .callout-title::before,
+.reference-tooltip .callout-title-inner::before,
+.floating-footnote-content .callout-title::before,
+.floating-footnote-content .callout-title-inner::before,
+.footnote-tooltip .callout-title::before,
+.footnote-tooltip .callout-title-inner::before {
+    display: none !important;
+    content: none !important;
+}
+.baked-num {
+    font-weight: bold;
+    margin-right: 5px;
+}
+
+
+
 .reference-tooltip .callout .callout-title-inner,
 .reference-tooltip .callout .callout-title {
   font-size: 0.95em !important;
@@ -9569,6 +9588,56 @@ const targetLi = document.getElementById(targetId);
       innerScroll.className = 'footnote-inner-scroll';
       innerScroll.innerHTML = targetLi.innerHTML;
       
+
+
+// --- 📌 여기서부터 [각주 팝업 번호 고정 로직 (직접 카운팅)] ---
+const oTitles = targetLi.querySelectorAll('.callout-title-inner');
+const cTitles = innerScroll.querySelectorAll('.callout-title-inner');
+const oArr = targetLi.classList.contains('callout-title-inner') ? [targetLi] : Array.from(oTitles);
+const cArr = innerScroll.classList.contains('callout-title-inner') ? [innerScroll] : Array.from(cTitles);
+
+const countTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'];
+const allCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(c => countTypes.includes(c.getAttribute('data-callout')));
+
+oArr.forEach((orig, index) => {
+    if (cArr[index]) {
+        const calloutNode = orig.closest('.callout');
+        if (calloutNode) {
+            const type = calloutNode.getAttribute('data-callout');
+            if (countTypes.includes(type)) {
+                let prefix = '';
+                if (['definition', '정의'].includes(type)) prefix = '정의 ';
+                else if (['theorem', '정리'].includes(type)) prefix = '정리 ';
+                else if (['lemma', '보조정리'].includes(type)) prefix = '보조정리 ';
+                else if (['corollary', '따름정리'].includes(type)) prefix = '따름정리 ';
+                else if (['example', '예시'].includes(type)) prefix = '예시 ';
+                
+                const num = allCallouts.indexOf(calloutNode) + 1;
+                const dataPrefix = calloutNode.getAttribute('data-prefix') || '';
+                const finalStr = prefix + dataPrefix + num + '. ';
+                
+                if (!cArr[index].querySelector('.baked-num')) {
+                    const numSpan = document.createElement('span');
+                    numSpan.className = 'baked-num';
+                    numSpan.textContent = finalStr;
+                    cArr[index].prepend(numSpan);
+                }
+            } else if (type === 'proof' || type === '증명') {
+                if (!cArr[index].querySelector('.baked-num')) {
+                    const numSpan = document.createElement('span');
+                    numSpan.className = 'baked-num';
+                    numSpan.textContent = '증명. ';
+                    cArr[index].prepend(numSpan);
+                }
+            }
+        }
+    }
+});
+// --- 여기까지 ---
+
+
+
+
       // 팝업 안의 돌아가기 링크 제거
       const backref = innerScroll.querySelector('a.footnote-backref, a[href^="#fnref"]');
       if (backref) backref.remove();
@@ -11508,6 +11577,57 @@ function removeActiveTooltip() {
 let contentHtml = targetEl.innerHTML;
             contentHtml = contentHtml.replace(/<a[^>]*class="[^"]*footnote-backref[^"]*"[^>]*>.*?<\/a>/gi, '');
             innerScroll.innerHTML = contentHtml; // 툴팁 본체가 아닌 래퍼 안에 내용을 넣음
+
+
+// --- 📌 여기서부터 [레퍼런스 팝업 번호 고정 로직 (직접 카운팅)] ---
+const oTitles = targetEl.querySelectorAll('.callout-title-inner');
+const cTitles = innerScroll.querySelectorAll('.callout-title-inner');
+const oArr = targetEl.classList.contains('callout-title-inner') ? [targetEl] : Array.from(oTitles);
+const cArr = innerScroll.classList.contains('callout-title-inner') ? [innerScroll] : Array.from(cTitles);
+
+const countTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'];
+const allCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(c => countTypes.includes(c.getAttribute('data-callout')));
+
+oArr.forEach((orig, index) => {
+    if (cArr[index]) {
+        const calloutNode = orig.closest('.callout');
+        if (calloutNode) {
+            const type = calloutNode.getAttribute('data-callout');
+            if (countTypes.includes(type)) {
+                let prefix = '';
+                if (['definition', '정의'].includes(type)) prefix = '정의 ';
+                else if (['theorem', '정리'].includes(type)) prefix = '정리 ';
+                else if (['lemma', '보조정리'].includes(type)) prefix = '보조정리 ';
+                else if (['corollary', '따름정리'].includes(type)) prefix = '따름정리 ';
+                else if (['example', '예시'].includes(type)) prefix = '예시 ';
+                
+                const num = allCallouts.indexOf(calloutNode) + 1;
+                const dataPrefix = calloutNode.getAttribute('data-prefix') || '';
+                const finalStr = prefix + dataPrefix + num + '. ';
+                
+                if (!cArr[index].querySelector('.baked-num')) {
+                    const numSpan = document.createElement('span');
+                    numSpan.className = 'baked-num';
+                    numSpan.textContent = finalStr;
+                    cArr[index].prepend(numSpan);
+                }
+            } else if (type === 'proof' || type === '증명') {
+                if (!cArr[index].querySelector('.baked-num')) {
+                    const numSpan = document.createElement('span');
+                    numSpan.className = 'baked-num';
+                    numSpan.textContent = '증명. ';
+                    cArr[index].prepend(numSpan);
+                }
+            }
+        }
+    }
+});
+// --- 여기까지 ---
+
+
+
+
+
 
             // 🚀 [추가] 팝업 내부의 접힌 콜아웃(Foldable Callout) 펼치기/접기 기능 부활
             const popupCallouts = innerScroll.querySelectorAll('.callout.is-collapsible');
