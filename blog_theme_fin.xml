@@ -6478,19 +6478,57 @@ body.light-mode .comments .comment-form {
 }
 .ref-close-btn:hover { background: rgba(255, 255, 255, 0.2); }
 
-/* 원본 디자인 유지 */
+/* 원본 디자인 유지 - 팝업 내부 텍스트는 수식을 제외하고 절대 기울임꼴이 되지 않도록 강력 제어 */
 .reference-tooltip > p, .ref-inner-scroll > p { margin-top: 0 !important; }
-.reference-tooltip, .reference-tooltip p, .reference-tooltip span:not(.mjx-c) { font-style: normal !important; }
-.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"] { font-style: italic !important; }
-
-/* 🚀 중첩 콜아웃 최적화 */
-.reference-tooltip .callout {
-  margin: 12px 0 0 0 !important;
-  padding: 12px 16px !important;
-  font-size: 0.9em !important;
-  border-radius: 8px !important;
-  box-shadow: none !important;
+.reference-tooltip, 
+.reference-tooltip *, 
+.reference-tooltip p, 
+.reference-tooltip blockquote, 
+.reference-tooltip .callout, 
+.reference-tooltip .callout-title, 
+.reference-tooltip .callout-title-inner,
+.footnote-tooltip,
+.footnote-tooltip *,
+.floating-footnote-content,
+.floating-footnote-content * { 
+    font-style: normal !important; 
 }
+.reference-tooltip .mjx-i, .reference-tooltip [class*="mjx-i"],
+.footnote-tooltip .mjx-i, .footnote-tooltip [class*="mjx-i"],
+.floating-footnote-content .mjx-i, .floating-footnote-content [class*="mjx-i"] { 
+    font-style: italic !important; 
+}
+
+/* --- 📌 팝업 내부 MathJax 수식 반응형 스케일링 및 가로폭 초과 방지 (참조 및 각주 팝업 통합) --- */
+.reference-tooltip mjx-container[display="true"],
+.footnote-tooltip mjx-container[display="true"],
+.floating-footnote-content mjx-container[display="true"] {
+    display: block !important;
+    width: 100% !important;
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    box-sizing: border-box !important;
+    padding: 8px 0 !important;
+    margin: 1em auto !important;
+    text-align: center !important;
+}
+.reference-tooltip mjx-container:not([display="true"]),
+.footnote-tooltip mjx-container:not([display="true"]),
+.floating-footnote-content mjx-container:not([display="true"]) {
+    max-width: 100% !important;
+    overflow-x: auto !important;
+    overflow-y: hidden !important;
+    vertical-align: middle !important;
+}
+.reference-tooltip mjx-container svg,
+.footnote-tooltip mjx-container svg,
+.floating-footnote-content mjx-container svg {
+    max-width: 100% !important;
+    height: auto !important;
+}
+
+
 
 
 /* --- 📌 팝업 내 가상 요소 완전 숨김 --- */
@@ -6503,10 +6541,71 @@ body.light-mode .comments .comment-form {
     display: none !important;
     content: none !important;
 }
+
+
+/* 팝업 내 원본 복제 콜아웃 번호 */
 .baked-num {
-    font-weight: bold;
-    margin-right: 5px;
+    display: block !important;
+    font-size: 1.05em !important;
+    font-weight: 700 !important;
+    margin-bottom: 6px !important;
 }
+
+
+
+
+
+
+
+
+
+
+/* =========================================================
+   [디자인 오버홀] 각주 & 레퍼런스 팝업 본체 UI (모던 카드형)
+========================================================= */
+.reference-tooltip, .floating-footnote-content {
+    background: #141518 !important; /* 투박한 그라데이션 제거, 본문과 동일한 깔끔한 솔리드 다크 */
+    border: 1px solid rgba(255, 255, 255, 0.08) !important; /* 정교한 테두리 */
+    border-radius: 16px !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.4), 0 4px 12px rgba(0, 0, 0, 0.2) !important;
+    /* 기존의 투박한 파란색 세로줄을 강제로 제거하여 내부 콜아웃 디자인과 충돌하는 현상 원천 차단 */
+    border-left: 1px solid rgba(255, 255, 255, 0.08) !important; 
+}
+
+/* ☀️ 라이트 모드 완벽 동기화 */
+body.light-mode .reference-tooltip, 
+body.light-mode .floating-footnote-content {
+    background: #FFFFFF !important;
+    border: 1px solid rgba(0, 0, 0, 0.08) !important;
+    border-left: 1px solid rgba(0, 0, 0, 0.08) !important;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.04) !important;
+}
+
+/* 닫기(X) 버튼 일체감 정돈 */
+.ref-close-btn, .footnote-close-btn {
+    background: rgba(255, 255, 255, 0.06) !important;
+    color: #8B95A1 !important;
+    border-radius: 50% !important;
+    transition: all 0.2s ease !important;
+}
+.ref-close-btn:hover, .footnote-close-btn:hover {
+    background: rgba(255, 255, 255, 0.15) !important;
+    color: #E5E8EB !important;
+}
+body.light-mode .ref-close-btn, body.light-mode .footnote-close-btn {
+    background: rgba(0, 0, 0, 0.04) !important;
+}
+body.light-mode .ref-close-btn:hover, body.light-mode .footnote-close-btn:hover {
+    background: rgba(0, 0, 0, 0.1) !important;
+    color: #191F28 !important;
+}
+
+
+
+
+
+
+
 
 
 
@@ -6691,7 +6790,7 @@ body:not(.light-mode) .floating-footnote-content strong {
 
 
 /* =========================================================
-   일반 콜아웃 아이콘 보이기 및 정렬 (옵시디안 스타일 최적화)
+   일반 콜아웃 아이콘 보이기 및 정렬 (옵시디안 스타일 최적화)
 ========================================================= */
 
 
@@ -6716,27 +6815,27 @@ body:not(.light-mode) .floating-footnote-content strong {
 
 /* 콜아웃 제목 전체 레이아웃 정돈 */
 .callout-title {
-    display: flex !important;
-    align-items: center !important; /* 세로 중앙 정렬 */
-    padding-left: 0 !important; /* 불필요한 기본 여백 제거 */
-    gap: 0 !important; /* 아이콘과 텍스트 사이의 간격은 아이콘의 margin-right가 담당하므로 gap은 초기화 */
+    display: flex !important;
+    align-items: center !important; /* 세로 중앙 정렬 */
+    padding-left: 0 !important; /* 불필요한 기본 여백 제거 */
+    gap: 0 !important; /* 아이콘과 텍스트 사이의 간격은 아이콘의 margin-right가 담당하므로 gap은 초기화 */
 }
 
 /* 텍스트 영역 여백 초기화 */
 .callout-title-inner {
-    margin-left: 0 !important;
-    padding-left: 0 !important;
+    margin-left: 0 !important;
+    padding-left: 0 !important;
 }
 
 /* 접기/펴기 가능한 콜아웃일 때, 화살표 아이콘 우측에 적당한 여백 주기 */
 .callout.is-collapsible .callout-fold-icon {
-    margin-right: 12px !important;
-    flex-shrink: 0 !important;
+    margin-right: 12px !important;
+    flex-shrink: 0 !important;
 }
 
 /* 콜아웃 내부 MathJax 수식 찌그러짐 방지 */
 .callout mjx-container, .callout mjx-container svg {
-    flex-shrink: 0 !important;
+    flex-shrink: 0 !important;
 }
 
 
@@ -7554,11 +7653,11 @@ document.addEventListener('touchend', function(e) {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -9590,45 +9689,63 @@ const targetLi = document.getElementById(targetId);
       
 
 
-// --- 📌 여기서부터 [각주 팝업 번호 고정 로직 (직접 카운팅)] ---
+
+
+// --- 📌 여기서부터 [각주 팝업 번호 고정 로직 (함수 기반 데이터 결합 오버홀)] ---
 const oTitles = targetLi.querySelectorAll('.callout-title-inner');
 const cTitles = innerScroll.querySelectorAll('.callout-title-inner');
 const oArr = targetLi.classList.contains('callout-title-inner') ? [targetLi] : Array.from(oTitles);
 const cArr = innerScroll.classList.contains('callout-title-inner') ? [innerScroll] : Array.from(cTitles);
 
-const countTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'];
-const allCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(c => countTypes.includes(c.getAttribute('data-callout')));
+// 원본 태그 데이터와 브라우저 카운팅 순번을 조합하여 깨지지 않는 순수 문자열을 반환하는 함수
+function bakeCalloutNumber(origNode) {
+    if (!origNode) return null;
+    const callout = origNode.closest('.callout');
+    if (!callout) return null;
+
+    const type = callout.getAttribute('data-callout') || '';
+    const prefix = callout.getAttribute('data-prefix') || '';
+    
+    // 블로그 본문 안에 실제 정의된 수학 콜아웃만 넘버링 타겟으로 매핑
+    const typeMap = {
+        'definition': '정의', '정의': '정의',
+        'theorem': '정리', '정리': '정리',
+        'lemma': '보조정리', '보조정리': '보조정리',
+        'corollary': '따름정리', '따름정리': '따름정리',
+        'example': '예시', '예시': '예시',
+        'proof': '증명', '증명': '증명'
+    };
+
+    const korType = typeMap[type.toLowerCase()];
+    if (!korType) return null; // 대상이 아니면 번호 생성 안 함
+    if (korType === '증명') return '증명.';
+
+    // 본문 전체 흐름 내에서 이 콜아웃이 몇 번째 타겟 콜아웃인지 직접 계산 (CSS counter와 100% 동기화)
+    const allCountableCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(el => {
+        const t = (el.getAttribute('data-callout') || '').toLowerCase();
+        return ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'].includes(t);
+    });
+    
+    const currentIndex = allCountableCallouts.indexOf(callout);
+    if (currentIndex === -1) return null;
+    
+    const counterValue = currentIndex + 1; // 1-based index
+    return `${korType} ${prefix}${counterValue}.`;
+}
 
 oArr.forEach((orig, index) => {
     if (cArr[index]) {
-        const calloutNode = orig.closest('.callout');
-        if (calloutNode) {
-            const type = calloutNode.getAttribute('data-callout');
-            if (countTypes.includes(type)) {
-                let prefix = '';
-                if (['definition', '정의'].includes(type)) prefix = '정의 ';
-                else if (['theorem', '정리'].includes(type)) prefix = '정리 ';
-                else if (['lemma', '보조정리'].includes(type)) prefix = '보조정리 ';
-                else if (['corollary', '따름정리'].includes(type)) prefix = '따름정리 ';
-                else if (['example', '예시'].includes(type)) prefix = '예시 ';
-                
-                const num = allCallouts.indexOf(calloutNode) + 1;
-                const dataPrefix = calloutNode.getAttribute('data-prefix') || '';
-                const finalStr = prefix + dataPrefix + num + '. ';
-                
-                if (!cArr[index].querySelector('.baked-num')) {
-                    const numSpan = document.createElement('span');
-                    numSpan.className = 'baked-num';
-                    numSpan.textContent = finalStr;
-                    cArr[index].prepend(numSpan);
-                }
-            } else if (type === 'proof' || type === '증명') {
-                if (!cArr[index].querySelector('.baked-num')) {
-                    const numSpan = document.createElement('span');
-                    numSpan.className = 'baked-num';
-                    numSpan.textContent = '증명. ';
-                    cArr[index].prepend(numSpan);
-                }
+        const finalNumberString = bakeCalloutNumber(orig);
+        if (finalNumberString) {
+            // 원본 콜아웃 스타일의 고유 컬러 데이터 추출
+            const origColor = window.getComputedStyle(orig).color;
+            
+            if (!cArr[index].querySelector('.baked-num')) {
+                const numSpan = document.createElement('span');
+                numSpan.className = 'baked-num';
+                numSpan.textContent = finalNumberString + ' ';
+                numSpan.style.color = origColor;
+                cArr[index].prepend(numSpan);
             }
         }
     }
@@ -11574,74 +11691,118 @@ function removeActiveTooltip() {
             const innerScroll = document.createElement('div');
             innerScroll.className = 'ref-inner-scroll';
 
-let contentHtml = targetEl.innerHTML;
-            contentHtml = contentHtml.replace(/<a[^>]*class="[^"]*footnote-backref[^"]*"[^>]*>.*?<\/a>/gi, '');
-            innerScroll.innerHTML = contentHtml; // 툴팁 본체가 아닌 래퍼 안에 내용을 넣음
+            // 🚀 1. 이미 렌더링된 원본 콜아웃 요소를 깊은 복제(Deep Clone)
+            const clone = targetEl.cloneNode(true);
 
+            // 🚀 1.5. [번호 굽기] 원본의 가상 요소(::before) 텍스트를 실시간으로 가져와 복제본에 심어주기 (fallback 포함)
+            const origTitles = targetEl.querySelectorAll('.callout-title-inner');
+            const cloneTitles = clone.querySelectorAll('.callout-title-inner');
 
-// --- 📌 여기서부터 [레퍼런스 팝업 번호 고정 로직 (직접 카운팅)] ---
-const oTitles = targetEl.querySelectorAll('.callout-title-inner');
-const cTitles = innerScroll.querySelectorAll('.callout-title-inner');
-const oArr = targetEl.classList.contains('callout-title-inner') ? [targetEl] : Array.from(oTitles);
-const cArr = innerScroll.classList.contains('callout-title-inner') ? [innerScroll] : Array.from(cTitles);
+            const oArr = targetEl.classList.contains('callout-title-inner') ? [targetEl] : Array.from(origTitles);
+            const cArr = clone.classList.contains('callout-title-inner') ? [clone] : Array.from(cloneTitles);
 
-const countTypes = ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'];
-const allCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(c => countTypes.includes(c.getAttribute('data-callout')));
+            oArr.forEach((orig, index) => {
+                if (cArr[index]) {
+                    const beforeStyle = window.getComputedStyle(orig, '::before');
+                    let beforeContent = beforeStyle.content;
+                    let finalNumberString = '';
 
-oArr.forEach((orig, index) => {
-    if (cArr[index]) {
-        const calloutNode = orig.closest('.callout');
-        if (calloutNode) {
-            const type = calloutNode.getAttribute('data-callout');
-            if (countTypes.includes(type)) {
-                let prefix = '';
-                if (['definition', '정의'].includes(type)) prefix = '정의 ';
-                else if (['theorem', '정리'].includes(type)) prefix = '정리 ';
-                else if (['lemma', '보조정리'].includes(type)) prefix = '보조정리 ';
-                else if (['corollary', '따름정리'].includes(type)) prefix = '따름정리 ';
-                else if (['example', '예시'].includes(type)) prefix = '예시 ';
-                
-                const num = allCallouts.indexOf(calloutNode) + 1;
-                const dataPrefix = calloutNode.getAttribute('data-prefix') || '';
-                const finalStr = prefix + dataPrefix + num + '. ';
-                
-                if (!cArr[index].querySelector('.baked-num')) {
-                    const numSpan = document.createElement('span');
-                    numSpan.className = 'baked-num';
-                    numSpan.textContent = finalStr;
-                    cArr[index].prepend(numSpan);
+                    // ① 실시간 렌더링된 가상 요소 텍스트 추출 시도
+                    if (beforeContent && beforeContent !== 'none' && beforeContent !== 'normal') {
+                        beforeContent = beforeContent.replace(/^['"]|['"]$/g, '').trim();
+                        // attr이나 counter 키워드가 그대로 노출되는 원시 CSS 표현식이 아닐 때만 사용
+                        if (beforeContent && !beforeContent.includes('attr(') && !beforeContent.includes('counter(')) {
+                            finalNumberString = beforeContent;
+                        }
+                    }
+
+                    // ② 추출 실패 시 (또는 브라우저가 원시 CSS 표현식을 반환했을 때) 안전한 JS Fallback 작동
+                    if (!finalNumberString) {
+                        const callout = orig.closest('.callout');
+                        if (callout) {
+                            const type = callout.getAttribute('data-callout') || '';
+                            // data-prefix는 .callout-title-inner(orig) 요소에 저장되어 있으므로 orig에서 우선 탐색
+                            const prefix = orig.getAttribute('data-prefix')
+                                || callout.querySelector('.callout-title-inner')?.getAttribute('data-prefix')
+                                || callout.getAttribute('data-prefix')
+                                || '';
+                            const typeMap = {
+                                'definition': '정의', '정의': '정의',
+                                'theorem': '정리', '정리': '정리',
+                                'lemma': '보조정리', '보조정리': '보조정리',
+                                'corollary': '따름정리', '따름정리': '따름정리',
+                                'example': '예시', '예시': '예시',
+                                'proof': '증명', '증명': '증명'
+                            };
+                            const korType = typeMap[type.toLowerCase()];
+                            if (korType) {
+                                if (korType === '증명') {
+                                    finalNumberString = '증명.';
+                                } else {
+                                    const allCountableCallouts = Array.from(document.querySelectorAll('.post-body .callout')).filter(el => {
+                                        const t = (el.getAttribute('data-callout') || '').toLowerCase();
+                                        return ['definition', '정의', 'theorem', '정리', 'lemma', '보조정리', 'corollary', '따름정리', 'example', '예시'].includes(t);
+                                    });
+                                    const currentIndex = allCountableCallouts.indexOf(callout);
+                                    if (currentIndex !== -1) {
+                                        finalNumberString = `${korType} ${prefix}${currentIndex + 1}.`;
+                                    }
+                                }
+                            }
+                        }
+                    }
+
+                    // ③ 번호가 성공적으로 생성되었다면 주입
+                    if (finalNumberString) {
+                        const numSpan = document.createElement('span');
+                        numSpan.className = 'baked-num';
+                        numSpan.textContent = finalNumberString + ' ';
+                        
+                        // 색상, 폰트 크기, 투명도 등 스타일 그대로 복사 (기본값 설정 포함)
+                        numSpan.style.color = (beforeStyle && beforeStyle.color !== 'rgba(0, 0, 0, 0)') ? beforeStyle.color : '';
+                        numSpan.style.fontSize = (beforeStyle && beforeStyle.fontSize) ? beforeStyle.fontSize : '0.85em';
+                        numSpan.style.opacity = (beforeStyle && beforeStyle.opacity) ? beforeStyle.opacity : '0.9';
+
+                        cArr[index].prepend(numSpan);
+                    }
                 }
-            } else if (type === 'proof' || type === '증명') {
-                if (!cArr[index].querySelector('.baked-num')) {
-                    const numSpan = document.createElement('span');
-                    numSpan.className = 'baked-num';
-                    numSpan.textContent = '증명. ';
-                    cArr[index].prepend(numSpan);
+            });
+
+            // 🚀 2. ID 중복 방지를 위해 복제본 노드와 모든 하위 요소의 id 속성 완전히 제거
+            clone.removeAttribute('id');
+            clone.querySelectorAll('[id]').forEach(el => el.removeAttribute('id'));
+
+            // 🚀 3. 팝업 내부에서 작동할 필요가 없는 각주 역링크(backref) 제거
+            clone.querySelectorAll('a.footnote-backref').forEach(el => el.remove());
+
+            // 🚀 4. 팝업 최상위(바깥쪽) 콜아웃만 무조건 펼치고(is-collapsed 제거), 내부에 중첩된(하위) 접이식 콜아웃들은 접었다 폈다 클릭할 수 있게 개별 대응
+            if (clone.classList.contains('is-collapsible')) {
+                clone.classList.remove('is-collapsed');
+                const titleArea = clone.querySelector('.callout-title');
+                if (titleArea) {
+                    titleArea.style.cursor = 'default'; // 최상위 콜아웃은 팝업 내에서 더 이상 접히지 않으므로 기본 커서
                 }
             }
-        }
-    }
-});
-// --- 여기까지 ---
 
+            // 중첩된 하위 접이식 콜아웃들에 대해 접고 펴는 토글 클릭 이벤트 연결
+            const nestedCollapsibleCallouts = clone.querySelectorAll('.callout.is-collapsible');
+            nestedCollapsibleCallouts.forEach(nestedCallout => {
+                // clone 자체가 .callout.is-collapsible일 경우 nestedCallout에 clone이 잡히므로 이는 최상위이므로 제외
+                if (nestedCallout === clone) return;
 
-
-
-
-
-            // 🚀 [추가] 팝업 내부의 접힌 콜아웃(Foldable Callout) 펼치기/접기 기능 부활
-            const popupCallouts = innerScroll.querySelectorAll('.callout.is-collapsible');
-            popupCallouts.forEach(callout => {
-                const titleArea = callout.querySelector('.callout-title');
+                const titleArea = nestedCallout.querySelector('.callout-title');
                 if (titleArea) {
-                    titleArea.style.cursor = 'pointer';
+                    titleArea.style.cursor = 'pointer'; // 클릭 가능하게 손가락 커서 적용
                     titleArea.addEventListener('click', function(ev) {
                         ev.preventDefault();
-                        ev.stopPropagation(); // 클릭 시 팝업이 닫히거나 스크롤이 튀는 현상 방지
-                        callout.classList.toggle('is-collapsed');
+                        ev.stopPropagation(); // 클릭 시 부모 팝업 스크롤이나 닫기 이벤트 등으로 튀는 현상 방지
+                        nestedCallout.classList.toggle('is-collapsed');
                     });
                 }
             });
+
+            // 🚀 5. 완전히 복제되고 정제된 콜아웃 요소를 스크롤 래퍼에 삽입
+            innerScroll.appendChild(clone);
 
             // 🚀 X (닫기) 버튼 강제 주입
 
