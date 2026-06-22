@@ -269,13 +269,13 @@ body { background: var(--bg-base) !important; color: var(--text-primary) !import
 <Group description="Posts" selector="div.widget.Blog">
   <Variable name="posts.title.color" description="Post title color"
       type="color"
-      default="#3182F6"  value="#3182f6"/>
+      default="#3182F6"  value="#F2F4F6"/>
   <Variable name="posts.title.font" description="Post title font"
       type="font"
-      default="$(robotoBold22)"  value="normal bold 22px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+      default="$(robotoBold22)"  value="normal bold 22px Pretendard, -apple-system, BlinkMacSystemFont, sans-serif"/>
   <Variable name="posts.stream.title.font" description="Post title stream font"
       type="font"
-      default="$(robotoBold30)"  value="normal bold 30px Arial, Tahoma, Helvetica, FreeSans, sans-serif"/>
+      default="$(robotoBold30)"  value="normal bold 30px Pretendard, -apple-system, BlinkMacSystemFont, sans-serif"/>
   <Variable name="posts.text.font" description="Post text font"
       type="font"
       default="$(body.text.font)"  value="normal normal 15px &#39;Times New Roman&#39;, Times, FreeSerif, serif"/>
@@ -404,14 +404,14 @@ body { background: var(--bg-base) !important; color: var(--text-primary) !import
   <Variable name="labels.text.color"
       description="Label text color"
       type="color"
-      default="$(body.link.color)"  value="#f8f8f2"/>
+      default="$(body.link.color)"  value="#5C9DFF"/>
   <Variable name="labels.background.color"
       description="Label background color"
       type="color"
       red="$(labels.text.color.red)"
       green="$(labels.text.color.green)"
       blue="$(labels.text.color.blue)"
-      default="rgba($red, $green, $blue, 0.05)"  value="#44475a"/>
+      default="rgba($red, $green, $blue, 0.05)"  value="#1a2744"/>
 </Group>
 
 <Group description="Attribution" selector=".widget.Attribution">
@@ -2420,6 +2420,42 @@ padding:3px 8px
 .Label a,.byline.post-labels a{
 color:$(labels.text.color)
 }
+
+/* === 모던 태그(Label) 스타일 — Dracula 팔레트 교체 === */
+.Label li, .Label span.label-size, .byline.post-labels a {
+  background-color: rgba(49, 130, 246, 0.08) !important;
+  border: 1px solid rgba(49, 130, 246, 0.2) !important;
+  border-radius: 8px !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  padding: 4px 10px !important;
+  letter-spacing: 0.02em !important;
+  transition: background 0.2s ease, border-color 0.2s ease !important;
+}
+.Label a, .byline.post-labels a {
+  color: #5C9DFF !important;
+}
+.Label li:hover, .byline.post-labels a:hover {
+  background-color: rgba(49, 130, 246, 0.15) !important;
+  border-color: rgba(49, 130, 246, 0.4) !important;
+  color: #7DB8FF !important;
+}
+body.light-mode .Label li,
+body.light-mode .Label span.label-size,
+body.light-mode .byline.post-labels a {
+  background-color: rgba(49, 130, 246, 0.06) !important;
+  border-color: rgba(49, 130, 246, 0.18) !important;
+}
+body.light-mode .Label a,
+body.light-mode .byline.post-labels a {
+  color: #1B64DA !important;
+}
+body.light-mode .Label li:hover,
+body.light-mode .byline.post-labels a:hover {
+  background-color: rgba(49, 130, 246, 0.12) !important;
+  border-color: rgba(49, 130, 246, 0.3) !important;
+  color: #3182F6 !important;
+}
 .Label ul{
 list-style:none;
 padding:0
@@ -3271,7 +3307,7 @@ span.math, span.math.inline, span.math.display {
 
 /* 모든 SVG (사용자 삽입 + MathJax) 수평 정렬 근본 해결 */
 .post-body svg, #comments svg, .MathJax_SVG {
-	max-width: 100%;
+    max-width: 100%;
   height: auto;
   /* 클릭/드래그 방지 유지 */
   pointer-events: none !important;
@@ -3333,11 +3369,41 @@ body.light-mode div.code-toolbar.hidden-section-content,
     opacity: 0 !important;
 }
 
-/* === 본문 내 강조 텍스트 (** **) 토스 블루 포인트 적용 === */
+/* === 본문 내 강조 텍스트 (** **) — 토스 블루, 다크/라이트 공통 === */
 .post-body strong, 
 .post-body b { 
   color: #3182F6 !important; /* 토스 시그니처 블루 */
   font-weight: 700 !important;
+}
+/* strong/b 안의 링크는 링크 색상 우선 (강조 색 오버라이드 방지) */
+.post-body strong a,
+.post-body b a,
+.reference-tooltip strong a,
+.reference-tooltip b a,
+.footnote-tooltip strong a,
+.footnote-tooltip b a,
+.floating-footnote-content strong a,
+.floating-footnote-content b a {
+  color: var(--link-color, #8ad3ee) !important;
+}
+body.light-mode .post-body strong a,
+body.light-mode .post-body b a,
+body.light-mode .reference-tooltip strong a,
+body.light-mode .reference-tooltip b a,
+body.light-mode .footnote-tooltip strong a,
+body.light-mode .footnote-tooltip b a,
+body.light-mode .floating-footnote-content strong a,
+body.light-mode .floating-footnote-content b a {
+  color: var(--link-color, #1B64DA) !important;
+}
+/* strong/b 안의 MathJax도 동일하게 토스 블루 */
+.post-body strong mjx-container,
+.post-body b mjx-container,
+.post-body strong .MathJax,
+.post-body b .MathJax,
+.post-body strong .MathJax_SVG,
+.post-body b .MathJax_SVG {
+  color: #3182F6 !important;
 }
 
 
@@ -3381,7 +3447,6 @@ body.light-mode div.code-toolbar.hidden-section-content,
 /* 제목 넘버링 & 강조색 */
 
 .post-body h2 { border-bottom: 1px solid rgba(255, 255, 255, 0.08); color: #F2F4F6; }
-.post-body strong, .post-body b { color: #3182F6 !important; font-weight: 700; }
 
 
 /* 스크롤바 커스텀 */
@@ -3464,12 +3529,27 @@ body.light-mode div.code-toolbar.hidden-section-content,
   /* 2. 블러(Blur) 효과 완전히 끄고, 대신 불투명한 단색 배경으로 대체 */
   .centered-top-container.sticky, 
   .blog-name,
-  #toc-wrapper, 
-  .sidebar-container { 
+  #toc-wrapper { 
     backdrop-filter: none !important; 
     -webkit-backdrop-filter: none !important;
     background: rgba(22, 23, 27, 0.98) !important;
     box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+  }
+  .sidebar-container {
+    backdrop-filter: none !important;
+    -webkit-backdrop-filter: none !important;
+    background: rgba(22, 23, 27, 0.98) !important;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.2) !important;
+  }
+  /* 라이트 모드 사이드바 — 흰색 배경 */
+  body.light-mode .sidebar-container {
+    background: rgba(255, 255, 255, 0.98) !important;
+    box-shadow: 2px 0 12px rgba(0,0,0,0.08) !important;
+  }
+  body.light-mode .sidebar-container .widget li,
+  body.light-mode .sidebar-container .widget a,
+  body.light-mode .sidebar-container .widget .title {
+    color: #191F28 !important;
   }
   
   #toc-wrapper.folded {
@@ -4923,6 +5003,51 @@ body.light-mode b .MathJax_SVG * {
    [라이트 모드] 댓글창 하얀색 글씨 증발 버그 완벽 해결
 ========================================================= */
 
+/* =========================================================
+   ☀️ 라이트모드 누락 요소 보정 — 흰색 텍스트 → 어두운 색으로
+========================================================= */
+/* strong/b 강조 텍스트 — 라이트모드도 토스 블루 유지 */
+body.light-mode .post-body strong,
+body.light-mode .post-body b {
+  color: #3182F6 !important;
+}
+/* 블로그 제목 (비-sticky 상태) */
+body.light-mode .Header h1,
+body.light-mode .Header h1 a {
+  color: #191F28 !important;
+}
+/* 댓글 작성자명, 댓글 폼 제목 */
+body.light-mode .comments .comment-header .user,
+body.light-mode .comments h4#comment-post-message {
+  color: #191F28 !important;
+}
+/* 시리즈 제목 */
+body.light-mode .series-title {
+  color: #333D4B !important;
+}
+/* 이전/다음 글 버튼 텍스트 */
+body.light-mode .nav-btn .tit {
+  color: #333D4B !important;
+}
+/* 더보기 버튼 */
+body.light-mode .load-more-btn {
+  background: #F2F4F6 !important;
+  color: #191F28 !important;
+  border-color: rgba(0,0,0,0.08) !important;
+}
+/* 공지 제목 */
+body.light-mode .notice-title {
+  color: #333D4B !important;
+}
+/* 검색 입력창 */
+body.light-mode #spotlight-input {
+  color: #191F28 !important;
+}
+/* 플로팅 각주 팝업 */
+body.light-mode .footnote-inner-scroll {
+  color: #333D4B !important;
+}
+
 /* 1. 이미 작성된 댓글의 내용, 작성자 이름, 안내 문구 색상 반전 */
 body.light-mode #comments .comment-content,
 body.light-mode #comments .comment-body,
@@ -5017,6 +5142,14 @@ body.latex-font mjx-container[display="true"] {
   font-weight: 800 !important;
   letter-spacing: -0.5px !important;
   text-shadow: 0 0 8px rgba(255, 255, 255, 0.08) !important; /* 아주 은은한 글로우 (밝기 대폭 축소) */
+}
+
+/* 라이트 모드 포스트 제목: 흰색 대신 진한 색으로 */
+body.light-mode .post-title,
+body.light-mode .post-title a,
+body.light-mode .post-title a:hover,
+body.light-mode .post-title a:visited {
+  color: #191F28 !important;
 }
 
 /* 라이트 모드에서는 하얀 빛이 안 보이므로, 텍스트가 또렷해 보이게 아주 옅은 검은 그림자로 대체 */
@@ -5698,7 +5831,71 @@ div.code-toolbar > .toolbar .toolbar-item button.latex-overleaf-btn { min-width:
 }
 
 
+/* =========================================================
+   [포스트 카드] 16:9 썸네일 + 제목 흰색 + 라벨 오버레이
+========================================================= */
 
+/* 1. 홈 목록에서 썸네일을 16:9 전체 너비로 전환 */
+body:not(.item-view) .Blog .blog-posts .post-body .snippet-thumbnail {
+  float: none !important;
+  width: 100% !important;
+  height: auto !important;
+  aspect-ratio: 16 / 9 !important;
+  flex: none !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  max-width: 100% !important;
+  margin: 0 0 14px 0 !important;
+  border-radius: 14px !important;
+  overflow: hidden !important;
+  position: relative !important;
+}
+body:not(.item-view) .Blog .blog-posts .post-body .snippet-thumbnail img {
+  width: 100% !important;
+  height: 100% !important;
+  min-width: unset !important;
+  min-height: unset !important;
+  max-width: 100% !important;
+  max-height: unset !important;
+  object-fit: cover !important;
+  border-radius: 0 !important;
+}
+
+/* 2. 제목 hover 시 파란색 포인트 */
+body:not(.item-view) .post-title a:hover {
+  color: #3182F6 !important;
+  transition: color 0.2s ease !important;
+}
+.post-title a {
+  transition: color 0.2s ease;
+}
+
+/* 3. 썸네일 위 라벨 오버레이 CSS (JS가 DOM 이동 후 적용) */
+body:not(.item-view) .snippet-thumbnail .byline.post-labels {
+  position: absolute !important;
+  bottom: 10px !important;
+  left: 10px !important;
+  z-index: 5 !important;
+  margin: 0 !important;
+  display: flex !important;
+  flex-wrap: wrap !important;
+  gap: 4px !important;
+}
+body:not(.item-view) .snippet-thumbnail .byline.post-labels a {
+  background: rgba(10, 11, 14, 0.65) !important;
+  backdrop-filter: blur(8px) !important;
+  -webkit-backdrop-filter: blur(8px) !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #EDEDED !important;
+  font-size: 11px !important;
+  padding: 3px 9px !important;
+  border-radius: 6px !important;
+}
+body:not(.item-view) .snippet-thumbnail .byline.post-labels a:hover {
+  background: rgba(49, 130, 246, 0.75) !important;
+  border-color: rgba(49, 130, 246, 0.5) !important;
+  color: #fff !important;
+}
 
 /* =========================================================
    [OVERHAUL] 표(Table) 디자인 및 라이트 모드 완벽 동기화
@@ -7011,6 +7208,24 @@ body:not(.light-mode) .footnote-tooltip strong,
 body:not(.light-mode) .floating-footnote-content strong {
   color: #3182F6 !important;
 }
+/* 팝업 내 strong 안의 링크는 링크 색상 유지 (Toss Blue 강제 방지) */
+.reference-tooltip strong a,
+.reference-tooltip b a,
+.footnote-tooltip strong a,
+.footnote-tooltip b a,
+.floating-footnote-content strong a,
+.floating-footnote-content b a {
+  color: var(--link-color, #8ad3ee) !important;
+  font-weight: inherit;
+}
+body.light-mode .reference-tooltip strong a,
+body.light-mode .reference-tooltip b a,
+body.light-mode .footnote-tooltip strong a,
+body.light-mode .footnote-tooltip b a,
+body.light-mode .floating-footnote-content strong a,
+body.light-mode .floating-footnote-content b a {
+  color: var(--link-color, #1B64DA) !important;
+}
 
 
 
@@ -7364,7 +7579,7 @@ html {
 
             <b:if cond='data:post.featuredImage'>
               <div class='snippet-thumbnail'>
-                <b:include data='{                                     image: data:post.featuredImage,                                     imageSizes: [32, 64, 128, 256],                                     imageRatio: &quot;1:1&quot;,                                     sourceSizes: &quot;(max-width: 800px) 20vw, 128px&quot;                                  }' name='responsiveImage'/>
+                <b:include data='{                                     image: data:post.featuredImage,                                     imageSizes: [256, 512, 945, 1684],                                     imageRatio: &quot;16:9&quot;,                                     sourceSizes: &quot;(max-width: 800px) calc(100vw - 32px), 640px&quot;                                  }' name='responsiveImage'/>
               </div>
             </b:if>
             <b:include cond='data:post' data='post' name='postSnippet'/>
@@ -7966,7 +8181,7 @@ document.addEventListener('touchend', function(e) {
                   <b:comment>Nav primarily intended for sections that consist of major navigation blocks.</b:comment>
                   <nav role='navigation'>
                     <b:section class='clearboth' id='page_list_top' name='Page List (Top)' showaddelement='false'>
-                      <b:widget id='PageList1' locked='true' title='페이지' type='PageList' visible='false'>
+                      <b:widget cond='!data:view.isPost' id='PageList1' locked='true' title='페이지' type='PageList' visible='false'>
                         <b:widget-settings>
                           <b:widget-setting name='pageListJson'>{}</b:widget-setting>
                           <b:widget-setting name='homeTitle'>홈</b:widget-setting>
@@ -8110,7 +8325,7 @@ document.addEventListener('touchend', function(e) {
                   </div>
                 </b:if>
                 <b:section class='main' id='page_body' name='Page Body' showaddelement='false'>
-                  <b:widget id='FeaturedPost1' locked='true' title='추천 게시물' type='FeaturedPost' version='2' visible='false'>
+                  <b:widget cond='data:view.isHomepage' id='FeaturedPost1' locked='true' title='추천 게시물' type='FeaturedPost' version='2' visible='false'>
                     <b:widget-settings>
                       <b:widget-setting name='showSnippet'>true</b:widget-setting>
                       <b:widget-setting name='showPostTitle'>true</b:widget-setting>
@@ -8785,7 +9000,7 @@ document.addEventListener('touchend', function(e) {
 
             <b:if cond='data:post.featuredImage'>
               <div class='snippet-thumbnail'>
-                <b:include data='{                                     image: data:post.featuredImage,                                     imageSizes: [32, 64, 128, 256],                                     imageRatio: &quot;1:1&quot;,                                     sourceSizes: &quot;(max-width: 800px) 20vw, 128px&quot;                                  }' name='responsiveImage'/>
+                <b:include data='{                                     image: data:post.featuredImage,                                     imageSizes: [256, 512, 945, 1684],                                     imageRatio: &quot;16:9&quot;,                                     sourceSizes: &quot;(max-width: 800px) calc(100vw - 32px), 640px&quot;                                  }' name='responsiveImage'/>
               </div>
             </b:if>
             <b:include cond='data:post' data='post' name='postSnippet'/>
@@ -9098,7 +9313,7 @@ document.addEventListener('touchend', function(e) {
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
 </b:includable>
                   </b:widget>
-                  <b:widget id='PopularPosts1' locked='true' title='post-of-the-week' type='PopularPosts' version='2' visible='true'>
+                  <b:widget cond='data:view.isSingleItem and data:posts any (p =&gt; p.id != data:view.postId)' id='PopularPosts1' locked='true' title='post-of-the-week' type='PopularPosts' version='2' visible='true'>
                     <b:widget-settings>
                       <b:widget-setting name='numItemsToShow'>3</b:widget-setting>
                       <b:widget-setting name='showThumbnails'>true</b:widget-setting>
@@ -10789,6 +11004,23 @@ document.addEventListener("DOMContentLoaded", () => {
 //]]>
 </script>
     
+
+    <script type='text/javascript'>
+//<![CDATA[
+/* === 홈 카드 — 라벨 뱃지를 썸네일 위로 이동 === */
+document.addEventListener("DOMContentLoaded", function() {
+  if (document.body.classList.contains('item-view')) return;
+  document.querySelectorAll('.Blog .post-outer-container').forEach(function(card) {
+    var thumb = card.querySelector('.snippet-thumbnail');
+    var labels = card.querySelector('.post-bottom .byline.post-labels');
+    if (!thumb || !labels || !labels.querySelector('a')) return;
+    var clone = labels.cloneNode(true);
+    thumb.appendChild(clone);
+    labels.style.display = 'none';
+  });
+});
+//]]>
+</script>
 
     <script type='text/javascript'>
 //<![CDATA[
