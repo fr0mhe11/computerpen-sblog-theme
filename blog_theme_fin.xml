@@ -3914,7 +3914,7 @@ body .callout:not([data-callout="theorem"]):not([data-callout="정리"]):not([da
     border-top: 1px solid rgba(255, 255, 255, 0.05);
     max-height: 350px;
     overflow-y: auto;
-    background: rgba(15, 16, 18, 0.6);
+    background: rgba(255, 255, 255, 0.02); /* 새 다크 팔레트에 맞게 투명 */
 }
 .series-dropdown-list {
     list-style: none !important; 
@@ -4384,7 +4384,7 @@ body.light-mode:not(.item-view) .post-outer-container {
 
 .load-more-wrapper {
   display: flex; justify-content: center; margin: 40px 0 80px 0; padding-top: 30px;
-  border-top: 1px solid rgba(255, 255, 255, 0.05); clear: both;
+  border-top: none; clear: both;
 }
 
 .load-more-btn {
@@ -4406,7 +4406,7 @@ body.light-mode:not(.item-view) .post-outer-container {
 @keyframes lm-spin { to { transform: rotate(360deg); } }
 
 /* ☀️ 라이트 모드 완벽 동기화 */
-body.light-mode .load-more-wrapper { border-top-color: rgba(0, 0, 0, 0.05); }
+body.light-mode .load-more-wrapper { border-top: none; }
 body.light-mode .load-more-btn { background: #FFFFFF; border-color: rgba(0, 0, 0, 0.1); color: #333D4B; }
 body.light-mode .lm-spinner { border-color: rgba(0, 0, 0, 0.1); border-top-color: #FFF; }
 
