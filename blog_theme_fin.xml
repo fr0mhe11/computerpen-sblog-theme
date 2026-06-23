@@ -8181,7 +8181,7 @@ document.addEventListener('touchend', function(e) {
                   <b:comment>Nav primarily intended for sections that consist of major navigation blocks.</b:comment>
                   <nav role='navigation'>
                     <b:section class='clearboth' id='page_list_top' name='Page List (Top)' showaddelement='false'>
-                      <b:widget cond='!data:view.isPost' id='PageList1' locked='true' title='페이지' type='PageList' visible='false'>
+                      <b:widget id='PageList1' locked='true' title='페이지' type='PageList' visible='false'>
                         <b:widget-settings>
                           <b:widget-setting name='pageListJson'>{}</b:widget-setting>
                           <b:widget-setting name='homeTitle'>홈</b:widget-setting>
@@ -8325,7 +8325,7 @@ document.addEventListener('touchend', function(e) {
                   </div>
                 </b:if>
                 <b:section class='main' id='page_body' name='Page Body' showaddelement='false'>
-                  <b:widget cond='data:view.isHomepage' id='FeaturedPost1' locked='true' title='추천 게시물' type='FeaturedPost' version='2' visible='false'>
+                  <b:widget id='FeaturedPost1' locked='true' title='추천 게시물' type='FeaturedPost' version='2' visible='false'>
                     <b:widget-settings>
                       <b:widget-setting name='showSnippet'>true</b:widget-setting>
                       <b:widget-setting name='showPostTitle'>true</b:widget-setting>
@@ -9313,7 +9313,7 @@ document.addEventListener('touchend', function(e) {
   <!-- LINT.ThenChange(//depot/google3/java/com/google/blogger/b2/layouts/widgets/v2-style.css) -->
 </b:includable>
                   </b:widget>
-                  <b:widget cond='data:view.isSingleItem and data:posts any (p =&gt; p.id != data:view.postId)' id='PopularPosts1' locked='true' title='post-of-the-week' type='PopularPosts' version='2' visible='true'>
+                  <b:widget id='PopularPosts1' locked='true' title='post-of-the-week' type='PopularPosts' version='2' visible='true'>
                     <b:widget-settings>
                       <b:widget-setting name='numItemsToShow'>3</b:widget-setting>
                       <b:widget-setting name='showThumbnails'>true</b:widget-setting>
