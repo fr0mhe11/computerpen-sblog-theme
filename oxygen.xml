@@ -73,45 +73,69 @@ svg: {
   
   
   /* =========================================================
-  제목 수식 색상 보정 및 태그 호버 가독성 개선 패치
+  제목 수식 색상 보정 및 태그 호버 가독성 개선 패치 (라이트 모드 대응)
   ========================================================= */
 
   /* 1. 타이틀 내부의 수식은 파란색 강제를 무시하고 타이틀 원래 색상(상속)을 따르도록 설정 */
+  /* 1. 제목 및 사이드바(보관함, 인기글 등) 내부 수식 파란색 강제 무시 (원래 텍스트 색상 상속) */
   .post-title mjx-container,
   .post-title .MathJax_SVG,
   .post-title a mjx-container,
-  .post-title a .MathJax_SVG {
+  .post-title a .MathJax_SVG,
+  .sidebar-container .widget a mjx-container,
+  .sidebar-container .widget a .MathJax_SVG,
+  .PopularPosts a mjx-container,
+  .PopularPosts a .MathJax_SVG {
   color: inherit !important;
   }
+
   .post-title mjx-container svg,
   .post-title mjx-container svg [fill=&quot;currentColor&quot;],
   .post-title .MathJax_SVG *,
-  .post-title .MathJax_SVG [fill=&quot;currentColor&quot;] {
+  .post-title .MathJax_SVG [fill=&quot;currentColor&quot;],
+  .sidebar-container .widget a mjx-container svg,
+  .sidebar-container .widget a mjx-container svg [fill=&quot;currentColor&quot;],
+  .sidebar-container .widget a .MathJax_SVG *,
+  .sidebar-container .widget a .MathJax_SVG [fill=&quot;currentColor&quot;],
+  .PopularPosts a mjx-container svg,
+  .PopularPosts a mjx-container svg [fill=&quot;currentColor&quot;],
+  .PopularPosts a .MathJax_SVG *,
+  .PopularPosts a .MathJax_SVG [fill=&quot;currentColor&quot;] {
   fill: currentColor !important;
   stroke: currentColor !important;
   }
 
-  /* 2. 태그(Label) 호버 시 내부 링크(a) 및 상세 버튼의 가독성 개선 (텍스트 흰색 동기화) */
+  /* 2. [다크 모드] 태그(Label) 호버 스타일 (파란색 배경 + 흰색 글씨) */
+  .Label li:hover,
+  .byline.post-labels a:hover {
+  background: linear-gradient(180deg, #5fc3f5, var(--accent)) !important;
+  border-color: rgba(255, 255, 255, 0.3) !important;
+  }
   .Label li:hover a,
-  .Label a:hover,
   .byline.post-labels a:hover {
   color: #FFFFFF !important;
   }
+
+  /* 3. [라이트 모드] 태그(Label) 호버 스타일 (파란색 배경은 동일하게 유지하되, 글씨만 어두운 차콜색으로 가독성 보정) */
+  body.light-mode .Label li:hover,
+  body.light-mode .byline.post-labels a:hover {
+  background: linear-gradient(180deg, #5fc3f5, var(--accent)) !important; /* 다크 모드와 동일한 선명한 블루 배경 */
+  border-color: rgba(0, 0, 0, 0.15) !important;
+  }
   body.light-mode .Label li:hover a,
-  body.light-mode .Label a:hover,
   body.light-mode .byline.post-labels a:hover {
   color: #FFFFFF !important;
   }
+
+  /* 4. 태그 &#39;자세히 보기&#39; 버튼 호버 스타일 */
   .extendable .show-less:hover,
   .extendable .show-more:hover {
   background-color: var(--accent) !important;
   color: #FFFFFF !important;
   border-color: var(--accent) !important;
   }
-  
-  
-  
-  
+
+
   
   
   
@@ -3550,7 +3574,45 @@ body.light-mode .floating-footnote-content b a {
 
 
 @media screen and (max-width: 800px) {
-  
+/* 🚀 1. 전역 블러(Glassmorphism) 강제 비활성화 (모든 요소의 Blur 연산 삭제) */
+* {
+backdrop-filter: none !important;
+-webkit-backdrop-filter: none !important;
+}
+
+/* 🚀 2. 블러가 꺼졌으므로, 유리창(반투명)이었던 패널들을 불투명한 솔리드(단색) 다크 배경으로 덮음 */
+.centered-top-container.sticky,
+#toc-wrapper,
+#settings-panel,
+.search-modal-content,
+.reference-tooltip,
+.floating-footnote-content,
+#callout-modal-box {
+background: #1c232c !important; /* KDE 다크 모드 딥 블랙/그레이 */
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important; /* 무거운 그림자도 가볍게 교체 */
+}
+
+/* 🚀 3. 라이트 모드일 때는 불투명한 솔리드(단색) 화이트/라이트 그레이 배경으로 덮음 */
+body.light-mode .centered-top-container.sticky,
+body.light-mode #toc-wrapper,
+body.light-mode #settings-panel,
+body.light-mode .search-modal-content,
+body.light-mode .reference-tooltip,
+body.light-mode .floating-footnote-content,
+body.light-mode #callout-modal-box {
+background: #f8f9fa !important; /* 토스 라이트 모드 깔끔한 흰색 */
+box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+}
+
+/* 🚀 4. 모달이나 검색창 뒷배경 (화면 전체 덮는 투명막) - 너무 까마면 답답하므로 짙은 반투명으로만 처리 */
+.search-modal-backdrop,
+#callout-modal-overlay {
+background: rgba(15, 16, 18, 0.95) !important;
+}
+body.light-mode .search-modal-backdrop,
+body.light-mode #callout-modal-overlay {
+background: rgba(255, 255, 255, 0.95) !important;
+}
   /* 모바일 터치 파란색 박스 깜빡임 제거 (앱처럼 부드럽게) */
   * { -webkit-tap-highlight-color: transparent !important; }
 
@@ -4611,16 +4673,16 @@ body.light-mode .settings-close:hover {
   margin-top: 16px; color: #B0B8C1; font-size: 15px;
 }
 .setting-item button {
-  background: rgba(255, 255, 255, 0.08);
-  border: 1px solid rgba(255, 255, 255, 0.05);
-  color: #F2F4F6;
-  padding: 8px 16px;
-  border-radius: 12px;
-  cursor: pointer;
-  font-family: inherit;
-  font-size: 14px;
-  font-weight: 600;
-  transition: all 0.2s ease;
+background: rgba(255, 255, 255, 0.08);
+border: 1px solid rgba(255, 255, 255, 0.05);
+color: #F2F4F6;
+padding: 8px 16px;
+border-radius: 12px;
+cursor: pointer;
+font-family: inherit;
+font-size: 14px;
+font-weight: 600;
+transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
 }
 .setting-item button:hover { background: rgba(255, 255, 255, 0.15); }
 .setting-item button.active {
@@ -6511,10 +6573,29 @@ display: flex;
 align-items: center;
 padding: 16px 20px;
 text-decoration: none !important;
-transition: background-color 0.2s;
+transition: background-color 0.2s, color 0.2s, transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275) !important;
 }
+
+/* 🔥 호버 시 직관적인 색상 피드백 (Well-defined feel) */
 .notice-list a:hover {
-background-color: var(--bg-card-hover) !important;
+background-color: rgba(61, 174, 233, 0.08) !important; /* 배경에 옅은 블루 틴트 */
+}
+.notice-list a:hover .notice-title {
+color: var(--accent) !important; /* 제목이 포인트 파란색으로 변경 */
+transform: translateX(2px); /* 텍스트가 살짝 우측으로 밀리는 애니메이션 */
+}
+.notice-list a:hover .notice-badge {
+background: var(--accent) !important; /* 뱃지가 꽉 찬 파란색으로 반전 */
+color: #FFFFFF !important; /* 뱃지 글씨는 흰색으로 */
+box-shadow: 0 0 10px var(--accent-glow) !important; /* 뱃지에 네온 발광 효과 추가 */
+}
+.notice-list a:hover .notice-date {
+color: var(--text-secondary) !important; /* 날짜도 살짝 밝아짐 */
+}
+
+/* 제목과 뱃지에 트랜지션 애니메이션 미리 추가 */
+.notice-title, .notice-badge {
+transition: all 0.2s ease !important;
 }
 
 .notice-badge {
@@ -6555,7 +6636,13 @@ box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 10px 26px rgba(60,110,160,0.
 }
 
 
-
+/* ☀️ 라이트 모드 공지사항 호버 색감 보정 */
+body.light-mode .notice-list a:hover {
+background-color: rgba(45, 143, 201, 0.06) !important; /* 라이트모드용 옅은 블루 틴트 */
+}
+body.light-mode .notice-list a:hover .notice-title {
+color: var(--accent) !important;
+}
 
 
 
@@ -6580,23 +6667,26 @@ box-shadow: inset 0 1px 0 rgba(255,255,255,0.95), 0 10px 26px rgba(60,110,160,0.
   background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
 }
 .search-modal-content {
-  position: relative; width: 90%; max-width: 650px;
-  max-height: 80vh; max-height: 80dvh; /* 💥 핵심: 모달창이 화면의 80%를 절대 넘지 못하게 콘크리트 타설 */
-  display: flex; flex-direction: column; /* 💥 핵심: 내부 스크롤을 위한 플렉스 박스 레이아웃 */
-  background: #141518; border: 1px solid rgba(255,255,255,0.08);
-  border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);
-  transform: translateY(-20px) scale(0.98); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+position: relative; width: 90%; max-width: 650px;
+max-height: 80vh; max-height: 80dvh;
+display: flex; flex-direction: column;
+background: #141518; border: 1px solid rgba(255,255,255,0.08);
+border-radius: 16px; box-shadow: 0 16px 40px rgba(0,0,0,0.5);
+transform: translateY(-20px) scale(0.98); transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+box-sizing: border-box !important; /* 패딩이 너비를 초과하지 못하게 제어 */
 }
 #spotlight-search-modal.active .search-modal-content { transform: translateY(0) scale(1); }
 
 .search-input-wrapper {
-  display: flex; align-items: center; padding: 16px 20px;
-  border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+display: flex; align-items: center; padding: 16px 20px;
+border-bottom: 1px solid rgba(255,255,255,0.08); flex-shrink: 0;
+width: 100%; box-sizing: border-box !important; /* 내부 폭 100% 고정 */
 }
-.search-icon { font-size: 1.2em; margin-right: 12px; opacity: 0.7; }
+.search-icon { font-size: 1.2em; margin-right: 12px; opacity: 0.7; flex-shrink: 0; }
 #spotlight-input {
-  flex-grow: 1; background: transparent; border: none; color: #E5E8EB;
-  font-size: 16px !important; outline: none; /* iOS 화면 자동 확대 버그 방어선 */
+flex-grow: 1; background: transparent; border: none; color: #E5E8EB;
+font-size: 16px !important; outline: none;
+width: 100%; min-width: 0; box-sizing: border-box !important; /* 💥 핵심: 입력창이 화면 밖으로 튀어나가는 현상 완벽 방지 */
 }
 .search-shortcut-hint { font-size: 0.75em; color: #8B95A1; background: rgba(255,255,255,0.1); padding: 4px 8px; border-radius: 6px; }
 .search-cancel-btn { display: none; }
@@ -7485,21 +7575,32 @@ html {
 
 /* Oxygen desktop: blue-grey gradient + soft ambient glow, all in the
    background so it never overlaps content. */
-html { background: #1c232c !important; }
-body {
-  background:
-    radial-gradient(58% 42% at 16% 0%, rgba(61,174,233,0.16), transparent 70%),
-    radial-gradient(52% 38% at 92% 6%, rgba(246,116,0,0.07), transparent 72%),
-    linear-gradient(168deg, #232c36 0%, #1d242c 52%, #19202a 100%) !important;
-  background-attachment: fixed, fixed, fixed !important;
-}
-body.light-mode {
-  background:
-    radial-gradient(58% 42% at 16% 0%, rgba(80,160,225,0.22), transparent 70%),
-    radial-gradient(52% 38% at 92% 6%, rgba(255,180,90,0.12), transparent 72%),
-    linear-gradient(168deg, #e8f1fa 0%, #d8e8f5 54%, #cfe2f3 100%) !important;
-  background-attachment: fixed, fixed, fixed !important;
-}
+   /* 기본 body 배경은 투명하게 비웁니다 */
+   html { background: #1c232c !important; }
+   body { background: transparent !important; }
+
+   /* GPU가 별도의 이미지 레이어로 인식하도록 ::before로 배경을 깝니다 */
+   body::before {
+   content: "";
+   position: fixed; /* 배경 고정 */
+   top: 0; left: 0; right: 0; bottom: 0;
+   z-index: -9999; /* 콘텐츠 뒤로 보내기 */
+   pointer-events: none;
+   background:
+   radial-gradient(58% 42% at 16% 0%, rgba(61,174,233,0.16), transparent 70%),
+   radial-gradient(52% 38% at 92% 6%, rgba(246,116,0,0.07), transparent 72%),
+   linear-gradient(168deg, #232c36 0%, #1d242c 52%, #19202a 100%) !important;
+   /* will-change 삭제하고 가벼운 3D 가속 레이어만 생성 */
+   transform: translateZ(0);
+   }
+
+   /* 라이트 모드 배경 */
+   body.light-mode::before {
+   background:
+   radial-gradient(58% 42% at 16% 0%, rgba(80,160,225,0.22), transparent 70%),
+   radial-gradient(52% 38% at 92% 6%, rgba(255,180,90,0.12), transparent 72%),
+   linear-gradient(168deg, #e8f1fa 0%, #d8e8f5 54%, #cfe2f3 100%) !important;
+   }
 
 /* Glassy Oxygen panels: top gloss highlight + inset sheen + soft depth */
 .post-outer-container,
@@ -7534,11 +7635,11 @@ body.light-mode #toc-wrapper {
 
 /* Glossy Oxygen top bar */
 .centered-top-container.sticky {
-background: linear-gradient(180deg, rgba(48,59,72,0.92), rgba(32,40,50,0.92)) !important;
+background: linear-gradient(180deg, rgba(48,59,72,0.94), rgba(32,40,50,0.94)) !important;
 border-bottom: 1px solid rgba(255,255,255,0.10) !important;
-box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 18px rgba(0,0,0,0.3) !important;
-backdrop-filter: blur(16px) saturate(1.4) !important;
--webkit-backdrop-filter: blur(16px) saturate(1.4) !important;
+box-shadow: inset 0 1px 0 rgba(255,255,255,0.14), 0 4px 18px rgba(0,0,0,0.2) !important;
+backdrop-filter: blur(4px) saturate(1.2) !important;
+-webkit-backdrop-filter: blur(8px) saturate(1.2) !important;
 }
 body.light-mode .centered-top-container.sticky {
 background: linear-gradient(180deg, rgba(255,255,255,0.9), rgba(228,239,250,0.85)) !important;
@@ -7959,6 +8060,13 @@ blockquote .callout-content {
     text-align: left !important;
     color: inherit !important; /* 여기도 텍스트 색상 상속 추가 */
 }
+
+
+
+
+
+
+
 </style>
     
     
@@ -8010,15 +8118,15 @@ blockquote .callout-content {
   transform: scale(1.15) !important;
   background: transparent !important;
   border: none !important;
-  filter: drop-shadow(0 0 5px rgba(61, 174, 233, 0.6)) !important;
+  /* 필터 대신 훨씬 가벼운 text-shadow 사용 (SVG는 color를 상속받으므로 적용됨) */
+  text-shadow: 0 0 8px rgba(61, 174, 233, 0.8) !important;
   }
 
-  /* 라이트 모드 마우스 호버 처리 */
   body.light-mode .toc-btn:hover,
   body.light-mode .settings-close:hover,
   body.light-mode .ref-close-btn:hover,
   body.light-mode .footnote-close-btn:hover {
-  filter: drop-shadow(0 0 5px rgba(45, 143, 201, 0.5)) !important;
+  text-shadow: 0 0 8px rgba(45, 143, 201, 0.8) !important;
   }
 
   /* 3. Settings Panel Sub-Buttons (설정창 내부 버튼 - 심플한 플랫 글래스 형태) */
@@ -8070,6 +8178,56 @@ blockquote .callout-content {
   border-radius: 6px !important;
   }
 </style>
+
+<!-- &#9660; 모바일 환경 GPU 최적화 (가장 마지막에 선언하여 무조건 덮어쓰기) &#9660; -->
+<style>
+  @media screen and (max-width: 800px) {
+  /* 1. 전역 블러(Glassmorphism) 강제 비활성화 (모든 요소의 Blur 연산 삭제) */
+  * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+  }
+
+  /* 2. 블러가 꺼졌으므로, 반투명했던 패널들을 불투명한 솔리드(단색) 다크 배경으로 덮음 */
+  .centered-top-container.sticky,
+  #toc-wrapper,
+  #settings-panel,
+  .search-modal-content,
+  .reference-tooltip,
+  .floating-footnote-content,
+  #callout-modal-box {
+  background: #1c232c !important; /* KDE 다크 모드 딥 블랙/그레이 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.4) !important; /* 무거운 그림자도 가볍게 교체 */
+  }
+
+  /* 3. 라이트 모드일 때는 불투명한 솔리드(단색) 화이트/라이트 그레이 배경으로 덮음 */
+  body.light-mode .centered-top-container.sticky,
+  body.light-mode #toc-wrapper,
+  body.light-mode #settings-panel,
+  body.light-mode .search-modal-content,
+  body.light-mode .reference-tooltip,
+  body.light-mode .floating-footnote-content,
+  body.light-mode #callout-modal-box {
+  background: #f8f9fa !important; /* 토스 라이트 모드 깔끔한 흰색 */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1) !important;
+  }
+
+  /* 4. 모달이나 검색창 뒷배경 (화면 전체 덮는 투명막) - 너무 까마면 답답하므로 짙은 반투명으로만 처리 */
+  .search-modal-backdrop,
+  #callout-modal-overlay {
+  background: rgba(15, 16, 18, 0.95) !important;
+  }
+  body.light-mode .search-modal-backdrop,
+  body.light-mode #callout-modal-overlay {
+  background: rgba(255, 255, 255, 0.95) !important;
+  }
+  }
+</style>
+<!-- &#9650; 모바일 환경 GPU 최적화 끝 &#9650; -->
+
+
+
+
 </head>
     
     
@@ -8348,7 +8506,7 @@ document.addEventListener('touchend', function(e) {
                       </div>
                     </button>
                     <b:section id='search_top' name='Search (Top)' showaddelement='false'>
-                      <b:widget id='BlogSearch1' locked='true' title='Search' type='BlogSearch' version='2' visible='true'>
+                      <b:widget id='BlogSearch1' locked='true' title='Search' type='BlogSearch' visible='true'>
                         <b:includable id='main'>
   <b:include name='widget-title'/>
   <b:include name='content'/>
@@ -8380,11 +8538,11 @@ document.addEventListener('touchend', function(e) {
 
                 <div class='blog-name container'>
                   <b:section class='container' id='header' name='Header' showaddelement='false'>
-                    <b:widget id='Header1' locked='true' title='betablog1(헤더)' type='Header' version='2' visible='true'>
+                    <b:widget id='Header1' locked='true' title='fr0mhell&apos;s math stash(헤더)' type='Header' visible='true'>
                       <b:widget-settings>
                         <b:widget-setting name='displayUrl'/>
                         <b:widget-setting name='displayHeight'>0</b:widget-setting>
-                        <b:widget-setting name='sectionWidth'>-1</b:widget-setting>
+                        <b:widget-setting name='sectionWidth'>893</b:widget-setting>
                         <b:widget-setting name='useImage'>false</b:widget-setting>
                         <b:widget-setting name='shrinkToFit'>false</b:widget-setting>
                         <b:widget-setting name='imagePlacement'>BEHIND</b:widget-setting>
@@ -8431,7 +8589,7 @@ document.addEventListener('touchend', function(e) {
                   <b:comment>Nav primarily intended for sections that consist of major navigation blocks.</b:comment>
                   <nav role='navigation'>
                     <b:section class='clearboth' id='page_list_top' name='Page List (Top)' showaddelement='false'>
-                      <b:widget id='PageList1' locked='true' title='페이지' type='PageList' version='2' visible='false'>
+                      <b:widget id='PageList1' locked='true' title='페이지' type='PageList' visible='false'>
                         <b:widget-settings>
                           <b:widget-setting name='pageListJson'>{}</b:widget-setting>
                           <b:widget-setting name='homeTitle'>홈</b:widget-setting>
@@ -9886,7 +10044,7 @@ document.addEventListener('touchend', function(e) {
         <b:class cond='data:widgets none w =&gt; w.sectionId == &quot;sidebar_top&quot;' name='no-items'/>
 
         <b:section class='sidebar_top' id='sidebar_top' name='Sidebar (Top)'>
-          <b:widget id='Profile1' locked='true' title='Profile' type='Profile' version='2' visible='true'>
+          <b:widget id='Profile1' locked='true' title='Profile' type='Profile' visible='true'>
             <b:widget-settings>
               <b:widget-setting name='showaboutme'>false</b:widget-setting>
               <b:widget-setting name='showlocation'>false</b:widget-setting>
@@ -9993,7 +10151,7 @@ document.addEventListener('touchend', function(e) {
         </b:section>
       </div>
       <b:section class='sidebar_bottom' id='sidebar_bottom' name='Sidebar (Bottom)' preferred='yes'>
-        <b:widget id='BlogArchive1' locked='false' title='all posts' type='BlogArchive' version='2' visible='true'>
+        <b:widget id='BlogArchive1' locked='false' title='all posts' type='BlogArchive' visible='true'>
           <b:widget-settings>
             <b:widget-setting name='showStyle'>HIERARCHY</b:widget-setting>
             <b:widget-setting name='yearPattern'>yyyy</b:widget-setting>
@@ -10059,7 +10217,7 @@ document.addEventListener('touchend', function(e) {
   </ul>
 </b:includable>
         </b:widget>
-        <b:widget id='Label1' locked='false' title='Tags' type='Label' version='2' visible='true'>
+        <b:widget id='Label1' locked='false' title='Tags' type='Label' visible='true'>
           <b:widget-settings>
             <b:widget-setting name='sorting'>ALPHA</b:widget-setting>
             <b:widget-setting name='display'>LIST</b:widget-setting>
